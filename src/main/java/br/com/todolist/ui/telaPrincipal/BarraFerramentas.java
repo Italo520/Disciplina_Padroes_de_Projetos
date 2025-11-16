@@ -1,6 +1,8 @@
 package br.com.todolist.ui.telaPrincipal;
 
-import br.com.todolist.controller.AppController;
+import br.com.todolist.controller.EventController;
+import br.com.todolist.controller.ReportController;
+import br.com.todolist.controller.TaskController;
 import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Tarefa;
 import com.formdev.flatlaf.FlatDarkLaf;
@@ -24,7 +26,7 @@ public class BarraFerramentas {
     private static final DateTimeFormatter FORMATADOR_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter FORMATADOR_MES_ANO = DateTimeFormatter.ofPattern("MM/yyyy");
 
-    public static JMenuBar criarBarraFerramentas(TelaPrincipal frame, AppController appController) {
+    public static JMenuBar criarBarraFerramentas(TelaPrincipal frame, TaskController taskController, EventController eventController, ReportController reportController) {
         JMenuBar menuBar = new JMenuBar();
 
         JMenu menuArquivo = new JMenu("Arquivo");
@@ -40,25 +42,25 @@ public class BarraFerramentas {
         });
 
         JMenuItem listarTarefasPorDia = new JMenuItem("Listar Tarefas por Dia");
-        listarTarefasPorDia.addActionListener(new OuvinteListarTarefasPorDia(frame, appController));
+        listarTarefasPorDia.addActionListener(new OuvinteListarTarefasPorDia(frame, taskController));
         
         JMenuItem listarTarefasCriticas = new JMenuItem("Listar Tarefas Críticas");
-        listarTarefasCriticas.addActionListener(new OuvinteListarTarefasCriticas(frame, appController));
+        listarTarefasCriticas.addActionListener(new OuvinteListarTarefasCriticas(frame, taskController));
 
         JMenuItem pdfDoDia = new JMenuItem("Gerar PDF das Tarefas do Dia");
-        pdfDoDia.addActionListener(new OuvinteGerarPdfTarefas(frame, appController));
+        pdfDoDia.addActionListener(new OuvinteGerarPdfTarefas(frame, reportController));
 
         JMenuItem enviarEmailTarefas = new JMenuItem("Enviar Tarefas do Dia por Email");
-        enviarEmailTarefas.addActionListener(new OuvinteEnviarEmailTarefas(frame, appController));
+        enviarEmailTarefas.addActionListener(new OuvinteEnviarEmailTarefas(frame, reportController));
         
         JMenuItem relatorioTarefasPorMes = new JMenuItem("Relatório de Tarefas por Mês (Excel)");
-        relatorioTarefasPorMes.addActionListener(new OuvinteGerarExcelTarefas(frame, appController));
+        relatorioTarefasPorMes.addActionListener(new OuvinteGerarExcelTarefas(frame, reportController));
         
         JMenuItem listarEventosPorDia = new JMenuItem("Listar Eventos por Dia");
-        listarEventosPorDia.addActionListener(new OuvinteListarEventosPorDia(frame, appController));
+        listarEventosPorDia.addActionListener(new OuvinteListarEventosPorDia(frame, eventController));
         
         JMenuItem listarEventosMesEspecifico = new JMenuItem("Listar Eventos por Mês");
-        listarEventosMesEspecifico.addActionListener(new OuvinteListarEventosPorMes(frame, appController));
+        listarEventosMesEspecifico.addActionListener(new OuvinteListarEventosPorMes(frame, eventController));
 
         JMenuItem itemSobre = new JMenuItem("Sobre");
         itemSobre.addActionListener(e -> JOptionPane.showMessageDialog(frame,
@@ -140,16 +142,16 @@ public class BarraFerramentas {
 
     private static class OuvinteListarTarefasPorDia implements ActionListener {
         private final TelaPrincipal frame;
-        private final AppController appController;
+        private final TaskController taskController;
 
-        public OuvinteListarTarefasPorDia(TelaPrincipal frame, AppController appController) {
+        public OuvinteListarTarefasPorDia(TelaPrincipal frame, TaskController taskController) {
             this.frame = frame;
-            this.appController = appController;
+            this.taskController = taskController;
         }
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para listar as tarefas (dd/MM/yyyy):")
                 .ifPresent(dia -> {
-                    List<Tarefa> tarefas = appController.listarTarefasPorDia(dia);
+                    List<Tarefa> tarefas = taskController.listarTarefasPorDia(dia);
                     if (tarefas.isEmpty()) {
                         JOptionPane.showMessageDialog(frame, "Nenhuma tarefa encontrada para esta data.", "Informação", JOptionPane.INFORMATION_MESSAGE);
                     }
@@ -160,14 +162,14 @@ public class BarraFerramentas {
 
     private static class OuvinteListarTarefasCriticas implements ActionListener {
         private final TelaPrincipal frame;
-        private final AppController appController;
+        private final TaskController taskController;
 
-        public OuvinteListarTarefasCriticas(TelaPrincipal frame, AppController appController) {
+        public OuvinteListarTarefasCriticas(TelaPrincipal frame, TaskController taskController) {
             this.frame = frame;
-            this.appController = appController;
+            this.taskController = taskController;
         }
         public void actionPerformed(ActionEvent e) {
-            List<Tarefa> tarefas = appController.listarTarefasCriticas();
+            List<Tarefa> tarefas = taskController.listarTarefasCriticas();
             if (tarefas.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, "Nenhuma tarefa crítica encontrada.", "Informação", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -177,16 +179,16 @@ public class BarraFerramentas {
 
     private static class OuvinteListarEventosPorDia implements ActionListener {
         private final TelaPrincipal frame;
-        private final AppController appController;
+        private final EventController eventController;
 
-        public OuvinteListarEventosPorDia(TelaPrincipal frame, AppController appController) {
+        public OuvinteListarEventosPorDia(TelaPrincipal frame, EventController eventController) {
             this.frame = frame;
-            this.appController = appController;
+            this.eventController = eventController;
         }
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para listar os eventos (dd/MM/yyyy):")
                 .ifPresent(dia -> {
-                    List<Evento> eventos = appController.listarEventosPorDia(dia);
+                    List<Evento> eventos = eventController.listarEventosPorDia(dia);
                      if (eventos.isEmpty()) {
                         JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para esta data.", "Informação", JOptionPane.INFORMATION_MESSAGE);
                     }
@@ -197,16 +199,16 @@ public class BarraFerramentas {
     
     private static class OuvinteListarEventosPorMes implements ActionListener {
         private final TelaPrincipal frame;
-        private final AppController appController;
+        private final EventController eventController;
         
-        public OuvinteListarEventosPorMes(TelaPrincipal frame, AppController appController) {
+        public OuvinteListarEventosPorMes(TelaPrincipal frame, EventController eventController) {
             this.frame = frame;
-            this.appController = appController;
+            this.eventController = eventController;
         }
         public void actionPerformed(ActionEvent e) {
             obterMesAnoDoUsuario(frame, "Digite o mês e ano (MM/yyyy):")
                 .ifPresent(mes -> {
-                    List<Evento> eventos = appController.listarEventosPorMes(mes);
+                    List<Evento> eventos = eventController.listarEventosPorMes(mes);
                     if (eventos.isEmpty()) {
                         JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para este mês.", "Informação", JOptionPane.INFORMATION_MESSAGE);
                     }
@@ -217,41 +219,28 @@ public class BarraFerramentas {
     
     private static class OuvinteGerarPdfTarefas implements ActionListener {
         private final JFrame frame;
-        private final AppController appController;
+        private final ReportController reportController;
 
-        public OuvinteGerarPdfTarefas(JFrame frame, AppController appController) {
+        public OuvinteGerarPdfTarefas(JFrame frame, ReportController reportController) {
             this.frame = frame;
-            this.appController = appController;
+            this.reportController = reportController;
         }
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para gerar o PDF (dd/MM/yyyy):")
                 .ifPresent(dia -> {
-                    List<Tarefa> tarefas = appController.listarTarefasPorDia(dia);
-                    if (tarefas.isEmpty()) {
-                        JOptionPane.showMessageDialog(frame, "Nenhuma tarefa encontrada para esta data.", "Informação", JOptionPane.INFORMATION_MESSAGE);
-                        return;
-                    }
-
-                    String nomeArquivo = "Relatorio_Tarefas_" + dia.format(FORMATADOR_DATA) + ".pdf";
-                    String titulo = "Relatório de Tarefas - " + dia.format(FORMATADOR_DATA);
-                    String[] cabecalhos = {"Título", "Descrição", "Prioridade", "Prazo"};
-                    List<String[]> dados = tarefas.stream()
-                        .map(t -> new String[]{t.getTitulo(), t.getDescricao(), String.valueOf(t.getPrioridade()), t.getDeadline().toString()})
-                        .collect(java.util.stream.Collectors.toList());
-
-                    br.com.todolist.util.Central.gerarPdf(nomeArquivo, titulo, cabecalhos, dados);
-                    JOptionPane.showMessageDialog(frame, "PDF '" + nomeArquivo + "' gerado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    reportController.enviarRelatorioTarefasDoDiaPorEmail(dia);
+                    JOptionPane.showMessageDialog(frame, "PDF gerado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                 });
         }
     }
 
     private static class OuvinteEnviarEmailTarefas implements ActionListener {
         private final JFrame frame;
-        private final AppController appController;
+        private final ReportController reportController;
 
-        public OuvinteEnviarEmailTarefas(JFrame frame, AppController appController) {
+        public OuvinteEnviarEmailTarefas(JFrame frame, ReportController reportController) {
             this.frame = frame;
-            this.appController = appController;
+            this.reportController = reportController;
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -263,7 +252,7 @@ public class BarraFerramentas {
                     SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
                         @Override
                         protected Boolean doInBackground() throws Exception {
-                            return appController.enviarRelatorioTarefasDoDiaPorEmail(dia);
+                            return reportController.enviarRelatorioTarefasDoDiaPorEmail(dia);
                         }
 
                         protected void done() {
@@ -290,16 +279,16 @@ public class BarraFerramentas {
 
     private static class OuvinteGerarExcelTarefas implements ActionListener {
         private final JFrame frame;
-        private final AppController appController;
-        public OuvinteGerarExcelTarefas(JFrame frame, AppController appController) {
+        private final ReportController reportController;
+        public OuvinteGerarExcelTarefas(JFrame frame, ReportController reportController) {
             this.frame = frame;
-            this.appController = appController;
+            this.reportController = reportController;
         }
         public void actionPerformed(ActionEvent e) {
             obterMesAnoDoUsuario(frame, "Digite o mês e ano para o relatório (MM/yyyy):")
                 .ifPresent(mes -> {
                     String nomeArquivo = "Relatorio_Tarefas_" + mes.format(DateTimeFormatter.ofPattern("MM_yyyy")) + ".xlsx";
-                    appController.gerarRelatorioTarefasPorMes(mes, nomeArquivo);
+                    reportController.gerarRelatorioTarefasPorMes(mes, nomeArquivo);
                     JOptionPane.showMessageDialog(frame, "Relatório Excel '" + nomeArquivo + "' gerado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                 });
         }

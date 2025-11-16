@@ -19,15 +19,12 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public boolean cadastrarEvento(Evento novoEvento) {
-        if (!novoEvento.getCriado_por().equals(emailUsuario)) {
-            return false;
-        }
-
+    public boolean cadastrarEvento(String titulo, String descricao, LocalDate deadline) {
         boolean dataDisponivel = listarTodosEventos().stream()
-                .noneMatch(evento -> evento.getDeadline().isEqual(novoEvento.getDeadline()));
+                .noneMatch(evento -> evento.getDeadline().isEqual(deadline));
 
         if (dataDisponivel) {
+            Evento novoEvento = new Evento(titulo, descricao, this.emailUsuario, deadline);
             itemRepository.salvar(novoEvento);
             return true;
         }
@@ -71,5 +68,10 @@ public class EventServiceImpl implements EventService {
         return listarTodosEventos().stream()
                 .filter(evento -> YearMonth.from(evento.getDeadline()).equals(mes))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getEmailUsuario() {
+        return this.emailUsuario;
     }
 }

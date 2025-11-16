@@ -1,6 +1,8 @@
 package br.com.todolist.ui.telasusuario;
 
-import br.com.todolist.controller.AppController;
+import br.com.todolist.controller.AuthController;
+import br.com.todolist.entity.Usuario;
+import br.com.todolist.service.SessionManager;
 import br.com.todolist.ui.telaPrincipal.TelaPrincipal;
 import javax.swing.*;
 
@@ -10,11 +12,11 @@ public class TelaLogin extends JFrame {
     private JPasswordField campoSenha;
     private JButton botaoEntrar;
     private JButton botaoCriarConta;
-    private final AppController appController;
+    private final AuthController authController;
 
     public TelaLogin() {
         super("Login - ToDo List");
-        this.appController = AppController.getInstance();
+        this.authController = new AuthController();
         configurarLayout();
         configurarAcoes();
     }
@@ -70,8 +72,10 @@ public class TelaLogin extends JFrame {
             return;
         }
 
-        if (appController.login(email, senha)) {
-            new TelaPrincipal(appController).setVisible(true);
+        Usuario usuario = authController.login(email, senha);
+        if (usuario != null) {
+            SessionManager.getInstance().login(usuario);
+            new TelaPrincipal().setVisible(true);
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Email ou senha incorretos.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
@@ -79,7 +83,7 @@ public class TelaLogin extends JFrame {
     }
 
     private void abrirTelaDeCadastro() {
-        TelaCadastro telaCadastro = new TelaCadastro(this, appController);
+        TelaCadastro telaCadastro = new TelaCadastro(this, authController);
         telaCadastro.setVisible(true);
         String emailNovo = telaCadastro.getEmailCadastrado();
         if (emailNovo != null) {

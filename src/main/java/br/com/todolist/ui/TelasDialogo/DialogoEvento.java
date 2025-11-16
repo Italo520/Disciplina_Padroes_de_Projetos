@@ -1,7 +1,7 @@
 // Em: src/main/java/br/com/todolist/ui/TelasDialogo/DialogoEvento.java
 package br.com.todolist.ui.TelasDialogo;
 
-import br.com.todolist.controller.AppController;
+import br.com.todolist.controller.EventController;
 import br.com.todolist.entity.Evento;
 
 import javax.swing.*;
@@ -12,7 +12,7 @@ import java.time.format.DateTimeParseException;
 
 public class DialogoEvento extends JDialog {
 
-    private final AppController appController;
+    private final EventController eventController;
     private Evento evento;
 
     private JTextField campoTitulo;
@@ -25,17 +25,17 @@ public class DialogoEvento extends JDialog {
     private boolean salvo = false;
     private final DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public DialogoEvento(Frame frame, AppController appController) {
+    public DialogoEvento(Frame frame, EventController eventController) {
         super(frame, "Novo Evento", true);
-        this.appController = appController;
+        this.eventController = eventController;
         this.evento = null;
         configurarEAdicionarComponentes();
         configurarAcoes();
     }
 
-    public DialogoEvento(Frame frame, AppController appController, Evento eventoParaEditar) {
+    public DialogoEvento(Frame frame, EventController eventController, Evento eventoParaEditar) {
         super(frame, "Editar Evento", true);
-        this.appController = appController;
+        this.eventController = eventController;
         this.evento = eventoParaEditar;
         configurarEAdicionarComponentes();
         preencherCampos();
@@ -106,7 +106,7 @@ public class DialogoEvento extends JDialog {
 
         try {
             if (this.evento == null) {
-                boolean sucesso = appController.cadastrarEvento(titulo, descricao, deadline);
+                boolean sucesso = eventController.cadastrarEvento(titulo, descricao, deadline);
                 if (!sucesso) {
                     JOptionPane.showMessageDialog(this,
                             "Não foi possível cadastrar o evento.\nVerifique se já não existe um evento com a mesma data para o seu usuário.",
@@ -114,7 +114,7 @@ public class DialogoEvento extends JDialog {
                     return;
                 }
             } else {
-                appController.editarEvento(this.evento, titulo, descricao, deadline);
+                eventController.editarEvento(this.evento, titulo, descricao, deadline);
             }
 
             this.salvo = true;

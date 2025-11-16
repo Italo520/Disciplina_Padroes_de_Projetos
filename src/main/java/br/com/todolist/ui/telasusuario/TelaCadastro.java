@@ -1,6 +1,6 @@
 package br.com.todolist.ui.telasusuario;
 
-import br.com.todolist.controller.AppController;
+import br.com.todolist.controller.AuthController;
 import javax.swing.*;
 import java.awt.*;
 
@@ -12,12 +12,12 @@ public class TelaCadastro extends JDialog {
     private JButton botaoCadastrar;
     private JButton botaoCancelar;
 
-    private final AppController appController;
+    private final AuthController authController;
     private String emailCadastrado = null;
 
-    public TelaCadastro(Frame owner, AppController appController) {
+    public TelaCadastro(Frame owner, AuthController authController) {
         super(owner, "Criar Nova Conta", true);
-        this.appController = appController;
+        this.authController = authController;
         configurarLayout();
         configurarAcoes();
     }
@@ -85,7 +85,7 @@ public class TelaCadastro extends JDialog {
             return;
         }
 
-        if (appController.cadastrarUsuario(nome, email, senha)) {
+        if (authController.cadastrarUsuario(nome, email, senha)) {
             JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             emailCadastrado = email;
             dispose();

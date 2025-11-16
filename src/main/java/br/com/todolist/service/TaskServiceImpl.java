@@ -19,10 +19,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void cadastrarTarefa(Tarefa tarefa) {
-        if (tarefa.getCriado_por().equals(emailUsuario)) {
-            itemRepository.salvar(tarefa);
-        }
+    public void cadastrarTarefa(String titulo, String descricao, LocalDate deadline, int prioridade) {
+        Tarefa novaTarefa = new Tarefa(titulo, descricao, this.emailUsuario, deadline, prioridade);
+        itemRepository.salvar(novaTarefa);
     }
 
     @Override
@@ -74,5 +73,10 @@ public class TaskServiceImpl implements TaskService {
                     return (diasRestantes - tarefa.getPrioridade()) < 0;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getEmailUsuario() {
+        return this.emailUsuario;
     }
 }
