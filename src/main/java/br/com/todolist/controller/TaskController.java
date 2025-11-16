@@ -13,8 +13,8 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    public void cadastrarTarefa(String titulo, String descricao, LocalDate deadline, int prioridade) {
-        taskService.cadastrarTarefa(titulo, descricao, deadline, prioridade);
+    public void cadastrarTarefa(Tarefa tarefa) {
+        taskService.cadastrarTarefa(tarefa);
     }
 
     public List<Tarefa> listarTodasTarefas() {

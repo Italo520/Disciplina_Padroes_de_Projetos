@@ -14,8 +14,8 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    public boolean cadastrarEvento(String titulo, String descricao, LocalDate deadline) {
-        return eventService.cadastrarEvento(titulo, descricao, deadline);
+    public boolean cadastrarEvento(Evento evento) {
+        return eventService.cadastrarEvento(evento);
     }
 
     public List<Evento> listarTodosEventos() {

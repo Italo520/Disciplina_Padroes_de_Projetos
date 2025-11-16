@@ -2,16 +2,22 @@ package br.com.todolist.service;
 
 import br.com.todolist.entity.Itens;
 import br.com.todolist.entity.Tarefa;
+import br.com.todolist.observer.Observer;
 import br.com.todolist.repository.ItemRepository;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Implementação do serviço de tarefas.
+ * Contém a lógica de negócio para gerenciar tarefas e notificar observadores sobre mudanças.
+ */
 public class TaskServiceImpl implements TaskService {
 
     private final ItemRepository<Itens> itemRepository;
     private final String emailUsuario;
+    private final List<Observer<Tarefa>> observers = new ArrayList<>();
 
     public TaskServiceImpl(ItemRepository<Itens> itemRepository, String emailUsuario) {
         this.itemRepository = itemRepository;
@@ -19,15 +25,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void cadastrarTarefa(String titulo, String descricao, LocalDate deadline, int prioridade) {
-        Tarefa novaTarefa = new Tarefa(titulo, descricao, this.emailUsuario, deadline, prioridade);
-        itemRepository.salvar(novaTarefa);
+    public void cadastrarTarefa(Tarefa tarefa) {
+        itemRepository.salvar(tarefa);
+        notifyObservers(tarefa);
     }
 
     @Override
     public void excluirTarefa(Tarefa tarefa) {
         if (tarefa.getCriado_por().equals(emailUsuario)) {
             itemRepository.excluir(tarefa);
+            notifyObservers(tarefa);
         }
     }
 
@@ -39,6 +46,7 @@ public class TaskServiceImpl implements TaskService {
             tarefaOriginal.setDeadLine(novoDeadline);
             tarefaOriginal.setPrioridade(novaPrioridade);
             itemRepository.atualizar(tarefaOriginal);
+            notifyObservers(tarefaOriginal);
         }
     }
 
@@ -46,37 +54,59 @@ public class TaskServiceImpl implements TaskService {
     public void atualizarTarefa(Tarefa tarefa) {
         if (tarefa.getCriado_por().equals(emailUsuario)) {
             itemRepository.atualizar(tarefa);
+            notifyObservers(tarefa);
         }
     }
 
     @Override
     public List<Tarefa> listarTodasTarefas() {
-        return itemRepository.buscarTodos().stream()
-                .filter(item -> item instanceof Tarefa && emailUsuario.equals(item.getCriado_por()))
-                .map(item -> (Tarefa) item)
-                .collect(Collectors.toList());
+        List<Tarefa> tarefas = new ArrayList<>();
+        for (Itens item : itemRepository.buscarTodos()) {
+            if (item instanceof Tarefa && emailUsuario.equals(item.getCriado_por())) {
+                tarefas.add((Tarefa) item);
+            }
+        }
+        return tarefas;
     }
 
     @Override
     public List<Tarefa> listarTarefasPorDia(LocalDate dia) {
-        return listarTodasTarefas().stream()
-                .filter(tarefa -> tarefa.getDeadline().isEqual(dia))
-                .collect(Collectors.toList());
+        List<Tarefa> tarefasDoDia = new ArrayList<>();
+        for (Tarefa tarefa : listarTodasTarefas()) {
+            if (tarefa.getDeadline().isEqual(dia)) {
+                tarefasDoDia.add(tarefa);
+            }
+        }
+        return tarefasDoDia;
     }
 
     @Override
     public List<Tarefa> listarTarefasCriticas() {
         LocalDate hoje = LocalDate.now();
-        return listarTodasTarefas().stream()
-                .filter(tarefa -> {
-                    long diasRestantes = ChronoUnit.DAYS.between(hoje, tarefa.getDeadline());
-                    return (diasRestantes - tarefa.getPrioridade()) < 0;
-                })
-                .collect(Collectors.toList());
+        List<Tarefa> tarefasCriticas = new ArrayList<>();
+        for (Tarefa tarefa : listarTodasTarefas()) {
+            long diasRestantes = ChronoUnit.DAYS.between(hoje, tarefa.getDeadline());
+            if ((diasRestantes - tarefa.getPrioridade()) < 0) {
+                tarefasCriticas.add(tarefa);
+            }
+        }
+        return tarefasCriticas;
     }
 
     @Override
-    public String getEmailUsuario() {
-        return this.emailUsuario;
+    public void addObserver(Observer<Tarefa> observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer<Tarefa> observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(Tarefa tarefa) {
+        for (Observer<Tarefa> observer : observers) {
+            observer.update(tarefa);
+        }
     }
 }
