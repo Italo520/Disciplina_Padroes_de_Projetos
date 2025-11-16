@@ -1,5 +1,4 @@
-// Em: src/main/java/br/com/todolist/persistence/GerenciadorDePersistenciaJson.java
-package br.com.todolist.persistence;
+package br.com.todolist.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

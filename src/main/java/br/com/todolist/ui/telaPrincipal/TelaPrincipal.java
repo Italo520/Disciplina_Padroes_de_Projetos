@@ -4,21 +4,22 @@ package br.com.todolist.ui.telaPrincipal;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
-import br.com.todolist.models.Evento;
-import br.com.todolist.models.Tarefa;
-import br.com.todolist.models.Usuario;
-import br.com.todolist.service.Orquestrador;
+
+import br.com.todolist.controller.AppController;
+import br.com.todolist.entity.Evento;
+import br.com.todolist.entity.Tarefa;
+import br.com.todolist.entity.Usuario;
 
 public class TelaPrincipal extends JFrame {
 
-    private Orquestrador orquestrador;
+    private AppController appController;
     private PainelTarefas painelTarefas;
     private PainelEventos painelEventos;
     private JTabbedPane painelComAbas;
 
-    public TelaPrincipal(Usuario usuarioLogado) {
-        super("Usuário: " + usuarioLogado.getNome());
-        this.orquestrador = new Orquestrador(usuarioLogado);
+    public TelaPrincipal(AppController appController) {
+        super("Usuário: " + appController.getUsuarioLogado().getNome());
+        this.appController = appController;
         configurarJanela();
         montarLayout();
     }
@@ -32,7 +33,7 @@ public class TelaPrincipal extends JFrame {
     }
 
     private void montarLayout() {
-        setJMenuBar(BarraFerramentas.criarBarraFerramentas(this, this.orquestrador));
+        setJMenuBar(BarraFerramentas.criarBarraFerramentas(this, this.appController));
 
         criarPaineis();
         painelComAbas.setBounds(5, 5, 1270, 650);
@@ -43,8 +44,8 @@ public class TelaPrincipal extends JFrame {
     private void criarPaineis() {
         painelComAbas = new JTabbedPane();
 
-        this.painelTarefas = new PainelTarefas(this.orquestrador);
-        this.painelEventos = new PainelEventos(this.orquestrador);
+        this.painelTarefas = new PainelTarefas(this.appController);
+        this.painelEventos = new PainelEventos(this.appController);
 
         painelComAbas.addTab("Tarefas", null, this.painelTarefas, "Gerenciador de Tarefas");
         painelComAbas.addTab("Eventos", null, this.painelEventos, "Gerenciador de Eventos");

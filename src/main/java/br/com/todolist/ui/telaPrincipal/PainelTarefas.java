@@ -1,8 +1,8 @@
 package br.com.todolist.ui.telaPrincipal;
 
-import br.com.todolist.models.Subtarefa;
-import br.com.todolist.models.Tarefa;
-import br.com.todolist.service.Orquestrador;
+import br.com.todolist.controller.AppController;
+import br.com.todolist.entity.Subtarefa;
+import br.com.todolist.entity.Tarefa;
 import br.com.todolist.ui.TelasDialogo.DialogoTarefa;
 
 import javax.swing.*;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class PainelTarefas extends PainelBase {
 
-    private final Orquestrador orquestrador;
+    private final AppController appController;
 
     private DefaultListModel<Tarefa> modeloListaTarefas;
     private DefaultListModel<Subtarefa> modeloListaSubtarefas;
@@ -32,9 +32,9 @@ public class PainelTarefas extends PainelBase {
 
     private final DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    public PainelTarefas(Orquestrador orquestrador) {
+    public PainelTarefas(AppController appController) {
         super();
-        this.orquestrador = orquestrador;
+        this.appController = appController;
         super.inicializarLayout();
     }
 
@@ -152,7 +152,7 @@ public class PainelTarefas extends PainelBase {
 
     private void popularListaTarefas() {
         modeloListaTarefas.clear();
-        List<Tarefa> tarefas = orquestrador.listarTodasTarefas();
+        List<Tarefa> tarefas = appController.listarTodasTarefas();
         if (tarefas != null) {
             tarefas.forEach(modeloListaTarefas::addElement);
         }
@@ -180,7 +180,7 @@ public class PainelTarefas extends PainelBase {
 
     private class OuvinteBotaoNovaTarefa implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this), orquestrador);
+            DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this), appController);
             dialogo.setVisible(true);
             if (dialogo.foiSalvo()) {
                 popularListaTarefas();
@@ -195,7 +195,7 @@ public class PainelTarefas extends PainelBase {
                 JOptionPane.showMessageDialog(PainelTarefas.this, "Por favor, selecione uma tarefa para editar.", "Nenhuma Tarefa Selecionada", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this), orquestrador, tarefaSelecionada);
+            DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this), appController, tarefaSelecionada);
             dialogo.setVisible(true);
             if (dialogo.foiSalvo()) {
                 popularListaTarefas();
@@ -216,7 +216,7 @@ public class PainelTarefas extends PainelBase {
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.WARNING_MESSAGE);
             if (resposta == JOptionPane.YES_OPTION) {
-                orquestrador.excluirTarefa(tarefaSelecionada);
+                appController.excluirTarefa(tarefaSelecionada);
                 popularListaTarefas();
             }
         }
@@ -240,7 +240,7 @@ public class PainelTarefas extends PainelBase {
                 Subtarefa subtarefa = modeloListaSubtarefas.getElementAt(index);
                 subtarefa.mudarStatus();
                 if (tarefaPai != null) {
-                    orquestrador.atualizarTarefa(tarefaPai);
+                    appController.atualizarTarefa(tarefaPai);
                     atualizarDetalhesTarefa(tarefaPai);
                 }
                 listaDeSubtarefas.repaint(listaDeSubtarefas.getCellBounds(index, index));
@@ -259,7 +259,7 @@ public class PainelTarefas extends PainelBase {
             String descricao = JOptionPane.showInputDialog(PainelTarefas.this, "Descrição da nova subtarefa:", "Nova Subtarefa", JOptionPane.PLAIN_MESSAGE);
             if (descricao != null && !descricao.trim().isEmpty()) {
                 tarefaPai.adicionarSubtarefa(new Subtarefa(descricao));
-                orquestrador.atualizarTarefa(tarefaPai);
+                appController.atualizarTarefa(tarefaPai);
                 atualizarListaSubtarefas(tarefaPai);
                 atualizarDetalhesTarefa(tarefaPai);
                 listaDeTarefas.repaint();
@@ -278,7 +278,7 @@ public class PainelTarefas extends PainelBase {
             String novoTitulo = (String) JOptionPane.showInputDialog(PainelTarefas.this, "Nova descrição:", "Editar Subtarefa", JOptionPane.PLAIN_MESSAGE, null, null, subtarefa.getTitulo());
             if (novoTitulo != null && !novoTitulo.trim().isEmpty()) {
                 subtarefa.setTitulo(novoTitulo);
-                orquestrador.atualizarTarefa(tarefaPai);
+                appController.atualizarTarefa(tarefaPai);
                 atualizarListaSubtarefas(tarefaPai);
             }
         }
@@ -295,7 +295,7 @@ public class PainelTarefas extends PainelBase {
             int resposta = JOptionPane.showConfirmDialog(PainelTarefas.this, "Excluir a subtarefa '" + subtarefa.getTitulo() + "'?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
             if (resposta == JOptionPane.YES_OPTION) {
                 tarefaPai.removerSubtarefa(subtarefa);
-                orquestrador.atualizarTarefa(tarefaPai);
+                appController.atualizarTarefa(tarefaPai);
                 atualizarListaSubtarefas(tarefaPai);
                 atualizarDetalhesTarefa(tarefaPai);
                 listaDeTarefas.repaint();

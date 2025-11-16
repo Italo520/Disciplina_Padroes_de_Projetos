@@ -1,7 +1,6 @@
 package br.com.todolist.ui.telasusuario;
 
-import br.com.todolist.service.GerenteDeUsuarios;
-
+import br.com.todolist.controller.AppController;
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,22 +12,18 @@ public class TelaCadastro extends JDialog {
     private JButton botaoCadastrar;
     private JButton botaoCancelar;
 
-    private final GerenteDeUsuarios gerenteDeUsuarios;
-    
-    // Armazena o email do usuário se o cadastro for bem-sucedido.
+    private final AppController appController;
     private String emailCadastrado = null;
 
-    public TelaCadastro(Frame telalogin, GerenteDeUsuarios gerenteDeUsuarios) {
-        super(telalogin, "Criar Nova Conta", true);
-        this.gerenteDeUsuarios = gerenteDeUsuarios;
-
+    public TelaCadastro(Frame owner, AppController appController) {
+        super(owner, "Criar Nova Conta", true);
+        this.appController = appController;
         configurarLayout();
         configurarAcoes();
     }
-    
-   
+
     public String getEmailCadastrado() {
-        return this.emailCadastrado;
+        return emailCadastrado;
     }
 
     private void configurarLayout() {
@@ -76,40 +71,26 @@ public class TelaCadastro extends JDialog {
     }
 
     private void configurarAcoes() {
-        botaoCadastrar.addActionListener(new CadastrarAction());
-        // --- CLASSE INTERNA RESTAURADA ---
-        botaoCancelar.addActionListener(new OuvinteBotaoCancelar());
+        botaoCadastrar.addActionListener(e -> realizarCadastro());
+        botaoCancelar.addActionListener(e -> dispose());
     }
 
-    private class CadastrarAction implements java.awt.event.ActionListener {
-        @Override
-        public void actionPerformed(java.awt.event.ActionEvent e) {
-            String nome = campoNome.getText();
-            String email = campoEmail.getText();
-            String senha = new String(campoSenha.getPassword());
+    private void realizarCadastro() {
+        String nome = campoNome.getText();
+        String email = campoEmail.getText();
+        String senha = new String(campoSenha.getPassword());
 
-            if (nome.trim().isEmpty() || email.trim().isEmpty() || senha.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(TelaCadastro.this, "Todos os campos são obrigatórios.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            boolean sucesso = gerenteDeUsuarios.criarNovoUsuario(nome, email, senha);
-
-            if (sucesso) {
-                JOptionPane.showMessageDialog(TelaCadastro.this, "Usuário cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                // Armazena o e-mail antes de fechar a janela
-                emailCadastrado = email;
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(TelaCadastro.this, "Este email já está em uso. Tente outro.", "Erro no Cadastro", JOptionPane.ERROR_MESSAGE);
-            }
+        if (nome.trim().isEmpty() || email.trim().isEmpty() || senha.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+            return;
         }
-    }
 
-    // --- Ouvintes---
-    private class OuvinteBotaoCancelar implements java.awt.event.ActionListener {
-        public void actionPerformed(java.awt.event.ActionEvent e) {
+        if (appController.cadastrarUsuario(nome, email, senha)) {
+            JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            emailCadastrado = email;
             dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Este email já está em uso. Tente outro.", "Erro no Cadastro", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
