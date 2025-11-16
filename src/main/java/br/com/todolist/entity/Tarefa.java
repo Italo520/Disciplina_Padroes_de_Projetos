@@ -1,5 +1,7 @@
 package br.com.todolist.entity;
 
+import br.com.todolist.strategy.DefaultProgressCalculationStrategy;
+import br.com.todolist.strategy.ProgressCalculationStrategy;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
@@ -10,6 +12,7 @@ public class Tarefa extends Itens {
     private LocalDate dataConclusao;
     private int prioridade;
     private List<Subtarefa> subtarefas;
+    private ProgressCalculationStrategy progressCalculationStrategy;
 
     public Tarefa() {
     }
@@ -19,18 +22,11 @@ public class Tarefa extends Itens {
         this.prioridade = prioridade;
         this.dataConclusao = null;
         this.subtarefas = new ArrayList<>();
+        this.progressCalculationStrategy = new DefaultProgressCalculationStrategy();
     }
 
     public double obterPercentual() {
-        if (subtarefas.isEmpty()) {
-            return dataConclusao != null ? 100.0 : 0.0;
-        }
-
-        long subtarefasConcluidas = this.subtarefas.stream()
-                .filter(Subtarefa::isStatus)
-                .count();
-
-        return ((double) subtarefasConcluidas / subtarefas.size()) * 100;
+        return progressCalculationStrategy.calcularProgresso(this);
     }
 
     public LocalDate getDataConclusao() {
@@ -67,5 +63,9 @@ public class Tarefa extends Itens {
 
     public String toString() {
         return getTitulo();
+    }
+
+    public void setProgressCalculationStrategy(ProgressCalculationStrategy progressCalculationStrategy) {
+        this.progressCalculationStrategy = progressCalculationStrategy;
     }
 }

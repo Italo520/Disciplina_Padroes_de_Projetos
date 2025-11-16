@@ -4,11 +4,13 @@ import br.com.todolist.entity.DadosUsuario;
 import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Itens;
 import br.com.todolist.entity.Tarefa;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Implementação do repositório de itens.
+ * Responsável por persistir e recuperar dados de tarefas e eventos em um arquivo JSON.
+ */
 public class ItemRepositoryImpl implements ItemRepository<Itens> {
 
     private static final String ARQUIVO_DADOS = "arquivos/dados_globais.json";
@@ -62,23 +64,30 @@ public class ItemRepositoryImpl implements ItemRepository<Itens> {
     }
 
     @Override
+    public void atualizar(Itens item) {
+        salvarDados();
+    }
+
+    @Override
+    public Itens buscarPorId(String id) {
+        for (Tarefa tarefa : tarefas) {
+            if (tarefa.getTitulo().equals(id)) {
+                return tarefa;
+            }
+        }
+        for (Evento evento : eventos) {
+            if (evento.getTitulo().equals(id)) {
+                return evento;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public List<Itens> buscarTodos() {
         List<Itens> todos = new ArrayList<>();
         todos.addAll(tarefas);
         todos.addAll(eventos);
         return todos;
-    }
-
-    public List<Tarefa> buscarTodasTarefas() {
-        return new ArrayList<>(tarefas);
-    }
-
-    public List<Evento> buscarTodosEventos() {
-        return new ArrayList<>(eventos);
-    }
-
-    @Override
-    public void atualizar(Itens item) {
-        salvarDados();
     }
 }

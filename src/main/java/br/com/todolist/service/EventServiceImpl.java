@@ -2,16 +2,22 @@ package br.com.todolist.service;
 
 import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Itens;
+import br.com.todolist.observer.Observer;
 import br.com.todolist.repository.ItemRepository;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * Implementação do serviço de eventos.
+ * Contém a lógica de negócio para gerenciar eventos e notificar observadores sobre mudanças.
+ */
 public class EventServiceImpl implements EventService {
 
     private final ItemRepository<Itens> itemRepository;
     private final String emailUsuario;
+    private final List<Observer<Evento>> observers = new ArrayList<>();
 
     public EventServiceImpl(ItemRepository<Itens> itemRepository, String emailUsuario) {
         this.itemRepository = itemRepository;
@@ -19,13 +25,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public boolean cadastrarEvento(String titulo, String descricao, LocalDate deadline) {
-        boolean dataDisponivel = listarTodosEventos().stream()
-                .noneMatch(evento -> evento.getDeadline().isEqual(deadline));
+    public boolean cadastrarEvento(Evento evento) {
+        boolean dataDisponivel = true;
+        for (Evento e : listarTodosEventos()) {
+            if (e.getDeadline().isEqual(evento.getDeadline())) {
+                dataDisponivel = false;
+                break;
+            }
+        }
 
         if (dataDisponivel) {
-            Evento novoEvento = new Evento(titulo, descricao, this.emailUsuario, deadline);
-            itemRepository.salvar(novoEvento);
+            itemRepository.salvar(evento);
+            notifyObservers(evento);
             return true;
         }
         return false;
@@ -35,6 +46,7 @@ public class EventServiceImpl implements EventService {
     public void excluirEvento(Evento evento) {
         if (evento.getCriado_por().equals(emailUsuario)) {
             itemRepository.excluir(evento);
+            notifyObservers(evento);
         }
     }
 
@@ -45,33 +57,57 @@ public class EventServiceImpl implements EventService {
             eventoOriginal.setDescricao(novaDescricao);
             eventoOriginal.setDeadLine(novoDeadline);
             itemRepository.atualizar(eventoOriginal);
+            notifyObservers(eventoOriginal);
         }
     }
 
     @Override
     public List<Evento> listarTodosEventos() {
-        return itemRepository.buscarTodos().stream()
-                .filter(item -> item instanceof Evento && emailUsuario.equals(item.getCriado_por()))
-                .map(item -> (Evento) item)
-                .collect(Collectors.toList());
+        List<Evento> eventos = new ArrayList<>();
+        for (Itens item : itemRepository.buscarTodos()) {
+            if (item instanceof Evento && emailUsuario.equals(item.getCriado_por())) {
+                eventos.add((Evento) item);
+            }
+        }
+        return eventos;
     }
 
     @Override
     public List<Evento> listarEventosPorDia(LocalDate dia) {
-        return listarTodosEventos().stream()
-                .filter(evento -> evento.getDeadline().isEqual(dia))
-                .collect(Collectors.toList());
+        List<Evento> eventosDoDia = new ArrayList<>();
+        for (Evento evento : listarTodosEventos()) {
+            if (evento.getDeadline().isEqual(dia)) {
+                eventosDoDia.add(evento);
+            }
+        }
+        return eventosDoDia;
     }
 
     @Override
     public List<Evento> listarEventosPorMes(YearMonth mes) {
-        return listarTodosEventos().stream()
-                .filter(evento -> YearMonth.from(evento.getDeadline()).equals(mes))
-                .collect(Collectors.toList());
+        List<Evento> eventosDoMes = new ArrayList<>();
+        for (Evento evento : listarTodosEventos()) {
+            if (YearMonth.from(evento.getDeadline()).equals(mes)) {
+                eventosDoMes.add(evento);
+            }
+        }
+        return eventosDoMes;
     }
 
     @Override
-    public String getEmailUsuario() {
-        return this.emailUsuario;
+    public void addObserver(Observer<Evento> observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer<Evento> observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(Evento evento) {
+        for (Observer<Evento> observer : observers) {
+            observer.update(evento);
+        }
     }
 }

@@ -7,6 +7,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementação do repositório de usuários.
+ * Responsável por persistir e recuperar dados de usuários em um arquivo JSON.
+ */
 public class UserRepositoryImpl implements UserRepository {
 
     private static final String ARQUIVO_USUARIOS = "arquivos/usuarios.json";
@@ -22,11 +26,7 @@ public class UserRepositoryImpl implements UserRepository {
     private void criarPastaDeArquivos() {
         File pasta = new File("arquivos");
         if (!pasta.exists()) {
-            if (pasta.mkdir()) {
-                System.out.println("Pasta 'arquivos' criada com sucesso.");
-            } else {
-                System.err.println("Erro ao criar a pasta 'arquivos'.");
-            }
+            pasta.mkdir();
         }
     }
 
@@ -45,15 +45,39 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Usuario buscarPorEmail(String email) {
-        return usuarios.stream()
-                .filter(usuario -> usuario.getEmail().equals(email))
-                .findFirst()
-                .orElse(null);
+    public void excluir(Usuario usuario) {
+        usuarios.remove(usuario);
+        persistencia.salvar(this.usuarios);
+    }
+
+    @Override
+    public void atualizar(Usuario usuario) {
+        for (int i = 0; i < usuarios.size(); i++) {
+            if (usuarios.get(i).getEmail().equals(usuario.getEmail())) {
+                usuarios.set(i, usuario);
+                persistencia.salvar(this.usuarios);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public Usuario buscarPorId(String id) {
+        return buscarPorEmail(id);
     }
 
     @Override
     public List<Usuario> buscarTodos() {
         return new ArrayList<>(usuarios);
+    }
+
+    @Override
+    public Usuario buscarPorEmail(String email) {
+        for (Usuario usuario : usuarios) {
+            if (usuario.getEmail().equals(email)) {
+                return usuario;
+            }
+        }
+        return null;
     }
 }

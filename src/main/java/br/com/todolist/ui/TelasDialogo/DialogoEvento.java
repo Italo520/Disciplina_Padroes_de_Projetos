@@ -3,6 +3,7 @@ package br.com.todolist.ui.TelasDialogo;
 
 import br.com.todolist.controller.EventController;
 import br.com.todolist.entity.Evento;
+import br.com.todolist.service.SessionManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -106,7 +107,9 @@ public class DialogoEvento extends JDialog {
 
         try {
             if (this.evento == null) {
-                boolean sucesso = eventController.cadastrarEvento(titulo, descricao, deadline);
+                String user = SessionManager.getInstance().getUsuarioLogado().getEmail();
+                Evento novoEvento = new Evento(titulo, descricao, user, deadline);
+                boolean sucesso = eventController.cadastrarEvento(novoEvento);
                 if (!sucesso) {
                     JOptionPane.showMessageDialog(this,
                             "Não foi possível cadastrar o evento.\nVerifique se já não existe um evento com a mesma data para o seu usuário.",

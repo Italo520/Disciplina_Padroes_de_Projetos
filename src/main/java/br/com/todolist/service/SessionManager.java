@@ -5,19 +5,25 @@ import br.com.todolist.entity.Usuario;
 import br.com.todolist.repository.ItemRepository;
 import br.com.todolist.repository.ItemRepositoryImpl;
 
+/**
+ * Gerenciador de sessão do usuário.
+ * Implementado como um Singleton para garantir que haja apenas uma instância da classe em toda a aplicação.
+ */
 public class SessionManager {
 
-    private static SessionManager instance;
+    private static final SessionManager instance = new SessionManager();
     private Usuario usuarioLogado;
     private TaskService taskService;
     private EventService eventService;
 
     private SessionManager() {}
 
+    /**
+     * Retorna a instância única do SessionManager.
+     *
+     * @return a instância do SessionManager.
+     */
     public static SessionManager getInstance() {
-        if (instance == null) {
-            instance = new SessionManager();
-        }
         return instance;
     }
 

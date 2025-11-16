@@ -2,6 +2,7 @@ package br.com.todolist.ui.TelasDialogo;
 
 import br.com.todolist.controller.TaskController;
 import br.com.todolist.entity.Tarefa;
+import br.com.todolist.service.SessionManager;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
@@ -115,7 +116,9 @@ public class DialogoTarefa extends JDialog {
             LocalDate prazo = LocalDate.parse(campoPrazo.getText(), formatadorDeData);
 
             if (this.tarefa == null) {
-                taskController.cadastrarTarefa(titulo, descricao, prazo, prioridade);
+                String user = SessionManager.getInstance().getUsuarioLogado().getEmail();
+                Tarefa novaTarefa = new Tarefa(titulo, descricao, user, prazo, prioridade);
+                taskController.cadastrarTarefa(novaTarefa);
             } else {
                 taskController.editarTarefa(this.tarefa, titulo, descricao, prazo, prioridade);
             }
