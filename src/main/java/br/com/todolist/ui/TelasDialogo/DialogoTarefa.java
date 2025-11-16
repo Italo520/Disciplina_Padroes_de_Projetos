@@ -1,7 +1,7 @@
 package br.com.todolist.ui.TelasDialogo;
 
-import br.com.todolist.models.Tarefa;
-import br.com.todolist.service.Orquestrador;
+import br.com.todolist.controller.AppController;
+import br.com.todolist.entity.Tarefa;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +11,7 @@ import java.time.format.DateTimeParseException;
 
 public class DialogoTarefa extends JDialog {
 
-    private final Orquestrador orquestrador;
+    private final AppController appController;
     private Tarefa tarefa;
 
     private JTextField campoTitulo;
@@ -26,17 +26,17 @@ public class DialogoTarefa extends JDialog {
     private final DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     // Construtores
-    public DialogoTarefa(Frame frame, Orquestrador orquestrador) {
+    public DialogoTarefa(Frame frame, AppController appController) {
         super(frame, "Nova Tarefa", true);
-        this.orquestrador = orquestrador;
+        this.appController = appController;
         this.tarefa = null;
         configurarEAdicionarComponentes();
         configurarAcoes();
     }
 
-    public DialogoTarefa(Frame frame, Orquestrador orquestrador, Tarefa tarefaParaEditar) {
+    public DialogoTarefa(Frame frame, AppController appController, Tarefa tarefaParaEditar) {
         super(frame, "Editar Tarefa", true);
-        this.orquestrador = orquestrador;
+        this.appController = appController;
         this.tarefa = tarefaParaEditar;
         configurarEAdicionarComponentes();
         preencherCampos();
@@ -117,9 +117,9 @@ public class DialogoTarefa extends JDialog {
             LocalDate prazo = LocalDate.parse(campoPrazo.getText(), formatadorDeData);
 
             if (this.tarefa == null) {
-                orquestrador.cadastrarTarefa(titulo, descricao, prazo, prioridade);
+                appController.cadastrarTarefa(titulo, descricao, prazo, prioridade);
             } else {
-                orquestrador.editarTarefa(this.tarefa, titulo, descricao, prazo, prioridade);
+                appController.editarTarefa(this.tarefa, titulo, descricao, prazo, prioridade);
             }
 
             this.salvo = true;

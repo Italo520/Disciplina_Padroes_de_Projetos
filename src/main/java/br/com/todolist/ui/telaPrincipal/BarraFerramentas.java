@@ -1,9 +1,8 @@
 package br.com.todolist.ui.telaPrincipal;
 
-import br.com.todolist.models.Evento;
-import br.com.todolist.models.Tarefa;
-import br.com.todolist.service.Orquestrador;
-import br.com.todolist.util.Central;
+import br.com.todolist.controller.AppController;
+import br.com.todolist.entity.Evento;
+import br.com.todolist.entity.Tarefa;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.intellijthemes.*;
@@ -19,14 +18,13 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 public class BarraFerramentas {
 
     private static final DateTimeFormatter FORMATADOR_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter FORMATADOR_MES_ANO = DateTimeFormatter.ofPattern("MM/yyyy");
 
-    public static JMenuBar criarBarraFerramentas(TelaPrincipal frame, Orquestrador orquestrador) {
+    public static JMenuBar criarBarraFerramentas(TelaPrincipal frame, AppController appController) {
         JMenuBar menuBar = new JMenuBar();
 
         JMenu menuArquivo = new JMenu("Arquivo");
@@ -42,25 +40,25 @@ public class BarraFerramentas {
         });
 
         JMenuItem listarTarefasPorDia = new JMenuItem("Listar Tarefas por Dia");
-        listarTarefasPorDia.addActionListener(new OuvinteListarTarefasPorDia(frame, orquestrador));
+        listarTarefasPorDia.addActionListener(new OuvinteListarTarefasPorDia(frame, appController));
         
         JMenuItem listarTarefasCriticas = new JMenuItem("Listar Tarefas Críticas");
-        listarTarefasCriticas.addActionListener(new OuvinteListarTarefasCriticas(frame, orquestrador));
+        listarTarefasCriticas.addActionListener(new OuvinteListarTarefasCriticas(frame, appController));
 
         JMenuItem pdfDoDia = new JMenuItem("Gerar PDF das Tarefas do Dia");
-        pdfDoDia.addActionListener(new OuvinteGerarPdfTarefas(frame, orquestrador));
+        pdfDoDia.addActionListener(new OuvinteGerarPdfTarefas(frame, appController));
 
         JMenuItem enviarEmailTarefas = new JMenuItem("Enviar Tarefas do Dia por Email");
-        enviarEmailTarefas.addActionListener(new OuvinteEnviarEmailTarefas(frame, orquestrador));
+        enviarEmailTarefas.addActionListener(new OuvinteEnviarEmailTarefas(frame, appController));
         
         JMenuItem relatorioTarefasPorMes = new JMenuItem("Relatório de Tarefas por Mês (Excel)");
-        relatorioTarefasPorMes.addActionListener(new OuvinteGerarExcelTarefas(frame, orquestrador));
+        relatorioTarefasPorMes.addActionListener(new OuvinteGerarExcelTarefas(frame, appController));
         
         JMenuItem listarEventosPorDia = new JMenuItem("Listar Eventos por Dia");
-        listarEventosPorDia.addActionListener(new OuvinteListarEventosPorDia(frame, orquestrador));
+        listarEventosPorDia.addActionListener(new OuvinteListarEventosPorDia(frame, appController));
         
         JMenuItem listarEventosMesEspecifico = new JMenuItem("Listar Eventos por Mês");
-        listarEventosMesEspecifico.addActionListener(new OuvinteListarEventosPorMes(frame, orquestrador));
+        listarEventosMesEspecifico.addActionListener(new OuvinteListarEventosPorMes(frame, appController));
 
         JMenuItem itemSobre = new JMenuItem("Sobre");
         itemSobre.addActionListener(e -> JOptionPane.showMessageDialog(frame,
@@ -69,7 +67,6 @@ public class BarraFerramentas {
                 "Sobre", JOptionPane.INFORMATION_MESSAGE));
 
         ButtonGroup grupoDeTemas = new ButtonGroup();
-
 
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Carbon (Padrão)", FlatCarbonIJTheme.class.getName(), true);
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Dracula", FlatDraculaIJTheme.class.getName(), false);
@@ -80,19 +77,15 @@ public class BarraFerramentas {
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Dark", FlatDarkLaf.class.getName(), false);
 
         menuAjuda.add(itemSobre);
-
         menuEventos.add(listarEventosPorDia);
         menuEventos.add(listarEventosMesEspecifico);
-
         menuTarefas.add(listarTarefasPorDia);
         menuTarefas.add(listarTarefasCriticas);
         menuTarefas.addSeparator();
         menuTarefas.add(pdfDoDia);
         menuTarefas.add(enviarEmailTarefas);
         menuTarefas.add(relatorioTarefasPorMes);
-
         menuArquivo.add(itemSair);
-
         menuBar.add(menuArquivo);
         menuBar.add(menuTarefas);
         menuBar.add(menuEventos);
@@ -102,12 +95,9 @@ public class BarraFerramentas {
         return menuBar;
     }
 
-
-private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String nome, String className, boolean selecionado) {
-    JRadioButtonMenuItem itemMenu = new JRadioButtonMenuItem(nome, selecionado);
-    
-    itemMenu.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+    private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String nome, String className, boolean selecionado) {
+        JRadioButtonMenuItem itemMenu = new JRadioButtonMenuItem(nome, selecionado);
+        itemMenu.addActionListener(e -> {
             try {
                 UIManager.setLookAndFeel(className);
                 for (Window window : Window.getWindows()) {
@@ -117,8 +107,7 @@ private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String no
                 System.err.println("Falha ao aplicar o tema: " + className);
                 ex.printStackTrace();
             }
-        }
-    });
+        });
         grupo.add(itemMenu);
         menu.add(itemMenu);
     }
@@ -149,20 +138,18 @@ private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String no
         }
     }
 
-    // --- CLASSES DE OUVINTES---
-
     private static class OuvinteListarTarefasPorDia implements ActionListener {
         private final TelaPrincipal frame;
-        private final Orquestrador orquestrador;
+        private final AppController appController;
 
-        public OuvinteListarTarefasPorDia(TelaPrincipal frame, Orquestrador orquestrador) {
+        public OuvinteListarTarefasPorDia(TelaPrincipal frame, AppController appController) {
             this.frame = frame;
-            this.orquestrador = orquestrador;
+            this.appController = appController;
         }
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para listar as tarefas (dd/MM/yyyy):")
                 .ifPresent(dia -> {
-                    List<Tarefa> tarefas = orquestrador.listarTarefasPorDia(dia);
+                    List<Tarefa> tarefas = appController.listarTarefasPorDia(dia);
                     if (tarefas.isEmpty()) {
                         JOptionPane.showMessageDialog(frame, "Nenhuma tarefa encontrada para esta data.", "Informação", JOptionPane.INFORMATION_MESSAGE);
                     }
@@ -173,14 +160,14 @@ private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String no
 
     private static class OuvinteListarTarefasCriticas implements ActionListener {
         private final TelaPrincipal frame;
-        private final Orquestrador orquestrador;
+        private final AppController appController;
 
-        public OuvinteListarTarefasCriticas(TelaPrincipal frame, Orquestrador orquestrador) {
+        public OuvinteListarTarefasCriticas(TelaPrincipal frame, AppController appController) {
             this.frame = frame;
-            this.orquestrador = orquestrador;
+            this.appController = appController;
         }
         public void actionPerformed(ActionEvent e) {
-            List<Tarefa> tarefas = orquestrador.listarTarefasCriticas();
+            List<Tarefa> tarefas = appController.listarTarefasCriticas();
             if (tarefas.isEmpty()) {
                 JOptionPane.showMessageDialog(frame, "Nenhuma tarefa crítica encontrada.", "Informação", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -190,16 +177,16 @@ private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String no
 
     private static class OuvinteListarEventosPorDia implements ActionListener {
         private final TelaPrincipal frame;
-        private final Orquestrador orquestrador;
+        private final AppController appController;
 
-        public OuvinteListarEventosPorDia(TelaPrincipal frame, Orquestrador orquestrador) {
+        public OuvinteListarEventosPorDia(TelaPrincipal frame, AppController appController) {
             this.frame = frame;
-            this.orquestrador = orquestrador;
+            this.appController = appController;
         }
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para listar os eventos (dd/MM/yyyy):")
                 .ifPresent(dia -> {
-                    List<Evento> eventos = orquestrador.listarEventosPorDia(dia);
+                    List<Evento> eventos = appController.listarEventosPorDia(dia);
                      if (eventos.isEmpty()) {
                         JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para esta data.", "Informação", JOptionPane.INFORMATION_MESSAGE);
                     }
@@ -210,16 +197,16 @@ private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String no
     
     private static class OuvinteListarEventosPorMes implements ActionListener {
         private final TelaPrincipal frame;
-        private final Orquestrador orquestrador;
+        private final AppController appController;
         
-        public OuvinteListarEventosPorMes(TelaPrincipal frame, Orquestrador orquestrador) {
+        public OuvinteListarEventosPorMes(TelaPrincipal frame, AppController appController) {
             this.frame = frame;
-            this.orquestrador = orquestrador;
+            this.appController = appController;
         }
         public void actionPerformed(ActionEvent e) {
             obterMesAnoDoUsuario(frame, "Digite o mês e ano (MM/yyyy):")
                 .ifPresent(mes -> {
-                    List<Evento> eventos = orquestrador.listarEventosPorMes(mes);
+                    List<Evento> eventos = appController.listarEventosPorMes(mes);
                     if (eventos.isEmpty()) {
                         JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para este mês.", "Informação", JOptionPane.INFORMATION_MESSAGE);
                     }
@@ -228,36 +215,43 @@ private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String no
         }
     }
     
-
     private static class OuvinteGerarPdfTarefas implements ActionListener {
         private final JFrame frame;
-        private final Orquestrador orquestrador;
+        private final AppController appController;
 
-        public OuvinteGerarPdfTarefas(JFrame frame, Orquestrador orquestrador) {
+        public OuvinteGerarPdfTarefas(JFrame frame, AppController appController) {
             this.frame = frame;
-            this.orquestrador = orquestrador;
+            this.appController = appController;
         }
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para gerar o PDF (dd/MM/yyyy):")
                 .ifPresent(dia -> {
-                    List<Tarefa> tarefas = orquestrador.listarTarefasPorDia(dia);
+                    List<Tarefa> tarefas = appController.listarTarefasPorDia(dia);
+                    if (tarefas.isEmpty()) {
+                        JOptionPane.showMessageDialog(frame, "Nenhuma tarefa encontrada para esta data.", "Informação", JOptionPane.INFORMATION_MESSAGE);
+                        return;
+                    }
+
+                    String nomeArquivo = "Relatorio_Tarefas_" + dia.format(FORMATADOR_DATA) + ".pdf";
+                    String titulo = "Relatório de Tarefas - " + dia.format(FORMATADOR_DATA);
                     String[] cabecalhos = {"Título", "Descrição", "Prioridade", "Prazo"};
                     List<String[]> dados = tarefas.stream()
                         .map(t -> new String[]{t.getTitulo(), t.getDescricao(), String.valueOf(t.getPrioridade()), t.getDeadline().toString()})
-                        .collect(Collectors.toList());
-                    Central.gerarPdf("TarefasDoDia.pdf", "Relatório de Tarefas", cabecalhos, dados);
-                    JOptionPane.showMessageDialog(frame, "PDF gerado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                        .collect(java.util.stream.Collectors.toList());
+
+                    br.com.todolist.util.Central.gerarPdf(nomeArquivo, titulo, cabecalhos, dados);
+                    JOptionPane.showMessageDialog(frame, "PDF '" + nomeArquivo + "' gerado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                 });
         }
     }
 
     private static class OuvinteEnviarEmailTarefas implements ActionListener {
         private final JFrame frame;
-        private final Orquestrador orquestrador;
+        private final AppController appController;
 
-        public OuvinteEnviarEmailTarefas(JFrame frame, Orquestrador orquestrador) {
+        public OuvinteEnviarEmailTarefas(JFrame frame, AppController appController) {
             this.frame = frame;
-            this.orquestrador = orquestrador;
+            this.appController = appController;
         }
 
         public void actionPerformed(ActionEvent e) {
@@ -269,8 +263,7 @@ private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String no
                     SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
                         @Override
                         protected Boolean doInBackground() throws Exception {
-
-                            return orquestrador.enviarRelatorioTarefasDoDiaPorEmail(dia);
+                            return appController.enviarRelatorioTarefasDoDiaPorEmail(dia);
                         }
 
                         protected void done() {
@@ -297,16 +290,16 @@ private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String no
 
     private static class OuvinteGerarExcelTarefas implements ActionListener {
         private final JFrame frame;
-        private final Orquestrador orquestrador;
-        public OuvinteGerarExcelTarefas(JFrame frame, Orquestrador orquestrador) {
+        private final AppController appController;
+        public OuvinteGerarExcelTarefas(JFrame frame, AppController appController) {
             this.frame = frame;
-            this.orquestrador = orquestrador;
+            this.appController = appController;
         }
         public void actionPerformed(ActionEvent e) {
             obterMesAnoDoUsuario(frame, "Digite o mês e ano para o relatório (MM/yyyy):")
                 .ifPresent(mes -> {
                     String nomeArquivo = "Relatorio_Tarefas_" + mes.format(DateTimeFormatter.ofPattern("MM_yyyy")) + ".xlsx";
-                    orquestrador.gerarRelatorioTarefasPorMes(mes, nomeArquivo);
+                    appController.gerarRelatorioTarefasPorMes(mes, nomeArquivo);
                     JOptionPane.showMessageDialog(frame, "Relatório Excel '" + nomeArquivo + "' gerado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
                 });
         }
