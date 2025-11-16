@@ -1,7 +1,7 @@
 package br.com.todolist.ui.telaPrincipal;
 
-import br.com.todolist.models.Evento;
-import br.com.todolist.service.Orquestrador;
+import br.com.todolist.controller.EventController;
+import br.com.todolist.entity.Evento;
 import br.com.todolist.ui.TelasDialogo.DialogoEvento;
 
 import javax.swing.*;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class PainelEventos extends PainelBase {
 
-    private final Orquestrador orquestrador;
+    private final EventController eventController;
 
     private DefaultListModel<Evento> modeloListaEventos;
     private JList<Evento> listaDeEventos;
@@ -24,8 +24,8 @@ public class PainelEventos extends PainelBase {
     private JLabel valorDescricao;
     private JLabel valorTempoRestante;
 
-    public PainelEventos(Orquestrador orquestrador) {
-        this.orquestrador = orquestrador;
+    public PainelEventos(EventController eventController) {
+        this.eventController = eventController;
         inicializarLayout();
     }
 
@@ -108,7 +108,7 @@ public class PainelEventos extends PainelBase {
 
     private void popularListaEventos() {
         modeloListaEventos.clear();
-        for (Evento evento : this.orquestrador.listarTodosEventos()) {
+        for (Evento evento : this.eventController.listarTodosEventos()) {
             modeloListaEventos.addElement(evento);
         }
         atualizarDetalhesEvento(null);
@@ -127,7 +127,7 @@ public class PainelEventos extends PainelBase {
     private class OuvinteBotaoNovoEvento implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Frame framePrincipal = (Frame) SwingUtilities.getWindowAncestor(PainelEventos.this);
-            DialogoEvento dialogo = new DialogoEvento(framePrincipal, orquestrador);
+            DialogoEvento dialogo = new DialogoEvento(framePrincipal, eventController);
             dialogo.setVisible(true);
 
             if (dialogo.foiSalvo()) {
@@ -145,7 +145,7 @@ public class PainelEventos extends PainelBase {
             }
 
             Frame framePrincipal = (Frame) SwingUtilities.getWindowAncestor(PainelEventos.this);
-            DialogoEvento dialogo = new DialogoEvento(framePrincipal, orquestrador, eventoSelecionado);
+            DialogoEvento dialogo = new DialogoEvento(framePrincipal, eventController, eventoSelecionado);
             dialogo.setVisible(true);
 
             if (dialogo.foiSalvo()) {
@@ -167,7 +167,7 @@ public class PainelEventos extends PainelBase {
                     "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
 
             if (confirmacao == JOptionPane.YES_OPTION) {
-                orquestrador.excluirEvento(eventoSelecionado);
+                eventController.excluirEvento(eventoSelecionado);
                 popularListaEventos();
             }
         }

@@ -1,0 +1,43 @@
+package br.com.todolist.controller;
+
+import br.com.todolist.entity.Tarefa;
+import br.com.todolist.service.TaskService;
+import java.time.LocalDate;
+import java.util.List;
+
+public class TaskController {
+
+    private final TaskService taskService;
+
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    public void cadastrarTarefa(String titulo, String descricao, LocalDate deadline, int prioridade) {
+        taskService.cadastrarTarefa(titulo, descricao, deadline, prioridade);
+    }
+
+    public List<Tarefa> listarTodasTarefas() {
+        return taskService.listarTodasTarefas();
+    }
+
+    public void excluirTarefa(Tarefa tarefa) {
+        taskService.excluirTarefa(tarefa);
+    }
+
+    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) {
+        taskService.editarTarefa(tarefaOriginal, novoTitulo, novaDescricao, novoDeadline, novaPrioridade);
+    }
+
+    public void atualizarTarefa(Tarefa tarefa) {
+        taskService.atualizarTarefa(tarefa);
+    }
+
+    public List<Tarefa> listarTarefasPorDia(LocalDate dia) {
+        return taskService.listarTarefasPorDia(dia);
+    }
+
+    public List<Tarefa> listarTarefasCriticas() {
+        return taskService.listarTarefasCriticas();
+    }
+}

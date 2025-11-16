@@ -1,9 +1,9 @@
 package br.com.todolist.ui.telasusuario;
 
-import br.com.todolist.models.Usuario;
-import br.com.todolist.service.GerenteDeUsuarios;
+import br.com.todolist.controller.AuthController;
+import br.com.todolist.entity.Usuario;
+import br.com.todolist.service.SessionManager;
 import br.com.todolist.ui.telaPrincipal.TelaPrincipal;
-
 import javax.swing.*;
 
 public class TelaLogin extends JFrame {
@@ -12,11 +12,11 @@ public class TelaLogin extends JFrame {
     private JPasswordField campoSenha;
     private JButton botaoEntrar;
     private JButton botaoCriarConta;
-    private final GerenteDeUsuarios gerenteDeUsuarios;
+    private final AuthController authController;
 
     public TelaLogin() {
         super("Login - ToDo List");
-        this.gerenteDeUsuarios = new GerenteDeUsuarios();
+        this.authController = new AuthController();
         configurarLayout();
         configurarAcoes();
     }
@@ -58,9 +58,9 @@ public class TelaLogin extends JFrame {
     }
 
     private void configurarAcoes() {
-        botaoEntrar.addActionListener(new OuvinteBotaoEntrar());
-        botaoCriarConta.addActionListener(new OuvinteBotaoCriarConta());
-        campoSenha.addActionListener(new OuvinteBotaoEntrar());
+        botaoEntrar.addActionListener(e -> realizarLogin());
+        botaoCriarConta.addActionListener(e -> abrirTelaDeCadastro());
+        campoSenha.addActionListener(e -> realizarLogin());
     }
 
     private void realizarLogin() {
@@ -72,35 +72,24 @@ public class TelaLogin extends JFrame {
             return;
         }
 
-        Usuario usuarioAutenticado = gerenteDeUsuarios.autenticarUsuario(email, senha);
-
-        if (usuarioAutenticado != null) {
-            new TelaPrincipal(usuarioAutenticado).setVisible(true);
+        Usuario usuario = authController.login(email, senha);
+        if (usuario != null) {
+            SessionManager.getInstance().login(usuario);
+            new TelaPrincipal().setVisible(true);
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Email ou senha incorretos.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private class OuvinteBotaoEntrar implements java.awt.event.ActionListener {
-        public void actionPerformed(java.awt.event.ActionEvent e) {
-            realizarLogin();
-        }
-    }
-
-    private class OuvinteBotaoCriarConta implements java.awt.event.ActionListener {
-        public void actionPerformed(java.awt.event.ActionEvent e) {
-            TelaCadastro telaCadastro = new TelaCadastro(TelaLogin.this, gerenteDeUsuarios);
-            telaCadastro.setVisible(true); // O código para aqui até a tela de cadastro ser fechada
-
-            // --- CÓDIGO NOVO AQUI ---
-            // Após a tela de cadastro fechar, verificamos se um email foi retornado
-            String emailNovo = telaCadastro.getEmailCadastrado();
-            if (emailNovo != null) {
-                campoEmail.setText(emailNovo); // Preenche o campo de email
-                campoSenha.setText(""); // Limpa o campo de senha
-                campoSenha.requestFocus(); // Coloca o foco no campo de senha para facilitar
-            }
+    private void abrirTelaDeCadastro() {
+        TelaCadastro telaCadastro = new TelaCadastro(this, authController);
+        telaCadastro.setVisible(true);
+        String emailNovo = telaCadastro.getEmailCadastrado();
+        if (emailNovo != null) {
+            campoEmail.setText(emailNovo);
+            campoSenha.setText("");
+            campoSenha.requestFocus();
         }
     }
 }

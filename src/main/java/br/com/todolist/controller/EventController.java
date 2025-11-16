@@ -1,0 +1,40 @@
+package br.com.todolist.controller;
+
+import br.com.todolist.entity.Evento;
+import br.com.todolist.service.EventService;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.List;
+
+public class EventController {
+
+    private final EventService eventService;
+
+    public EventController(EventService eventService) {
+        this.eventService = eventService;
+    }
+
+    public boolean cadastrarEvento(String titulo, String descricao, LocalDate deadline) {
+        return eventService.cadastrarEvento(titulo, descricao, deadline);
+    }
+
+    public List<Evento> listarTodosEventos() {
+        return eventService.listarTodosEventos();
+    }
+
+    public void excluirEvento(Evento evento) {
+        eventService.excluirEvento(evento);
+    }
+
+    public void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline) {
+        eventService.editarEvento(eventoOriginal, novoTitulo, novaDescricao, novoDeadline);
+    }
+
+    public List<Evento> listarEventosPorDia(LocalDate dia) {
+        return eventService.listarEventosPorDia(dia);
+    }
+
+    public List<Evento> listarEventosPorMes(YearMonth mes) {
+        return eventService.listarEventosPorMes(mes);
+    }
+}

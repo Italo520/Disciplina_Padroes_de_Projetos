@@ -1,8 +1,7 @@
 package br.com.todolist.ui.TelasDialogo;
 
-import br.com.todolist.models.Tarefa;
-import br.com.todolist.service.Orquestrador;
-
+import br.com.todolist.controller.TaskController;
+import br.com.todolist.entity.Tarefa;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
@@ -11,7 +10,7 @@ import java.time.format.DateTimeParseException;
 
 public class DialogoTarefa extends JDialog {
 
-    private final Orquestrador orquestrador;
+    private final TaskController taskController;
     private Tarefa tarefa;
 
     private JTextField campoTitulo;
@@ -25,18 +24,17 @@ public class DialogoTarefa extends JDialog {
     private boolean salvo = false;
     private final DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    // Construtores
-    public DialogoTarefa(Frame frame, Orquestrador orquestrador) {
+    public DialogoTarefa(Frame frame, TaskController taskController) {
         super(frame, "Nova Tarefa", true);
-        this.orquestrador = orquestrador;
+        this.taskController = taskController;
         this.tarefa = null;
         configurarEAdicionarComponentes();
         configurarAcoes();
     }
 
-    public DialogoTarefa(Frame frame, Orquestrador orquestrador, Tarefa tarefaParaEditar) {
+    public DialogoTarefa(Frame frame, TaskController taskController, Tarefa tarefaParaEditar) {
         super(frame, "Editar Tarefa", true);
-        this.orquestrador = orquestrador;
+        this.taskController = taskController;
         this.tarefa = tarefaParaEditar;
         configurarEAdicionarComponentes();
         preencherCampos();
@@ -117,9 +115,9 @@ public class DialogoTarefa extends JDialog {
             LocalDate prazo = LocalDate.parse(campoPrazo.getText(), formatadorDeData);
 
             if (this.tarefa == null) {
-                orquestrador.cadastrarTarefa(titulo, descricao, prazo, prioridade);
+                taskController.cadastrarTarefa(titulo, descricao, prazo, prioridade);
             } else {
-                orquestrador.editarTarefa(this.tarefa, titulo, descricao, prazo, prioridade);
+                taskController.editarTarefa(this.tarefa, titulo, descricao, prazo, prioridade);
             }
 
             this.salvo = true;
