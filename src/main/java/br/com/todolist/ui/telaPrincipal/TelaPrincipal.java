@@ -1,7 +1,6 @@
 package br.com.todolist.ui.telaPrincipal;
 
 import br.com.todolist.controller.EventController;
-import br.com.todolist.controller.ReportController;
 import br.com.todolist.controller.TaskController;
 import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Tarefa;
@@ -18,7 +17,6 @@ public class TelaPrincipal extends JFrame {
 
     private TaskController taskController;
     private EventController eventController;
-    private ReportController reportController;
 
     public TelaPrincipal() {
         super("Usuário: " + SessionManager.getInstance().getUsuarioLogado().getNome());
@@ -26,7 +24,6 @@ public class TelaPrincipal extends JFrame {
         SessionManager sessionManager = SessionManager.getInstance();
         this.taskController = new TaskController(sessionManager.getTaskService());
         this.eventController = new EventController(sessionManager.getEventService());
-        this.reportController = new ReportController(sessionManager.getTaskService(), sessionManager.getEmailUsuarioLogado());
 
         configurarJanela();
         montarLayout();
@@ -41,7 +38,7 @@ public class TelaPrincipal extends JFrame {
     }
 
     private void montarLayout() {
-        setJMenuBar(BarraFerramentas.criarBarraFerramentas(this, taskController, eventController, reportController));
+        setJMenuBar(BarraFerramentas.criarBarraFerramentas(this, taskController, eventController));
 
         criarPaineis();
         painelComAbas.setBounds(5, 5, 1270, 650);

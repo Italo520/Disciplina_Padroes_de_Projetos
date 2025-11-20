@@ -1,21 +1,21 @@
 package br.com.todolist.controller;
 
 import br.com.todolist.entity.Evento;
-import br.com.todolist.service.EventService;
+import br.com.todolist.service.IEventService;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
 public class EventController {
 
-    private final EventService eventService;
+    private final IEventService eventService;
 
-    public EventController(EventService eventService) {
+    public EventController(IEventService eventService) {
         this.eventService = eventService;
     }
 
-    public boolean cadastrarEvento(String titulo, String descricao, LocalDate deadline) {
-        return eventService.cadastrarEvento(titulo, descricao, deadline);
+    public boolean cadastrarEvento(Evento evento) {
+        return eventService.cadastrarEvento(evento);
     }
 
     public List<Evento> listarTodosEventos() {

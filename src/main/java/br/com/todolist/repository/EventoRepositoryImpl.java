@@ -2,21 +2,24 @@ package br.com.todolist.repository;
 
 import br.com.todolist.entity.DadosUsuario;
 import br.com.todolist.entity.Evento;
-import br.com.todolist.entity.Itens;
 import br.com.todolist.entity.Tarefa;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class ItemRepositoryImpl implements ItemRepository<Itens> {
+/**
+ * Implementação do repositório de eventos.
+ * Responsável por persistir e recuperar dados de eventos em um arquivo JSON.
+ */
+public class EventoRepositoryImpl implements IEventoRepository {
 
     private static final String ARQUIVO_DADOS = "arquivos/dados_globais.json";
     private final GerenciadorDePersistenciaJson persistencia;
-    private final List<Tarefa> tarefas;
-    private final List<Evento> eventos;
+    private List<Tarefa> tarefas; // Mantido para salvar o arquivo completo
+    private List<Evento> eventos;
 
-    public ItemRepositoryImpl() {
+    public EventoRepositoryImpl() {
         this.persistencia = new GerenciadorDePersistenciaJson(ARQUIVO_DADOS);
         DadosUsuario dados = carregarDados();
         this.tarefas = dados.getTarefas();
@@ -42,43 +45,35 @@ public class ItemRepositoryImpl implements ItemRepository<Itens> {
     }
 
     @Override
-    public void salvar(Itens item) {
-        if (item instanceof Tarefa) {
-            tarefas.add((Tarefa) item);
-        } else if (item instanceof Evento) {
-            eventos.add((Evento) item);
-        }
+    public void salvar(Evento evento) {
+        eventos.add(evento);
         salvarDados();
     }
 
     @Override
-    public void excluir(Itens item) {
-        if (item instanceof Tarefa) {
-            tarefas.remove(item);
-        } else if (item instanceof Evento) {
-            eventos.remove(item);
-        }
+    public void excluir(Evento evento) {
+        eventos.remove(evento);
         salvarDados();
     }
 
     @Override
-    public List<Itens> buscarTodos() {
-        List<Itens> todos = new ArrayList<>();
-        todos.addAll(tarefas);
-        todos.addAll(eventos);
-        return todos;
+    public void atualizar(Evento evento) {
+        // A lógica de atualizar em lista simplesmente salva o estado atual
+        salvarDados();
     }
 
-    public List<Tarefa> buscarTodasTarefas() {
-        return new ArrayList<>(tarefas);
+    @Override
+    public Evento buscarPorId(String id) {
+        for (Evento evento : eventos) {
+            if (evento.getTitulo().equals(id)) {
+                return evento;
+            }
+        }
+        return null;
     }
 
-    public List<Evento> buscarTodosEventos() {
+    @Override
+    public List<Evento> buscarTodos() {
         return new ArrayList<>(eventos);
-    }
-
-    @Override
-    public void atualizar(Itens item) {
-        salvarDados();
     }
 }
