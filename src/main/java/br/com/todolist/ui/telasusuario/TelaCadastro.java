@@ -4,17 +4,39 @@ import br.com.todolist.controller.AuthController;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Tela de cadastro de novos usuários.
+ * Exibida como um diálogo modal sobre a tela de login.
+ */
 public class TelaCadastro extends JDialog {
 
+    /** Campo de texto para o nome do usuário. */
     private JTextField campoNome;
+
+    /** Campo de texto para o e-mail do usuário. */
     private JTextField campoEmail;
+
+    /** Campo de senha para a senha do usuário. */
     private JPasswordField campoSenha;
+
+    /** Botão para realizar o cadastro. */
     private JButton botaoCadastrar;
+
+    /** Botão para cancelar o cadastro. */
     private JButton botaoCancelar;
 
+    /** Controlador de autenticação. */
     private final AuthController authController;
+
+    /** Armazena o e-mail cadastrado com sucesso. */
     private String emailCadastrado = null;
 
+    /**
+     * Construtor da classe TelaCadastro.
+     *
+     * @param owner          O frame pai (geralmente a tela de login).
+     * @param authController O controlador de autenticação para processar o cadastro.
+     */
     public TelaCadastro(Frame owner, AuthController authController) {
         super(owner, "Criar Nova Conta", true);
         this.authController = authController;
@@ -22,10 +44,19 @@ public class TelaCadastro extends JDialog {
         configurarAcoes();
     }
 
+    /**
+     * Retorna o e-mail do usuário cadastrado com sucesso.
+     * Útil para preencher automaticamente o campo de e-mail na tela de login.
+     *
+     * @return O e-mail cadastrado, ou null se o cadastro não foi concluído.
+     */
     public String getEmailCadastrado() {
         return emailCadastrado;
     }
 
+    /**
+     * Configura o layout e adiciona os componentes à janela.
+     */
     private void configurarLayout() {
         setTitle("Criar Nova Conta");
         setSize(1280, 720);
@@ -70,11 +101,18 @@ public class TelaCadastro extends JDialog {
         add(botaoCancelar);
     }
 
+    /**
+     * Define as ações para os botões.
+     */
     private void configurarAcoes() {
         botaoCadastrar.addActionListener(e -> realizarCadastro());
         botaoCancelar.addActionListener(e -> dispose());
     }
 
+    /**
+     * Processa a solicitação de cadastro.
+     * Valida os campos e chama o controlador para criar o usuário.
+     */
     private void realizarCadastro() {
         String nome = campoNome.getText();
         String email = campoEmail.getText();

@@ -23,16 +23,24 @@ public class ReportServiceImpl implements IReportService {
     private final Mensageiro mensageiro;
 
     /**
-     * Construtor da classe.
+     * Construtor da classe ReportServiceImpl.
      *
-     * @param taskService o serviço de tarefas a ser utilizado.
-     * @param mensageiro o utilitário de envio de e-mails.
+     * @param taskService O serviço de tarefas utilizado para obter os dados dos relatórios.
+     * @param mensageiro  O utilitário de envio de e-mails para despachar os relatórios.
      */
     public ReportServiceImpl(ITaskService taskService, Mensageiro mensageiro) {
         this.taskService = taskService;
         this.mensageiro = mensageiro;
     }
 
+    /**
+     * Gera um relatório em PDF com as tarefas de um dia específico e envia por e-mail para o usuário.
+     * O arquivo temporário gerado é excluído após o envio.
+     *
+     * @param dia     O dia para o qual o relatório será gerado.
+     * @param usuario O usuário que receberá o relatório.
+     * @return true se o e-mail foi enviado com sucesso, false caso não existam tarefas ou ocorra erro no envio.
+     */
     @Override
     public boolean enviarRelatorioTarefasDoDiaPorEmail(LocalDate dia, Usuario usuario) {
         List<Tarefa> tarefas = taskService.listarTarefasPorDia(dia);
@@ -54,6 +62,12 @@ public class ReportServiceImpl implements IReportService {
         return sucesso;
     }
 
+    /**
+     * Gera um relatório em formato Excel (XLSX) com todas as tarefas de um mês específico.
+     *
+     * @param mes         O mês e ano de referência para o relatório.
+     * @param nomeArquivo O nome do arquivo Excel a ser gerado.
+     */
     @Override
     public void gerarRelatorioTarefasPorMes(YearMonth mes, String nomeArquivo) {
         List<Tarefa> tarefasDoMes = new ArrayList<>();

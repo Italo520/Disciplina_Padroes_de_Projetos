@@ -16,28 +16,58 @@ import java.awt.event.MouseEvent;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+/**
+ * Painel responsável pela gestão visual das tarefas.
+ * Exibe a lista de tarefas, detalhes da tarefa selecionada e suas subtarefas.
+ */
 public class PainelTarefas extends PainelBase {
 
+    /** Controlador de tarefas para operações de negócio. */
     private final TaskController taskController;
 
+    /** Modelo de lista para as tarefas exibidas. */
     private DefaultListModel<Tarefa> modeloListaTarefas;
+
+    /** Modelo de lista para as subtarefas da tarefa selecionada. */
     private DefaultListModel<Subtarefa> modeloListaSubtarefas;
+
+    /** Componente visual da lista de tarefas. */
     private JList<Tarefa> listaDeTarefas;
+
+    /** Componente visual da lista de subtarefas. */
     private JList<Subtarefa> listaDeSubtarefas;
 
+    /** Label para exibir a descrição da tarefa. */
     private JLabel valorDescricao;
+
+    /** Label para exibir a prioridade da tarefa. */
     private JLabel valorPrioridade;
+
+    /** Label para exibir o prazo da tarefa. */
     private JLabel valorPrazo;
+
+    /** Label para exibir a conclusão da tarefa em percentual. */
     private JLabel valorConclusao;
 
+    /** Formatador de data padrão para exibição (dd/MM/yyyy). */
     private final DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    /**
+     * Construtor da classe PainelTarefas.
+     *
+     * @param taskController O controlador de tarefas.
+     */
     public PainelTarefas(TaskController taskController) {
         super();
         this.taskController = taskController;
         super.inicializarLayout();
     }
 
+    /**
+     * Cria o painel de botões superior com as ações principais.
+     *
+     * @return O painel de botões.
+     */
     @Override
     protected JPanel criarPainelDeBotoes() {
         JPanel painel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -59,6 +89,11 @@ public class PainelTarefas extends PainelBase {
         return painel;
     }
 
+    /**
+     * Cria o painel de conteúdo principal, contendo a lista de tarefas e o painel de detalhes.
+     *
+     * @return O painel de conteúdo.
+     */
     @Override
     protected JPanel criarPainelDeConteudo() {
         modeloListaTarefas = new DefaultListModel<>();
@@ -80,6 +115,11 @@ public class PainelTarefas extends PainelBase {
         return painelConteudo;
     }
 
+    /**
+     * Cria o painel direito que exibe os detalhes da tarefa e as subtarefas.
+     *
+     * @return O painel direito configurado.
+     */
     private JPanel criarPainelDireito() {
         JPanel painelDireito = new JPanel(new BorderLayout(5, 5));
         painelDireito.setBorder(BorderFactory.createTitledBorder("Subtarefas e Detalhes"));
@@ -90,6 +130,11 @@ public class PainelTarefas extends PainelBase {
         return painelDireito;
     }
 
+    /**
+     * Cria o painel de detalhes da tarefa selecionada.
+     *
+     * @return O painel de detalhes.
+     */
     private JPanel criarPainelDetalhes() {
         JPanel painelDetalhes = new JPanel(new GridLayout(0, 2, 5, 5));
         painelDetalhes.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -111,6 +156,11 @@ public class PainelTarefas extends PainelBase {
         return painelDetalhes;
     }
 
+    /**
+     * Cria o painel de subtarefas.
+     *
+     * @return O painel de subtarefas.
+     */
     private JPanel criarPainelSubtarefas() {
         JPanel painelSubtarefas = new JPanel(new BorderLayout());
         modeloListaSubtarefas = new DefaultListModel<>();
@@ -136,6 +186,11 @@ public class PainelTarefas extends PainelBase {
         return painelSubtarefas;
     }
 
+    /**
+     * Atualiza os campos de detalhes com as informações da tarefa selecionada.
+     *
+     * @param tarefa A tarefa selecionada, ou null para limpar os campos.
+     */
     private void atualizarDetalhesTarefa(Tarefa tarefa) {
         if (tarefa != null) {
             valorDescricao.setText(tarefa.getDescricao());
@@ -150,6 +205,9 @@ public class PainelTarefas extends PainelBase {
         }
     }
 
+    /**
+     * Recarrega a lista de tarefas a partir do controlador.
+     */
     private void popularListaTarefas() {
         modeloListaTarefas.clear();
         List<Tarefa> tarefas = taskController.listarTodasTarefas();
@@ -160,6 +218,11 @@ public class PainelTarefas extends PainelBase {
         atualizarDetalhesTarefa(null);
     }
 
+    /**
+     * Atualiza a lista de subtarefas com base na tarefa selecionada.
+     *
+     * @param tarefa A tarefa selecionada.
+     */
     private void atualizarListaSubtarefas(Tarefa tarefa) {
         modeloListaSubtarefas.clear();
         if (tarefa != null && tarefa.getSubtarefas() != null) {
@@ -167,6 +230,11 @@ public class PainelTarefas extends PainelBase {
         }
     }
     
+    /**
+     * Filtra a lista para exibir apenas as tarefas de um dia específico.
+     *
+     * @param tarefasDoDia A lista de tarefas a serem exibidas.
+     */
     public void exibirTarefasDoDia(List<Tarefa> tarefasDoDia) {
         modeloListaTarefas.clear();
         if (tarefasDoDia != null) {
@@ -178,6 +246,9 @@ public class PainelTarefas extends PainelBase {
     
     // OUVINTES
 
+    /**
+     * Listener para o botão "Nova Tarefa".
+     */
     private class OuvinteBotaoNovaTarefa implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this), taskController);
@@ -188,6 +259,9 @@ public class PainelTarefas extends PainelBase {
         }
     }
 
+    /**
+     * Listener para o botão "Editar Tarefa".
+     */
     private class OuvinteBotaoEditarTarefa implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Tarefa tarefaSelecionada = listaDeTarefas.getSelectedValue();
@@ -203,6 +277,9 @@ public class PainelTarefas extends PainelBase {
         }
     }
 
+    /**
+     * Listener para o botão "Excluir Tarefa".
+     */
     private class OuvinteBotaoExcluirTarefa implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Tarefa tarefaSelecionada = listaDeTarefas.getSelectedValue();
@@ -222,6 +299,9 @@ public class PainelTarefas extends PainelBase {
         }
     }
     
+    /**
+     * Listener para mudanças na seleção da lista de tarefas.
+     */
     private class OuvinteSelecaoTarefa implements ListSelectionListener {
         public void valueChanged(ListSelectionEvent e) {
             if (!e.getValueIsAdjusting()) {
@@ -232,6 +312,9 @@ public class PainelTarefas extends PainelBase {
         }
     }
 
+    /**
+     * Listener para cliques na lista de subtarefas (para alternar status).
+     */
     private class OuvinteCliqueSubtarefa extends MouseAdapter {
         public void mouseClicked(MouseEvent e) {
             int index = listaDeSubtarefas.locationToIndex(e.getPoint());
@@ -249,6 +332,9 @@ public class PainelTarefas extends PainelBase {
         }
     }
     
+    /**
+     * Listener para o botão "Nova Subtarefa".
+     */
     private class OuvinteBotaoNovaSubtarefa implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Tarefa tarefaPai = listaDeTarefas.getSelectedValue();
@@ -267,6 +353,9 @@ public class PainelTarefas extends PainelBase {
         }
     }
     
+    /**
+     * Listener para o botão "Editar Subtarefa".
+     */
     private class OuvinteBotaoEditarSubtarefa implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Tarefa tarefaPai = listaDeTarefas.getSelectedValue();
@@ -284,6 +373,9 @@ public class PainelTarefas extends PainelBase {
         }
     }
 
+    /**
+     * Listener para o botão "Excluir Subtarefa".
+     */
     private class OuvinteBotaoExcluirSubtarefa implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Tarefa tarefaPai = listaDeTarefas.getSelectedValue();

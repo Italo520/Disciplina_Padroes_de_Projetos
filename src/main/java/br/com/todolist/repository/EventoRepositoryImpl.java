@@ -3,8 +3,6 @@ package br.com.todolist.repository;
 import br.com.todolist.entity.DadosUsuario;
 import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Tarefa;
-import com.fasterxml.jackson.core.type.TypeReference;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +17,10 @@ public class EventoRepositoryImpl implements IEventoRepository {
     private List<Tarefa> tarefas; // Mantido para salvar o arquivo completo
     private List<Evento> eventos;
 
+    /**
+     * Construtor da classe EventoRepositoryImpl.
+     * Inicializa o gerenciador de persistência e carrega os dados existentes.
+     */
     public EventoRepositoryImpl() {
         this.persistencia = new GerenciadorDePersistenciaJson(ARQUIVO_DADOS);
         DadosUsuario dados = carregarDados();
@@ -26,6 +28,11 @@ public class EventoRepositoryImpl implements IEventoRepository {
         this.eventos = dados.getEventos();
     }
 
+    /**
+     * Carrega os dados do arquivo JSON.
+     *
+     * @return Um objeto DadosUsuario contendo as listas de tarefas e eventos.
+     */
     private DadosUsuario carregarDados() {
         DadosUsuario dados = persistencia.carregar(DadosUsuario.class);
         if (dados == null) {
@@ -40,28 +47,54 @@ public class EventoRepositoryImpl implements IEventoRepository {
         return dados;
     }
 
+    /**
+     * Salva os dados atuais (listas de tarefas e eventos) no arquivo JSON.
+     */
     private void salvarDados() {
         persistencia.salvar(new DadosUsuario(tarefas, eventos));
     }
 
+    /**
+     * Adiciona um novo evento à lista e persiste as alterações.
+     *
+     * @param evento O evento a ser salvo.
+     */
     @Override
     public void salvar(Evento evento) {
         eventos.add(evento);
         salvarDados();
     }
 
+    /**
+     * Remove um evento da lista e persiste as alterações.
+     *
+     * @param evento O evento a ser excluído.
+     */
     @Override
     public void excluir(Evento evento) {
         eventos.remove(evento);
         salvarDados();
     }
 
+    /**
+     * Atualiza os dados persistidos.
+     * Como a manipulação é feita por referência na lista em memória,
+     * este método apenas dispara o salvamento no arquivo.
+     *
+     * @param evento O evento atualizado.
+     */
     @Override
     public void atualizar(Evento evento) {
         // A lógica de atualizar em lista simplesmente salva o estado atual
         salvarDados();
     }
 
+    /**
+     * Busca um evento pelo seu título (utilizado como ID).
+     *
+     * @param id O título do evento.
+     * @return O evento encontrado, ou null caso não exista.
+     */
     @Override
     public Evento buscarPorId(String id) {
         for (Evento evento : eventos) {
@@ -72,6 +105,11 @@ public class EventoRepositoryImpl implements IEventoRepository {
         return null;
     }
 
+    /**
+     * Retorna uma lista com todos os eventos cadastrados.
+     *
+     * @return Uma nova lista contendo todos os eventos.
+     */
     @Override
     public List<Evento> buscarTodos() {
         return new ArrayList<>(eventos);
