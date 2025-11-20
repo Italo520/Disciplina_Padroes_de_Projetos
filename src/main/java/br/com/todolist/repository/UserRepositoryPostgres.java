@@ -1,6 +1,7 @@
 package br.com.todolist.repository;
 
 import br.com.todolist.entity.Usuario;
+import br.com.todolist.exception.DatabaseException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
@@ -21,7 +22,7 @@ public class UserRepositoryPostgres implements IUserRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
+            throw new DatabaseException("Erro ao salvar usuário: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -41,7 +42,7 @@ public class UserRepositoryPostgres implements IUserRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
+            throw new DatabaseException("Erro ao excluir usuário: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -58,7 +59,7 @@ public class UserRepositoryPostgres implements IUserRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
+            throw new DatabaseException("Erro ao atualizar usuário: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -69,6 +70,8 @@ public class UserRepositoryPostgres implements IUserRepository {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             return em.find(Usuario.class, id);
+        } catch (Exception e) {
+            throw new DatabaseException("Erro ao buscar usuário por ID: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -80,6 +83,8 @@ public class UserRepositoryPostgres implements IUserRepository {
         try {
             TypedQuery<Usuario> query = em.createQuery("SELECT u FROM Usuario u", Usuario.class);
             return query.getResultList();
+        } catch (Exception e) {
+            throw new DatabaseException("Erro ao buscar todos os usuários: " + e.getMessage(), e);
         } finally {
             em.close();
         }

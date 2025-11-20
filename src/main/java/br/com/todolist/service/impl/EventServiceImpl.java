@@ -1,6 +1,9 @@
 package br.com.todolist.service.impl;
 
 import br.com.todolist.entity.Evento;
+import br.com.todolist.exception.BusinessException;
+import br.com.todolist.exception.DadosInvalidosException;
+import br.com.todolist.exception.DatabaseException;
 import br.com.todolist.repository.IEventoRepository;
 import br.com.todolist.service.util.IObserver;
 import br.com.todolist.service.IEventService;
@@ -38,31 +41,43 @@ public class EventServiceImpl implements IEventService {
      * Verifica se já existe um evento na mesma data para o usuário.
      *
      * @param evento O evento a ser cadastrado.
-     * @return true se o evento foi cadastrado, false se a data já estiver ocupada.
+     * @throws BusinessException se a data já estiver ocupada ou houver erro de persistência.
      */
     @Override
-    public boolean cadastrarEvento(Evento evento) {
+    public void cadastrarEvento(Evento evento) throws BusinessException {
+        // Ineficiente buscar todos para verificar, mas mantendo lógica original
         boolean dataDisponivel = listarTodosEventos().stream()
                 .noneMatch(e -> e.getDeadline().isEqual(evento.getDeadline()));
 
-        if (dataDisponivel) {
+        if (!dataDisponivel) {
+            throw new BusinessException("Já existe um evento agendado para esta data.");
+        }
+
+        try {
             eventoRepository.salvar(evento);
             notifyObservers(evento);
-            return true;
+        } catch (DatabaseException e) {
+            throw new BusinessException("Erro ao salvar evento.", e);
         }
-        return false;
     }
 
     /**
      * Exclui um evento, garantindo que pertença ao usuário logado.
      *
      * @param evento O evento a ser excluído.
+     * @throws BusinessException se ocorrer erro ao excluir.
      */
     @Override
-    public void excluirEvento(Evento evento) {
+    public void excluirEvento(Evento evento) throws BusinessException {
         if (evento.getCriado_por().equals(emailUsuario)) {
-            eventoRepository.excluir(evento);
-            notifyObservers(evento);
+            try {
+                eventoRepository.excluir(evento);
+                notifyObservers(evento);
+            } catch (DatabaseException e) {
+                throw new BusinessException("Erro ao excluir evento.", e);
+            }
+        } else {
+             throw new DadosInvalidosException("Evento não pertence ao usuário.");
         }
     }
 
@@ -73,15 +88,22 @@ public class EventServiceImpl implements IEventService {
      * @param novoTitulo     O novo título.
      * @param novaDescricao  A nova descrição.
      * @param novoDeadline   A nova data.
+     * @throws BusinessException se ocorrer erro ao editar.
      */
     @Override
-    public void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline) {
+    public void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline) throws BusinessException {
         if (eventoOriginal.getCriado_por().equals(emailUsuario)) {
             eventoOriginal.setTitulo(novoTitulo);
             eventoOriginal.setDescricao(novaDescricao);
             eventoOriginal.setDeadLine(novoDeadline);
-            eventoRepository.atualizar(eventoOriginal);
-            notifyObservers(eventoOriginal);
+            try {
+                eventoRepository.atualizar(eventoOriginal);
+                notifyObservers(eventoOriginal);
+            } catch (DatabaseException e) {
+                throw new BusinessException("Erro ao atualizar evento.", e);
+            }
+        } else {
+             throw new DadosInvalidosException("Evento não pertence ao usuário.");
         }
     }
 

@@ -1,8 +1,9 @@
 package br.com.todolist.controller;
 
 import br.com.todolist.entity.Usuario;
+import br.com.todolist.exception.BusinessException;
 import br.com.todolist.repository.IUserRepository;
-import br.com.todolist.repository.UserRepositoryImpl;
+import br.com.todolist.repository.UserRepositoryPostgres;
 import br.com.todolist.service.IUserService;
 import br.com.todolist.service.impl.UserServiceImpl;
 
@@ -16,10 +17,10 @@ public class AuthController {
 
     /**
      * Construtor padrão da classe AuthController.
-     * Inicializa o serviço de usuário com uma implementação padrão de repositório.
+     * Inicializa o serviço de usuário com a implementação de repositório PostgreSQL.
      */
     public AuthController() {
-        IUserRepository userRepository = new UserRepositoryImpl();
+        IUserRepository userRepository = new UserRepositoryPostgres();
         this.userService = new UserServiceImpl(userRepository);
     }
 
@@ -28,9 +29,10 @@ public class AuthController {
      *
      * @param email    O endereço de e-mail do usuário.
      * @param password A senha do usuário.
-     * @return O objeto Usuario se a autenticação for bem-sucedida, ou null caso contrário.
+     * @return O objeto Usuario se a autenticação for bem-sucedida.
+     * @throws BusinessException se a autenticação falhar.
      */
-    public Usuario login(String email, String password) {
+    public Usuario login(String email, String password) throws BusinessException {
         return userService.autenticarUsuario(email, password);
     }
 
@@ -40,9 +42,9 @@ public class AuthController {
      * @param nome     O nome completo do usuário.
      * @param email    O endereço de e-mail do usuário.
      * @param password A senha do usuário.
-     * @return true se o cadastro foi realizado com sucesso, false se o e-mail já estiver em uso.
+     * @throws BusinessException se houver erro no cadastro (ex: e-mail duplicado).
      */
-    public boolean cadastrarUsuario(String nome, String email, String password) {
-        return userService.criarNovoUsuario(nome, email, password);
+    public void cadastrarUsuario(String nome, String email, String password) throws BusinessException {
+        userService.criarNovoUsuario(nome, email, password);
     }
 }

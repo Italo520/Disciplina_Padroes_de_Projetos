@@ -1,6 +1,7 @@
 package br.com.todolist.service;
 
 import br.com.todolist.entity.Tarefa;
+import br.com.todolist.exception.BusinessException;
 import br.com.todolist.service.util.ISubject;
 import java.time.LocalDate;
 import java.util.List;
@@ -15,15 +16,17 @@ public interface ITaskService extends ISubject<Tarefa> {
      * Cadastra uma nova tarefa.
      *
      * @param tarefa a tarefa a ser cadastrada.
+     * @throws BusinessException se houver erro na validação ou persistência.
      */
-    void cadastrarTarefa(Tarefa tarefa);
+    void cadastrarTarefa(Tarefa tarefa) throws BusinessException;
 
     /**
      * Exclui uma tarefa.
      *
      * @param tarefa a tarefa a ser excluída.
+     * @throws BusinessException se houver erro ao excluir.
      */
-    void excluirTarefa(Tarefa tarefa);
+    void excluirTarefa(Tarefa tarefa) throws BusinessException;
 
     /**
      * Edita uma tarefa.
@@ -33,15 +36,17 @@ public interface ITaskService extends ISubject<Tarefa> {
      * @param novaDescricao a nova descrição da tarefa.
      * @param novoDeadline o novo prazo da tarefa.
      * @param novaPrioridade a nova prioridade da tarefa.
+     * @throws BusinessException se houver erro ao editar.
      */
-    void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade);
+    void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) throws BusinessException;
 
     /**
      * Atualiza uma tarefa.
      *
      * @param tarefa a tarefa a ser atualizada.
+     * @throws BusinessException se houver erro ao atualizar.
      */
-    void atualizarTarefa(Tarefa tarefa);
+    void atualizarTarefa(Tarefa tarefa) throws BusinessException;
 
     /**
      * Lista todas as tarefas.

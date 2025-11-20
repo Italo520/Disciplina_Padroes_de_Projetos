@@ -1,6 +1,7 @@
 package br.com.todolist.ui.telasusuario;
 
 import br.com.todolist.controller.AuthController;
+import br.com.todolist.exception.BusinessException;
 import javax.swing.*;
 import java.awt.*;
 
@@ -118,17 +119,15 @@ public class TelaCadastro extends JDialog {
         String email = campoEmail.getText();
         String senha = new String(campoSenha.getPassword());
 
-        if (nome.trim().isEmpty() || email.trim().isEmpty() || senha.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (authController.cadastrarUsuario(nome, email, senha)) {
+        try {
+            authController.cadastrarUsuario(nome, email, senha);
             JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             emailCadastrado = email;
             dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Este email já está em uso. Tente outro.", "Erro no Cadastro", JOptionPane.ERROR_MESSAGE);
+        } catch (BusinessException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro no Cadastro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Ocorreu um erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

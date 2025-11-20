@@ -1,6 +1,7 @@
 package br.com.todolist.controller;
 
 import br.com.todolist.entity.Tarefa;
+import br.com.todolist.exception.BusinessException;
 import br.com.todolist.service.ITaskService;
 import java.time.LocalDate;
 import java.util.List;
@@ -26,8 +27,9 @@ public class TaskController {
      * Cadastra uma nova tarefa.
      *
      * @param tarefa O objeto Tarefa a ser cadastrado.
+     * @throws BusinessException se houver erro na validação ou persistência.
      */
-    public void cadastrarTarefa(Tarefa tarefa) {
+    public void cadastrarTarefa(Tarefa tarefa) throws BusinessException {
         taskService.cadastrarTarefa(tarefa);
     }
 
@@ -44,8 +46,9 @@ public class TaskController {
      * Exclui uma tarefa existente.
      *
      * @param tarefa A tarefa a ser excluída.
+     * @throws BusinessException se houver erro ao excluir.
      */
-    public void excluirTarefa(Tarefa tarefa) {
+    public void excluirTarefa(Tarefa tarefa) throws BusinessException {
         taskService.excluirTarefa(tarefa);
     }
 
@@ -57,8 +60,9 @@ public class TaskController {
      * @param novaDescricao  A nova descrição da tarefa.
      * @param novoDeadline   A nova data limite da tarefa.
      * @param novaPrioridade A nova prioridade da tarefa.
+     * @throws BusinessException se houver erro ao editar.
      */
-    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) {
+    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) throws BusinessException {
         taskService.editarTarefa(tarefaOriginal, novoTitulo, novaDescricao, novoDeadline, novaPrioridade);
     }
 
@@ -67,8 +71,9 @@ public class TaskController {
      * Geralmente utilizado para persistir mudanças no status ou subtarefas.
      *
      * @param tarefa A tarefa com os dados atualizados.
+     * @throws BusinessException se houver erro ao atualizar.
      */
-    public void atualizarTarefa(Tarefa tarefa) {
+    public void atualizarTarefa(Tarefa tarefa) throws BusinessException {
         taskService.atualizarTarefa(tarefa);
     }
 
