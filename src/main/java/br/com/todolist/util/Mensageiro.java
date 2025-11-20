@@ -11,6 +11,10 @@ import jakarta.mail.internet.MimeMultipart;
 import java.io.File;
 import java.util.Properties;
 
+/**
+ * Classe utilitária para envio de e-mails.
+ * Utiliza o servidor SMTP do Gmail.
+ */
 public class Mensageiro {
 
     private static final String USERNAME = "ads.ifpb.testes@gmail.com";
@@ -20,6 +24,10 @@ public class Mensageiro {
 
     private final Session session;
 
+    /**
+     * Construtor da classe Mensageiro.
+     * Configura as propriedades da sessão de e-mail (SMTP, autenticação, TLS).
+     */
     public Mensageiro() {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
@@ -34,6 +42,14 @@ public class Mensageiro {
         });
     }
 
+    /**
+     * Envia um e-mail simples (apenas texto).
+     *
+     * @param emailDestino  O endereço de e-mail do destinatário.
+     * @param assunto       O assunto do e-mail.
+     * @param corpoMensagem O corpo (texto) da mensagem.
+     * @return true se o e-mail foi enviado com sucesso, false caso contrário.
+     */
     public boolean enviarEmail(String emailDestino, String assunto, String corpoMensagem) { // Sem arquivo, só a mensagem!
         try {
             Message message = new MimeMessage(session);
@@ -51,6 +67,15 @@ public class Mensageiro {
         }
     }
 
+    /**
+     * Envia um e-mail com um arquivo em anexo.
+     *
+     * @param emailDestino  O endereço de e-mail do destinatário.
+     * @param assunto       O assunto do e-mail.
+     * @param corpoMensagem O corpo (texto) da mensagem.
+     * @param caminhoArquivo O caminho do arquivo a ser anexado.
+     * @return true se o e-mail foi enviado com sucesso, false caso contrário ou se o arquivo não existir.
+     */
     public boolean enviarEmailComAnexo(String emailDestino, String assunto, String corpoMensagem, String caminhoArquivo) {
         try {
             Message message = new MimeMessage(session);

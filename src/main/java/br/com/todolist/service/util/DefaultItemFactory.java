@@ -10,6 +10,12 @@ import java.time.LocalDate;
  */
 public class DefaultItemFactory implements IItemFactory {
 
+    /**
+     * Construtor padrão da classe DefaultItemFactory.
+     */
+    public DefaultItemFactory() {
+    }
+
     @Override
     public Tarefa criarTarefa(String titulo, String descricao, String criadoPor, LocalDate deadline, int prioridade) {
         return new Tarefa(titulo, descricao, criadoPor, deadline, prioridade);

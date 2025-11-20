@@ -17,7 +17,26 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Classe utilitária central para geração de arquivos (PDF e Excel).
+ */
 public class Central {
+
+    /**
+     * Construtor privado para impedir a instanciação da classe utilitária.
+     */
+    private Central() {
+        throw new IllegalStateException("Classe utilitária");
+    }
+
+    /**
+     * Gera um arquivo PDF contendo uma tabela com os dados fornecidos.
+     *
+     * @param nomeArquivo O caminho/nome do arquivo PDF a ser gerado.
+     * @param titulo      O título a ser exibido no topo do documento.
+     * @param cabecalhos  Um array de strings com os cabeçalhos da tabela.
+     * @param dados       Uma lista de arrays de strings, onde cada array representa uma linha da tabela.
+     */
     public static void gerarPdf(String nomeArquivo, String titulo, String[] cabecalhos, List<String[]> dados) {
         try (PdfWriter writer = new PdfWriter(nomeArquivo)) {
             PdfDocument pdf = new PdfDocument(writer);
@@ -50,6 +69,15 @@ public class Central {
         }
     }
 
+    /**
+     * Gera um arquivo Excel (XLSX) com os dados fornecidos.
+     *
+     * @param nomeArquivo  O caminho/nome do arquivo Excel a ser gerado.
+     * @param nomePlanilha O nome da aba (planilha) dentro do arquivo.
+     * @param cabecalhos   Um array de strings com os cabeçalhos das colunas.
+     * @param dados        Uma lista de arrays de strings com os dados principais.
+     * @param colunaExtra  Uma lista de strings para uma coluna adicional (ex: percentual de conclusão).
+     */
     public static void gerarExcel(String nomeArquivo, String nomePlanilha, String[] cabecalhos, List<String[]> dados, List<String> colunaExtra) {
         try (Workbook workbook = new XSSFWorkbook();
              FileOutputStream outputStream = new FileOutputStream(nomeArquivo)) {

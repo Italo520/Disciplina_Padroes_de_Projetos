@@ -9,22 +9,48 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Diálogo modal para cadastro e edição de Tarefas.
+ * Oferece um formulário para preencher título, descrição, prioridade e prazo da tarefa.
+ */
 public class DialogoTarefa extends JDialog {
 
+    /** Controlador de tarefas para persistência dos dados. */
     private final TaskController taskController;
+
+    /** Tarefa a ser editada (null se for cadastro). */
     private Tarefa tarefa;
 
+    /** Campo de texto para o título da tarefa. */
     private JTextField campoTitulo;
+
+    /** Campo de texto para a descrição da tarefa. */
     private JTextField campoDescricao;
+
+    /** Campo de seleção numérica para a prioridade da tarefa. */
     private JSpinner campoPrioridade;
+
+    /** Campo de texto para o prazo da tarefa. */
     private JTextField campoPrazo;
 
+    /** Botão para salvar as alterações. */
     private JButton botaoSalvar;
+
+    /** Botão para cancelar e fechar o diálogo. */
     private JButton botaoCancelar;
 
+    /** Indica se a operação de salvar foi realizada com sucesso. */
     private boolean salvo = false;
+
+    /** Formatador de data utilizado nos campos de texto (dd/MM/yyyy). */
     private final DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    /**
+     * Construtor para criação de uma nova tarefa.
+     *
+     * @param frame          O frame pai da janela.
+     * @param taskController O controlador de tarefas.
+     */
     public DialogoTarefa(Frame frame, TaskController taskController) {
         super(frame, "Nova Tarefa", true);
         this.taskController = taskController;
@@ -33,6 +59,13 @@ public class DialogoTarefa extends JDialog {
         configurarAcoes();
     }
 
+    /**
+     * Construtor para edição de uma tarefa existente.
+     *
+     * @param frame           O frame pai da janela.
+     * @param taskController  O controlador de tarefas.
+     * @param tarefaParaEditar A tarefa a ser editada.
+     */
     public DialogoTarefa(Frame frame, TaskController taskController, Tarefa tarefaParaEditar) {
         super(frame, "Editar Tarefa", true);
         this.taskController = taskController;
@@ -42,6 +75,9 @@ public class DialogoTarefa extends JDialog {
         configurarAcoes();
     }
 
+    /**
+     * Inicializa e posiciona os componentes da interface gráfica.
+     */
     private void configurarEAdicionarComponentes() {
         setTitle(tarefa == null ? "Nova Tarefa" : "Editar Tarefa");
         setSize(1280, 720);
@@ -90,6 +126,9 @@ public class DialogoTarefa extends JDialog {
         add(botaoCancelar);
     }
     
+    /**
+     * Preenche os campos do formulário com os dados da tarefa em edição.
+     */
     private void preencherCampos() {
         if (tarefa != null) {
             campoTitulo.setText(tarefa.getTitulo());
@@ -99,11 +138,18 @@ public class DialogoTarefa extends JDialog {
         }
     }
 
+    /**
+     * Configura os listeners para os botões de ação.
+     */
     private void configurarAcoes() {
         botaoCancelar.addActionListener(e -> dispose());
         botaoSalvar.addActionListener(e -> salvar());
     }
 
+    /**
+     * Valida os campos e salva a tarefa (nova ou editada).
+     * Interage com o controlador para persistir os dados.
+     */
     private void salvar() {
         try {
             String titulo = campoTitulo.getText().trim();
@@ -131,6 +177,11 @@ public class DialogoTarefa extends JDialog {
         }
     }
     
+    /**
+     * Indica se a operação de salvar foi concluída com sucesso.
+     *
+     * @return true se a tarefa foi salva, false caso contrário.
+     */
     public boolean foiSalvo() {
         return this.salvo;
     }

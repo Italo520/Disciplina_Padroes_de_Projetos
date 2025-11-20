@@ -14,21 +14,43 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+/**
+ * Painel responsável pela gestão visual dos eventos.
+ * Exibe a lista de eventos e seus detalhes, incluindo o tempo restante para o prazo.
+ */
 public class PainelEventos extends PainelBase {
 
+    /** Controlador responsável pelas operações de eventos. */
     private final EventController eventController;
 
+    /** Modelo de lista para armazenar os eventos exibidos. */
     private DefaultListModel<Evento> modeloListaEventos;
+
+    /** Componente gráfico de lista para exibir os eventos. */
     private JList<Evento> listaDeEventos;
 
+    /** Label para exibir a descrição do evento selecionado. */
     private JLabel valorDescricao;
+
+    /** Label para exibir o tempo restante até o evento. */
     private JLabel valorTempoRestante;
 
+    /**
+     * Construtor da classe PainelEventos.
+     *
+     * @param eventController O controlador de eventos.
+     */
     public PainelEventos(EventController eventController) {
         this.eventController = eventController;
         inicializarLayout();
     }
 
+    /**
+     * Cria o painel de botões superior com as ações principais para eventos.
+     *
+     * @return O painel de botões.
+     */
+    @Override
     protected JPanel criarPainelDeBotoes() {
         JPanel painel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JButton botaoNovoEvento = new JButton("Novo Evento");
@@ -46,6 +68,11 @@ public class PainelEventos extends PainelBase {
         return painel;
     }
 
+    /**
+     * Cria o painel de conteúdo principal, contendo a lista de eventos e os detalhes.
+     *
+     * @return O painel de conteúdo.
+     */
     @Override
     protected JPanel criarPainelDeConteudo() {
         modeloListaEventos = new DefaultListModel<>();
@@ -84,6 +111,12 @@ public class PainelEventos extends PainelBase {
     }
 
 
+    /**
+     * Atualiza os campos de detalhes com as informações do evento selecionado.
+     * Calcula e exibe o tempo restante para o evento.
+     *
+     * @param evento O evento selecionado, ou null para limpar os campos.
+     */
     private void atualizarDetalhesEvento(Evento evento) {
         if (evento != null) {
             valorDescricao.setText("<html>" + evento.getDescricao() + "</html>");
@@ -106,6 +139,9 @@ public class PainelEventos extends PainelBase {
         }
     }
 
+    /**
+     * Recarrega a lista de eventos a partir do controlador.
+     */
     private void popularListaEventos() {
         modeloListaEventos.clear();
         for (Evento evento : this.eventController.listarTodosEventos()) {
@@ -114,6 +150,11 @@ public class PainelEventos extends PainelBase {
         atualizarDetalhesEvento(null);
     }
 
+    /**
+     * Atualiza a lista com um conjunto específico de eventos (usado para filtros).
+     *
+     * @param eventos A lista de eventos a ser exibida.
+     */
     public void exibirEventos(List<Evento> eventos) {
         modeloListaEventos.clear();
         if (eventos != null) {
@@ -124,6 +165,9 @@ public class PainelEventos extends PainelBase {
     
     // OUVINTES
     
+    /**
+     * Listener para o botão "Novo Evento".
+     */
     private class OuvinteBotaoNovoEvento implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Frame framePrincipal = (Frame) SwingUtilities.getWindowAncestor(PainelEventos.this);
@@ -136,6 +180,9 @@ public class PainelEventos extends PainelBase {
         }
     }
 
+    /**
+     * Listener para o botão "Editar Evento".
+     */
     private class OuvinteBotaoEditarEvento implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Evento eventoSelecionado = listaDeEventos.getSelectedValue();
@@ -154,6 +201,9 @@ public class PainelEventos extends PainelBase {
         }
     }
 
+    /**
+     * Listener para o botão "Excluir Evento".
+     */
     private class OuvinteBotaoExcluirEvento implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             Evento eventoSelecionado = listaDeEventos.getSelectedValue();
@@ -173,6 +223,9 @@ public class PainelEventos extends PainelBase {
         }
     }
 
+    /**
+     * Listener para mudanças na seleção da lista de eventos.
+     */
     private class OuvinteSelecaoEvento implements ListSelectionListener {
         public void valueChanged(ListSelectionEvent e) {
             if (!e.getValueIsAdjusting()) {

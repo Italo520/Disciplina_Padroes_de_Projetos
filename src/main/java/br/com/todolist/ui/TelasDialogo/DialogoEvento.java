@@ -11,21 +11,45 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Diálogo modal para cadastro e edição de Eventos.
+ * Oferece um formulário para preencher título, descrição e data do evento.
+ */
 public class DialogoEvento extends JDialog {
 
+    /** Controlador de eventos para persistência dos dados. */
     private final EventController eventController;
+
+    /** Evento a ser editado (null se for cadastro). */
     private Evento evento;
 
+    /** Campo de texto para o título do evento. */
     private JTextField campoTitulo;
+
+    /** Campo de texto para a descrição do evento. */
     private JTextField campoDescricao;
+
+    /** Campo de texto para a data do evento. */
     private JTextField campoData;
 
+    /** Botão para salvar as alterações. */
     private JButton botaoSalvar;
+
+    /** Botão para cancelar e fechar o diálogo. */
     private JButton botaoCancelar;
 
+    /** Indica se a operação de salvar foi realizada com sucesso. */
     private boolean salvo = false;
+
+    /** Formatador de data utilizado nos campos de texto (dd/MM/yyyy). */
     private final DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    /**
+     * Construtor para criação de um novo evento.
+     *
+     * @param frame          O frame pai da janela.
+     * @param eventController O controlador de eventos.
+     */
     public DialogoEvento(Frame frame, EventController eventController) {
         super(frame, "Novo Evento", true);
         this.eventController = eventController;
@@ -34,6 +58,13 @@ public class DialogoEvento extends JDialog {
         configurarAcoes();
     }
 
+    /**
+     * Construtor para edição de um evento existente.
+     *
+     * @param frame           O frame pai da janela.
+     * @param eventController O controlador de eventos.
+     * @param eventoParaEditar O evento a ser editado.
+     */
     public DialogoEvento(Frame frame, EventController eventController, Evento eventoParaEditar) {
         super(frame, "Editar Evento", true);
         this.eventController = eventController;
@@ -43,6 +74,9 @@ public class DialogoEvento extends JDialog {
         configurarAcoes();
     }
     
+    /**
+     * Inicializa e posiciona os componentes da interface gráfica.
+     */
     private void configurarEAdicionarComponentes() {
         setTitle(evento == null ? "Novo Evento" : "Editar Evento");
         setSize(1280, 720);
@@ -83,6 +117,9 @@ public class DialogoEvento extends JDialog {
         add(botaoCancelar);
     }
     
+    /**
+     * Preenche os campos do formulário com os dados do evento em edição.
+     */
     private void preencherCampos() {
         if (evento != null) {
             campoTitulo.setText(evento.getTitulo());
@@ -91,11 +128,18 @@ public class DialogoEvento extends JDialog {
         }
     }
 
+    /**
+     * Configura os listeners para os botões de ação.
+     */
     private void configurarAcoes() {
         botaoCancelar.addActionListener(e -> dispose());
         botaoSalvar.addActionListener(e -> salvar());
     }
 
+    /**
+     * Valida os campos e salva o evento (novo ou editado).
+     * Interage com o controlador para persistir os dados.
+     */
     private void salvar() {
         if (!validarCampos()) {
             return;
@@ -130,6 +174,11 @@ public class DialogoEvento extends JDialog {
         }
     }
 
+    /**
+     * Valida se os campos obrigatórios foram preenchidos corretamente.
+     *
+     * @return true se os dados forem válidos, false caso contrário.
+     */
     private boolean validarCampos() {
         if (campoTitulo.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "O campo 'Título' é obrigatório.", "Erro de Validação",
@@ -146,6 +195,11 @@ public class DialogoEvento extends JDialog {
         return true;
     }
 
+    /**
+     * Indica se a operação de salvar foi concluída com sucesso.
+     *
+     * @return true se o evento foi salvo, false caso contrário.
+     */
     public boolean foiSalvo() {
         return this.salvo;
     }

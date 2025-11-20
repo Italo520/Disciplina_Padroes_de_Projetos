@@ -7,5 +7,5 @@ import br.com.todolist.entity.Tarefa;
  * Estende a interface genérica IRepository e define as operações de persistência para a entidade Tarefa.
  */
 public interface ITarefaRepository extends IRepository<Tarefa, String> {
-    // Métodos específicos para o repositório de tarefas, se houver, podem ser adicionados aqui.
+    // Métodos específicos para o repositório de tarefas podem ser definidos aqui.
 }

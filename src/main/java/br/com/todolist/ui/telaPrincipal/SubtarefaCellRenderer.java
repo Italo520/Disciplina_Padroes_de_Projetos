@@ -8,11 +8,19 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-
+/**
+ * Renderizador personalizado para células de lista de subtarefas.
+ * Exibe cada subtarefa como um CheckBox, refletindo seu status (concluído ou não).
+ */
 public class SubtarefaCellRenderer extends JPanel implements ListCellRenderer<Subtarefa> {
 
+    /** Componente CheckBox usado para renderizar o status da subtarefa. */
     private final JCheckBox checkBox;
 
+    /**
+     * Construtor padrão da classe SubtarefaCellRenderer.
+     * Inicializa o layout e o componente CheckBox.
+     */
     public SubtarefaCellRenderer() {
         setLayout(new BorderLayout());
         setOpaque(true);
@@ -21,6 +29,17 @@ public class SubtarefaCellRenderer extends JPanel implements ListCellRenderer<Su
         add(checkBox, BorderLayout.CENTER);
     }
 
+    /**
+     * Configura o componente para exibir a célula da lista.
+     *
+     * @param list         A lista que está sendo renderizada.
+     * @param subtarefa    O objeto Subtarefa a ser exibido.
+     * @param index        O índice da célula.
+     * @param isSelected   Se a célula está selecionada.
+     * @param cellHasFocus Se a célula tem o foco.
+     * @return O componente configurado para exibição.
+     */
+    @Override
     public Component getListCellRendererComponent(JList<? extends Subtarefa> list,
                                                   Subtarefa subtarefa,
                                                   int index,
