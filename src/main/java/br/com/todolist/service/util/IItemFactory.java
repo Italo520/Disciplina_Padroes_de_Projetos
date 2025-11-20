@@ -1,4 +1,4 @@
-package br.com.todolist.factory;
+package br.com.todolist.service.util;
 
 import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Tarefa;
@@ -8,7 +8,7 @@ import java.time.LocalDate;
  * Interface para a fábrica de itens.
  * Define os métodos que devem ser implementados pelas fábricas de itens.
  */
-public interface ItemFactory {
+public interface IItemFactory {
 
     /**
      * Cria uma nova tarefa.

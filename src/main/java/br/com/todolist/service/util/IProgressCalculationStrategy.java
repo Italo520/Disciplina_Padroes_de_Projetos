@@ -1,4 +1,4 @@
-package br.com.todolist.strategy;
+package br.com.todolist.service.util;
 
 import br.com.todolist.entity.Tarefa;
 
@@ -6,7 +6,7 @@ import br.com.todolist.entity.Tarefa;
  * Interface para a estratégia de cálculo de progresso de tarefas.
  * Define o método que deve ser implementado por todas as estratégias de cálculo de progresso.
  */
-public interface ProgressCalculationStrategy {
+public interface IProgressCalculationStrategy {
 
     /**
      * Calcula o progresso de uma tarefa.

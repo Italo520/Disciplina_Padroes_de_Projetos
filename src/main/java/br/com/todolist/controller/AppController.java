@@ -4,16 +4,18 @@ import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Itens;
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.entity.Usuario;
-import br.com.todolist.repository.ItemRepository;
-import br.com.todolist.repository.ItemRepositoryImpl;
-import br.com.todolist.service.EventService;
-import br.com.todolist.service.EventServiceImpl;
-import br.com.todolist.service.ReportService;
-import br.com.todolist.service.ReportServiceImpl;
-import br.com.todolist.service.TaskService;
-import br.com.todolist.factory.ItemFactory;
-import br.com.todolist.service.TaskServiceImpl;
-import br.com.todolist.service.UserService;
+import br.com.todolist.repository.EventoRepositoryImpl;
+import br.com.todolist.repository.IEventoRepository;
+import br.com.todolist.repository.ITarefaRepository;
+import br.com.todolist.repository.TarefaRepositoryImpl;
+import br.com.todolist.service.IEventService;
+import br.com.todolist.service.impl.EventServiceImpl;
+import br.com.todolist.service.IReportService;
+import br.com.todolist.service.impl.ReportServiceImpl;
+import br.com.todolist.service.ITaskService;
+import br.com.todolist.service.util.IItemFactory;
+import br.com.todolist.service.impl.TaskServiceImpl;
+import br.com.todolist.service.IUserService;
 import br.com.todolist.util.Mensageiro;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -27,15 +29,15 @@ import java.util.List;
 public class AppController {
 
     private static AppController instance;
-    private final UserService userService;
+    private final IUserService userService;
     private final Mensageiro mensageiro;
-    private final ItemFactory itemFactory;
-    private TaskService taskService;
-    private EventService eventService;
-    private ReportService reportService;
+    private final IItemFactory itemFactory;
+    private ITaskService taskService;
+    private IEventService eventService;
+    private IReportService reportService;
     private Usuario usuarioLogado;
 
-    private AppController(UserService userService, Mensageiro mensageiro, ItemFactory itemFactory) {
+    private AppController(IUserService userService, Mensageiro mensageiro, IItemFactory itemFactory) {
         this.userService = userService;
         this.mensageiro = mensageiro;
         this.itemFactory = itemFactory;
@@ -49,7 +51,7 @@ public class AppController {
      * @param mensageiro o utilitário de mensageria.
      * @param itemFactory a fábrica de itens.
      */
-    public static void init(UserService userService, Mensageiro mensageiro, ItemFactory itemFactory) {
+    public static void init(IUserService userService, Mensageiro mensageiro, IItemFactory itemFactory) {
         if (instance == null) {
             instance = new AppController(userService, mensageiro, itemFactory);
         }
@@ -71,9 +73,10 @@ public class AppController {
     public boolean login(String email, String password) {
         usuarioLogado = userService.autenticarUsuario(email, password);
         if (usuarioLogado != null) {
-            ItemRepository<Itens> itemRepository = new ItemRepositoryImpl();
-            this.taskService = new TaskServiceImpl(itemRepository, usuarioLogado.getEmail());
-            this.eventService = new EventServiceImpl(itemRepository, usuarioLogado.getEmail());
+            ITarefaRepository tarefaRepository = new TarefaRepositoryImpl();
+            IEventoRepository eventoRepository = new EventoRepositoryImpl();
+            this.taskService = new TaskServiceImpl(tarefaRepository, usuarioLogado.getEmail());
+            this.eventService = new EventServiceImpl(eventoRepository, usuarioLogado.getEmail());
             this.reportService = new ReportServiceImpl(taskService, mensageiro);
             return true;
         }

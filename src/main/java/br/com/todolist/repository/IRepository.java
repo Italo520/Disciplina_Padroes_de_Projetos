@@ -9,7 +9,7 @@ import java.util.List;
  * @param <T> o tipo da entidade.
  * @param <ID> o tipo do identificador da entidade.
  */
-public interface Repository<T, ID> {
+public interface IRepository<T, ID> {
 
     /**
      * Salva uma entidade no repositório.

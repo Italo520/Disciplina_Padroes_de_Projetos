@@ -1,14 +1,15 @@
-package br.com.todolist.service;
+package br.com.todolist.service.impl;
 
 import br.com.todolist.entity.Usuario;
-import br.com.todolist.repository.UserRepository;
+import br.com.todolist.repository.IUserRepository;
+import br.com.todolist.service.IUserService;
 import org.mindrot.jbcrypt.BCrypt;
 
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements IUserService {
 
-    private final UserRepository userRepository;
+    private final IUserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(IUserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

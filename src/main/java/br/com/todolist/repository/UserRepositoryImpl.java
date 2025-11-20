@@ -11,7 +11,7 @@ import java.util.List;
  * Implementação do repositório de usuários.
  * Responsável por persistir e recuperar dados de usuários em um arquivo JSON.
  */
-public class UserRepositoryImpl implements UserRepository {
+public class UserRepositoryImpl implements IUserRepository {
 
     private static final String ARQUIVO_USUARIOS = "arquivos/usuarios.json";
     private final GerenciadorDePersistenciaJson persistencia;

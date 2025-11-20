@@ -1,4 +1,4 @@
-package br.com.todolist.observer;
+package br.com.todolist.service.util;
 
 /**
  * Interface para o padrão Observer.
@@ -6,21 +6,21 @@ package br.com.todolist.observer;
  *
  * @param <T> o tipo do objeto que está sendo observado.
  */
-public interface Subject<T> {
+public interface ISubject<T> {
 
     /**
      * Adiciona um observador à lista de observadores.
      *
      * @param observer o observador a ser adicionado.
      */
-    void addObserver(Observer<T> observer);
+    void addObserver(IObserver<T> observer);
 
     /**
      * Remove um observador da lista de observadores.
      *
      * @param observer o observador a ser removido.
      */
-    void removeObserver(Observer<T> observer);
+    void removeObserver(IObserver<T> observer);
 
     /**
      * Notifica todos os observadores sobre uma atualização.

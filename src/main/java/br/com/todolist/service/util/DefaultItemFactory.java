@@ -1,4 +1,4 @@
-package br.com.todolist.factory;
+package br.com.todolist.service.util;
 
 import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Tarefa;
@@ -8,7 +8,7 @@ import java.time.LocalDate;
  * Implementação padrão da fábrica de itens.
  * Encapsula a lógica de criação de tarefas e eventos.
  */
-public class DefaultItemFactory implements ItemFactory {
+public class DefaultItemFactory implements IItemFactory {
 
     @Override
     public Tarefa criarTarefa(String titulo, String descricao, String criadoPor, LocalDate deadline, int prioridade) {

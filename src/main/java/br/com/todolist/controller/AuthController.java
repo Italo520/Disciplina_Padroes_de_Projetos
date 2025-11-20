@@ -1,17 +1,17 @@
 package br.com.todolist.controller;
 
 import br.com.todolist.entity.Usuario;
-import br.com.todolist.repository.UserRepository;
+import br.com.todolist.repository.IUserRepository;
 import br.com.todolist.repository.UserRepositoryImpl;
-import br.com.todolist.service.UserService;
-import br.com.todolist.service.UserServiceImpl;
+import br.com.todolist.service.IUserService;
+import br.com.todolist.service.impl.UserServiceImpl;
 
 public class AuthController {
 
-    private final UserService userService;
+    private final IUserService userService;
 
     public AuthController() {
-        UserRepository userRepository = new UserRepositoryImpl();
+        IUserRepository userRepository = new UserRepositoryImpl();
         this.userService = new UserServiceImpl(userRepository);
     }
 

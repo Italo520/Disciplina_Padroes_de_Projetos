@@ -1,7 +1,7 @@
 package br.com.todolist.service;
 
 import br.com.todolist.entity.Tarefa;
-import br.com.todolist.observer.Subject;
+import br.com.todolist.service.util.ISubject;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -9,7 +9,7 @@ import java.util.List;
  * Interface para o serviço de tarefas.
  * Define os métodos que devem ser implementados pelas classes de serviço de tarefas.
  */
-public interface TaskService extends Subject<Tarefa> {
+public interface ITaskService extends ISubject<Tarefa> {
 
     /**
      * Cadastra uma nova tarefa.

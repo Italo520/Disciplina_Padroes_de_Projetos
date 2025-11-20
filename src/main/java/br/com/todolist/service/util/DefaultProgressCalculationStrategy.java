@@ -1,4 +1,4 @@
-package br.com.todolist.strategy;
+package br.com.todolist.service.util;
 
 import br.com.todolist.entity.Subtarefa;
 import br.com.todolist.entity.Tarefa;
@@ -7,7 +7,7 @@ import br.com.todolist.entity.Tarefa;
  * Estratégia padrão para cálculo de progresso de tarefas.
  * Calcula o progresso com base na porcentagem de subtarefas concluídas.
  */
-public class DefaultProgressCalculationStrategy implements ProgressCalculationStrategy {
+public class DefaultProgressCalculationStrategy implements IProgressCalculationStrategy {
 
     @Override
     public double calcularProgresso(Tarefa tarefa) {

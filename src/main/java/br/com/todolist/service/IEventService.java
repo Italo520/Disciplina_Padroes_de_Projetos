@@ -1,7 +1,7 @@
 package br.com.todolist.service;
 
 import br.com.todolist.entity.Evento;
-import br.com.todolist.observer.Subject;
+import br.com.todolist.service.util.ISubject;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  * Interface para o serviço de eventos.
  * Define os métodos que devem ser implementados pelas classes de serviço de eventos.
  */
-public interface EventService extends Subject<Evento> {
+public interface IEventService extends ISubject<Evento> {
 
     /**
      * Cadastra um novo evento.

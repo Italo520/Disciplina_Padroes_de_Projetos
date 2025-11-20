@@ -6,7 +6,7 @@ import br.com.todolist.entity.Usuario;
  * Interface para o repositório de usuários.
  * Estende a interface genérica Repository e define as operações de persistência para a entidade Usuario.
  */
-public interface UserRepository extends Repository<Usuario, String> {
+public interface IUserRepository extends IRepository<Usuario, String> {
 
     /**
      * Busca um usuário pelo seu endereço de e-mail.

@@ -1,4 +1,4 @@
-package br.com.todolist.observer;
+package br.com.todolist.service.util;
 
 /**
  * Interface para o padrão Observer.
@@ -6,7 +6,7 @@ package br.com.todolist.observer;
  *
  * @param <T> o tipo do objeto que está sendo observado.
  */
-public interface Observer<T> {
+public interface IObserver<T> {
 
     /**
      * Método chamado quando o objeto observado é atualizado.

@@ -8,7 +8,7 @@ import java.time.YearMonth;
  * Interface para o serviço de geração de relatórios.
  * Define os métodos que devem ser implementados pelas classes de serviço de relatório.
  */
-public interface ReportService {
+public interface IReportService {
 
     /**
      * Gera um relatório de tarefas do dia em PDF e o envia por e-mail.

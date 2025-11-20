@@ -1,7 +1,9 @@
-package br.com.todolist.service;
+package br.com.todolist.service.impl;
 
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.entity.Usuario;
+import br.com.todolist.service.IReportService;
+import br.com.todolist.service.ITaskService;
 import br.com.todolist.util.Central;
 import br.com.todolist.util.Mensageiro;
 import java.io.File;
@@ -15,9 +17,9 @@ import java.util.List;
  * Implementação do serviço de geração de relatórios.
  * Contém a lógica de negócio para criar e enviar relatórios de tarefas.
  */
-public class ReportServiceImpl implements ReportService {
+public class ReportServiceImpl implements IReportService {
 
-    private final TaskService taskService;
+    private final ITaskService taskService;
     private final Mensageiro mensageiro;
 
     /**
@@ -26,7 +28,7 @@ public class ReportServiceImpl implements ReportService {
      * @param taskService o serviço de tarefas a ser utilizado.
      * @param mensageiro o utilitário de envio de e-mails.
      */
-    public ReportServiceImpl(TaskService taskService, Mensageiro mensageiro) {
+    public ReportServiceImpl(ITaskService taskService, Mensageiro mensageiro) {
         this.taskService = taskService;
         this.mensageiro = mensageiro;
     }

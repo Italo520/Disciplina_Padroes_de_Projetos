@@ -6,7 +6,7 @@ import br.com.todolist.entity.Usuario;
  * Interface para o serviço de usuários.
  * Define os métodos que devem ser implementados pelas classes de serviço de usuários.
  */
-public interface UserService {
+public interface IUserService {
 
     /**
      * Cria um novo usuário.

@@ -1,7 +1,7 @@
 package br.com.todolist.entity;
 
-import br.com.todolist.strategy.DefaultProgressCalculationStrategy;
-import br.com.todolist.strategy.ProgressCalculationStrategy;
+import br.com.todolist.service.util.DefaultProgressCalculationStrategy;
+import br.com.todolist.service.util.IProgressCalculationStrategy;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
@@ -12,7 +12,7 @@ public class Tarefa extends Itens {
     private LocalDate dataConclusao;
     private int prioridade;
     private List<Subtarefa> subtarefas;
-    private ProgressCalculationStrategy progressCalculationStrategy;
+    private IProgressCalculationStrategy progressCalculationStrategy;
 
     public Tarefa() {
     }
@@ -65,7 +65,7 @@ public class Tarefa extends Itens {
         return getTitulo();
     }
 
-    public void setProgressCalculationStrategy(ProgressCalculationStrategy progressCalculationStrategy) {
+    public void setProgressCalculationStrategy(IProgressCalculationStrategy progressCalculationStrategy) {
         this.progressCalculationStrategy = progressCalculationStrategy;
     }
 }

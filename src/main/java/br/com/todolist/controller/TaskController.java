@@ -1,15 +1,15 @@
 package br.com.todolist.controller;
 
 import br.com.todolist.entity.Tarefa;
-import br.com.todolist.service.TaskService;
+import br.com.todolist.service.ITaskService;
 import java.time.LocalDate;
 import java.util.List;
 
 public class TaskController {
 
-    private final TaskService taskService;
+    private final ITaskService taskService;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(ITaskService taskService) {
         this.taskService = taskService;
     }
 
