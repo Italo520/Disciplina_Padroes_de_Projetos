@@ -1,12 +1,16 @@
 package br.com.todolist.entity;
 
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDate;
 
 /**
  * Classe abstrata que serve como base para itens do sistema, como Tarefas e Eventos.
  * Contém atributos comuns como título, descrição, tipo, criador e datas.
  */
+@MappedSuperclass
 public abstract class Itens {
+    @Id
     private String titulo;
     private String descricao;
     private String tipo;

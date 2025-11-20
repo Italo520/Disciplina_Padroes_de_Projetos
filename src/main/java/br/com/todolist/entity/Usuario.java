@@ -1,11 +1,18 @@
 package br.com.todolist.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 /**
  * Classe que representa um Usuário no sistema.
  * Armazena as informações de autenticação e identificação.
  */
+@Entity
+@Table(name = "usuarios")
 public class Usuario {
     private String nome;
+    @Id
     private String email;
     private String password;
 

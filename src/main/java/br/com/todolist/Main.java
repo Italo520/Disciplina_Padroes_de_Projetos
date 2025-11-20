@@ -4,7 +4,7 @@ import br.com.todolist.controller.AppController;
 import br.com.todolist.repository.IUserRepository;
 import br.com.todolist.service.util.DefaultItemFactory;
 import br.com.todolist.service.util.IItemFactory;
-import br.com.todolist.repository.UserRepositoryImpl;
+import br.com.todolist.repository.UserRepositoryPostgres;
 import br.com.todolist.service.IUserService;
 import br.com.todolist.service.impl.UserServiceImpl;
 import br.com.todolist.ui.telasusuario.TelaLogin;
@@ -36,7 +36,7 @@ public class Main {
         FlatCarbonIJTheme.setup();
 
         // Inicializa as dependências (Repositórios, Serviços, Utilitários)
-        IUserRepository userRepository = new UserRepositoryImpl();
+        IUserRepository userRepository = new UserRepositoryPostgres();
         IUserService userService = new UserServiceImpl(userRepository);
         Mensageiro mensageiro = new Mensageiro();
         IItemFactory itemFactory = new DefaultItemFactory();
