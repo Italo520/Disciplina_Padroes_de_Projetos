@@ -1,11 +1,15 @@
 package br.com.todolist.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 
 /**
  * Classe que representa um Evento no sistema.
  * Estende a classe abstrata Itens.
  */
+@Entity
+@Table(name = "eventos")
 public class Evento extends Itens {
 
     /**

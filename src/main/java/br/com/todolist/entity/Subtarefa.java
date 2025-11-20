@@ -1,13 +1,31 @@
 package br.com.todolist.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
 /**
  * Classe que representa uma subtarefa associada a uma tarefa principal.
  * Possui um título e um status de conclusão.
  */
+@Entity
+@Table(name = "subtarefas")
 public class Subtarefa {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String titulo;
     private boolean status;
+
+    @ManyToOne
+    @JoinColumn(name = "tarefa_titulo")
+    private Tarefa tarefa;
 
     /**
      * Construtor padrão da classe Subtarefa.
@@ -80,6 +98,22 @@ public class Subtarefa {
      */
     public String toString() {
         return titulo;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Tarefa getTarefa() {
+        return tarefa;
+    }
+
+    public void setTarefa(Tarefa tarefa) {
+        this.tarefa = tarefa;
     }
 
 }

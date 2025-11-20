@@ -93,6 +93,20 @@
       <version>3.4.1</version> 
     </dependency>
 
+    <!-- PostgreSQL Driver -->
+    <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.7.2</version>
+    </dependency>
+
+    <!-- Hibernate Core (JPA) -->
+    <dependency>
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>6.4.4.Final</version>
+    </dependency>
+
   </dependencies>
   <repositories>
     <repository>

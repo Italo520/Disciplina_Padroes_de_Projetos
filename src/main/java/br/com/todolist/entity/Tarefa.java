@@ -2,6 +2,12 @@ package br.com.todolist.entity;
 
 import br.com.todolist.service.util.DefaultProgressCalculationStrategy;
 import br.com.todolist.service.util.IProgressCalculationStrategy;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
@@ -11,11 +17,15 @@ import java.time.LocalDate;
  * Estende a classe abstrata Itens e adiciona funcionalidades específicas como prioridade,
  * data de conclusão, subtarefas e cálculo de progresso.
  */
+@Entity
+@Table(name = "tarefas")
 public class Tarefa extends Itens {
 
     private LocalDate dataConclusao;
     private int prioridade;
+    @OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Subtarefa> subtarefas;
+    @Transient
     private IProgressCalculationStrategy progressCalculationStrategy;
 
     /**
@@ -112,6 +122,7 @@ public class Tarefa extends Itens {
      */
     public void adicionarSubtarefa(Subtarefa subtarefa) {
         this.subtarefas.add(subtarefa);
+        subtarefa.setTarefa(this);
     }
 
     /**
@@ -121,6 +132,7 @@ public class Tarefa extends Itens {
      */
     public void removerSubtarefa(Subtarefa subtarefa) {
         this.subtarefas.remove(subtarefa);
+        subtarefa.setTarefa(null);
     }
 
     /**

@@ -4,10 +4,10 @@ import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Itens;
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.entity.Usuario;
-import br.com.todolist.repository.EventoRepositoryImpl;
+import br.com.todolist.repository.EventoRepositoryPostgres;
 import br.com.todolist.repository.IEventoRepository;
 import br.com.todolist.repository.ITarefaRepository;
-import br.com.todolist.repository.TarefaRepositoryImpl;
+import br.com.todolist.repository.TarefaRepositoryPostgres;
 import br.com.todolist.service.IEventService;
 import br.com.todolist.service.impl.EventServiceImpl;
 import br.com.todolist.service.IReportService;
@@ -80,8 +80,8 @@ public class AppController {
     public boolean login(String email, String password) {
         usuarioLogado = userService.autenticarUsuario(email, password);
         if (usuarioLogado != null) {
-            ITarefaRepository tarefaRepository = new TarefaRepositoryImpl();
-            IEventoRepository eventoRepository = new EventoRepositoryImpl();
+            ITarefaRepository tarefaRepository = new TarefaRepositoryPostgres();
+            IEventoRepository eventoRepository = new EventoRepositoryPostgres();
             this.taskService = new TaskServiceImpl(tarefaRepository, usuarioLogado.getEmail());
             this.eventService = new EventServiceImpl(eventoRepository, usuarioLogado.getEmail());
             this.reportService = new ReportServiceImpl(taskService, mensageiro);
