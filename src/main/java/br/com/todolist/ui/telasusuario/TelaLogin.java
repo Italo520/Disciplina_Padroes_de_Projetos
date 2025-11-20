@@ -2,6 +2,7 @@ package br.com.todolist.ui.telasusuario;
 
 import br.com.todolist.controller.AuthController;
 import br.com.todolist.entity.Usuario;
+import br.com.todolist.exception.BusinessException;
 import br.com.todolist.service.SessionManager;
 import br.com.todolist.ui.telaPrincipal.TelaPrincipal;
 import javax.swing.*;
@@ -93,18 +94,17 @@ public class TelaLogin extends JFrame {
         String email = campoEmail.getText();
         String senha = new String(campoSenha.getPassword());
 
-        if (email.trim().isEmpty() || senha.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Email e senha são obrigatórios.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        Usuario usuario = authController.login(email, senha);
-        if (usuario != null) {
-            SessionManager.getInstance().login(usuario);
-            new TelaPrincipal().setVisible(true);
-            this.dispose();
-        } else {
-            JOptionPane.showMessageDialog(this, "Email ou senha incorretos.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+        try {
+            Usuario usuario = authController.login(email, senha);
+            if (usuario != null) {
+                SessionManager.getInstance().login(usuario);
+                new TelaPrincipal().setVisible(true);
+                this.dispose();
+            }
+        } catch (BusinessException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro de Login", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Ocorreu um erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 

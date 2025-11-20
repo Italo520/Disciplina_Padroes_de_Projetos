@@ -1,40 +1,160 @@
-# Relatório de Refatoração da Camada de Persistência
+# Documentação da Refatoração de Tratamento de Exceções
 
-## Objetivo
-Substituir a persistência baseada em arquivos JSON por um banco de dados relacional PostgreSQL, mantendo a integridade arquitetural, princípios SOLID e Clean Code.
+Este documento detalha as mudanças arquiteturais implementadas para tornar o sistema de tratamento de exceções robusto, seguindo os princípios SOLID e Clean Code.
 
-## Alterações Realizadas
+## 1. Nova Hierarquia de Exceções
 
-### 1. Introdução de Dependências
-Foram adicionadas as dependências do driver JDBC do PostgreSQL e do Hibernate Core (JPA) no `pom.xml`.
+Criamos um pacote `br.com.todolist.exception` para centralizar as exceções de negócio e de infraestrutura.
 
-### 2. Mapeamento Objeto-Relacional (ORM)
-As entidades de domínio foram anotadas com anotações JPA (`@Entity`, `@Table`, `@Id`, `@OneToMany`, `@ManyToOne`, etc.) para permitir o mapeamento automático para tabelas do banco de dados.
-- **Usuario**: Mapeado para a tabela `usuarios`. Chave primária: `email`.
-- **Itens**: Mapeado como `@MappedSuperclass` para compartilhar atributos comuns.
-- **Tarefa**: Mapeado para a tabela `tarefas`. Chave primária: `titulo`.
-- **Evento**: Mapeado para a tabela `eventos`. Chave primária: `titulo`.
-- **Subtarefa**: Promovida a entidade JPA, mapeada para a tabela `subtarefas` com chave primária autogerada (`id`) e relacionamento `@ManyToOne` com `Tarefa`.
+### BusinessException (Checked)
+Base para todas as exceções de regra de negócio. Força o tratamento nas camadas superiores (View/Controller).
 
-### 3. Conexão com o Banco de Dados
-Criada a classe `DatabaseConnection` seguindo o padrão **Singleton**. Isso garante uma única instância da `EntityManagerFactory` durante o ciclo de vida da aplicação, otimizando recursos.
+```java
+package br.com.todolist.exception;
 
-### 4. Implementação dos Repositórios (Repository Pattern)
-Novas classes foram criadas implementando as interfaces existentes (`IUserRepository`, `ITarefaRepository`, `IEventoRepository`):
-- `UserRepositoryPostgres`
-- `TarefaRepositoryPostgres`
-- `EventoRepositoryPostgres`
+public class BusinessException extends Exception {
+    public BusinessException(String message) {
+        super(message);
+    }
 
-Essas implementações utilizam o `EntityManager` para realizar operações CRUD, substituindo a manipulação de arquivos JSON. O princípio **Open/Closed (OCP)** foi respeitado, pois as novas funcionalidades foram adicionadas criando novas classes, sem modificar a lógica dos repositórios antigos (que poderiam ser mantidos se necessário).
+    public BusinessException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
+```
 
-### 5. Injeção de Dependência (DIP)
-A classe `Main` e o `AppController` foram ajustados para instanciar as implementações PostgreSQL (`...Postgres`) em vez das implementações JSON (`...Impl`). Isso demonstra o Princípio da Inversão de Dependência, onde os módulos de alto nível dependem de abstrações (interfaces), permitindo a troca da implementação de baixo nível (persistência) com facilidade.
+### DatabaseException (Unchecked)
+Encapsula erros técnicos de persistência (JPA/Hibernate), desacoplando a camada de serviço de detalhes de implementação do banco.
 
-### 6. Script SQL
-Um script `init.sql` foi gerado com o DDL necessário para criar as tabelas e restrições (chaves primárias e estrangeiras), garantindo a integridade referencial, especialmente entre `tarefas` e `subtarefas` (ON DELETE CASCADE).
+```java
+package br.com.todolist.exception;
 
-## Justificativas Arquiteturais
+public class DatabaseException extends RuntimeException {
+    public DatabaseException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    // ...
+}
+```
 
-- **JPA/Hibernate**: Escolhido pela robustez, facilidade de mapeamento e independência de banco de dados.
-- **Singleton**: Adequado para gerenciar objetos pesados e únicos como a fábrica de conexões do banco.
-- **Clean Code**: O código dos repositórios é focado apenas na persistência, delegando regras de negócio para os serviços (que não foram alterados).
+### UsuarioJaCadastradoException
+Exemplo de exceção específica de negócio.
+
+```java
+package br.com.todolist.exception;
+
+public class UsuarioJaCadastradoException extends BusinessException {
+    public UsuarioJaCadastradoException(String email) {
+        super("O e-mail '" + email + "' já está cadastrado no sistema.");
+    }
+}
+```
+
+---
+
+## 2. Refatoração da Camada de Repositório
+
+Removemos os `e.printStackTrace()` e passamos a capturar exceções do Hibernate, relançando-as como `DatabaseException`.
+
+**Exemplo: `UserRepositoryPostgres`**
+
+```java
+@Override
+public void salvar(Usuario entity) {
+    EntityManager em = DatabaseConnection.getInstance().getEntityManager();
+    try {
+        em.getTransaction().begin();
+        em.persist(entity);
+        em.getTransaction().commit();
+    } catch (Exception e) {
+        if (em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+        // Encapsula o erro original (ex: ConstraintViolationException)
+        throw new DatabaseException("Erro ao salvar usuário: " + e.getMessage(), e);
+    } finally {
+        em.close();
+    }
+}
+```
+
+---
+
+## 3. Refatoração da Camada de Serviço
+
+A camada de serviço agora traduz erros de infraestrutura em regras de negócio ou validações prévias.
+
+**Exemplo: `UserServiceImpl`**
+
+```java
+@Override
+public void criarNovoUsuario(String nome, String email, String password) throws BusinessException {
+    // 1. Validação de Negócio Prévia
+    if (userRepository.buscarPorEmail(email) != null) {
+        throw new UsuarioJaCadastradoException(email);
+    }
+
+    String senhaHasheada = hashSenha(password);
+    Usuario novoUsuario = new Usuario(nome, email, senhaHasheada);
+
+    try {
+        userRepository.salvar(novoUsuario);
+    } catch (DatabaseException e) {
+        // 2. Tradução de Erros Técnicos (caso a validação prévia falhe por concorrência)
+        if (e.getCause() != null && e.getCause().getMessage().contains("ConstraintViolation")) {
+            throw new UsuarioJaCadastradoException(email);
+        }
+        throw e; // Relança se for outro erro técnico
+    }
+}
+```
+
+---
+
+## 4. Refatoração de Controller e View
+
+Os Controllers propagam as exceções de negócio, e as Views (Telas) são responsáveis por capturá-las e exibir mensagens amigáveis.
+
+**Exemplo: `AuthController`**
+
+```java
+public void cadastrarUsuario(String nome, String email, String password) throws BusinessException {
+    userService.criarNovoUsuario(nome, email, password);
+}
+```
+
+**Exemplo: `TelaCadastro` (View)**
+
+```java
+private void realizarCadastro() {
+    try {
+        authController.cadastrarUsuario(nome, email, senha);
+        JOptionPane.showMessageDialog(this, "Sucesso!", "Cadastro", JOptionPane.INFORMATION_MESSAGE);
+        dispose();
+    } catch (BusinessException e) {
+        // Captura exceção de negócio e exibe mensagem limpa
+        JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+    } catch (Exception e) {
+        // Captura erros inesperados
+        JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+}
+```
+
+---
+
+## 5. Princípios SOLID Aplicados
+
+### Single Responsibility Principle (SRP)
+*   **Exceptions:** Classes de exceção apenas definem o tipo do erro.
+*   **Repository:** Foca apenas em acesso a dados e captura de erros técnicos.
+*   **Service:** Foca em regras de negócio e orquestração.
+*   **View:** Foca na exibição (incluindo erros). O Controller não decide COMO mostrar o erro, apenas repassa.
+
+### Open/Closed Principle (OCP)
+*   Novas exceções de negócio podem ser criadas estendendo `BusinessException` sem alterar o código existente que captura `BusinessException` genericamente (se desejado) ou permitindo novos blocos `catch` específicos sem quebrar a lógica de fluxo.
+*   A mudança para PostgreSQL foi feita criando novas implementações de Repositório (`UserRepositoryPostgres`) sem alterar as interfaces (`IUserRepository`), permitindo a substituição fácil via injeção de dependência (Manual DI neste caso).
+
+### Dependency Inversion Principle (DIP)
+*   Os Serviços dependem de abstrações (`IUserRepository`), não de implementações concretas.
+*   As exceções lançadas pelos repositórios (`DatabaseException`) são desacopladas da tecnologia específica (Hibernate/SQL), permitindo que o Serviço trate erros de persistência de forma agnóstica.

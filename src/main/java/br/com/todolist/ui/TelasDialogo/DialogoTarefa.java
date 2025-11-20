@@ -2,6 +2,7 @@ package br.com.todolist.ui.TelasDialogo;
 
 import br.com.todolist.controller.TaskController;
 import br.com.todolist.entity.Tarefa;
+import br.com.todolist.exception.BusinessException;
 import br.com.todolist.service.SessionManager;
 import javax.swing.*;
 import java.awt.*;
@@ -174,6 +175,10 @@ public class DialogoTarefa extends JDialog {
 
         } catch (DateTimeParseException e) {
             JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+        } catch (BusinessException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
     

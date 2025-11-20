@@ -1,9 +1,9 @@
 package br.com.todolist.controller;
 
 import br.com.todolist.entity.Evento;
-import br.com.todolist.entity.Itens;
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.entity.Usuario;
+import br.com.todolist.exception.BusinessException;
 import br.com.todolist.repository.EventoRepositoryPostgres;
 import br.com.todolist.repository.IEventoRepository;
 import br.com.todolist.repository.ITarefaRepository;
@@ -78,14 +78,18 @@ public class AppController {
      * @return true se o login for bem-sucedido, false caso contrário.
      */
     public boolean login(String email, String password) {
-        usuarioLogado = userService.autenticarUsuario(email, password);
-        if (usuarioLogado != null) {
-            ITarefaRepository tarefaRepository = new TarefaRepositoryPostgres();
-            IEventoRepository eventoRepository = new EventoRepositoryPostgres();
-            this.taskService = new TaskServiceImpl(tarefaRepository, usuarioLogado.getEmail());
-            this.eventService = new EventServiceImpl(eventoRepository, usuarioLogado.getEmail());
-            this.reportService = new ReportServiceImpl(taskService, mensageiro);
-            return true;
+        try {
+            usuarioLogado = userService.autenticarUsuario(email, password);
+            if (usuarioLogado != null) {
+                ITarefaRepository tarefaRepository = new TarefaRepositoryPostgres();
+                IEventoRepository eventoRepository = new EventoRepositoryPostgres();
+                this.taskService = new TaskServiceImpl(tarefaRepository, usuarioLogado.getEmail());
+                this.eventService = new EventServiceImpl(eventoRepository, usuarioLogado.getEmail());
+                this.reportService = new ReportServiceImpl(taskService, mensageiro);
+                return true;
+            }
+        } catch (BusinessException e) {
+            // Log or handle? Returning false as per original signature contract
         }
         return false;
     }
@@ -96,10 +100,10 @@ public class AppController {
      * @param nome     O nome do usuário.
      * @param email    O e-mail do usuário.
      * @param password A senha do usuário.
-     * @return true se o cadastro for realizado com sucesso, false caso contrário.
+     * @throws BusinessException se houver erro no cadastro.
      */
-    public boolean cadastrarUsuario(String nome, String email, String password) {
-        return userService.criarNovoUsuario(nome, email, password);
+    public void cadastrarUsuario(String nome, String email, String password) throws BusinessException {
+        userService.criarNovoUsuario(nome, email, password);
     }
 
     /**
@@ -109,8 +113,9 @@ public class AppController {
      * @param descricao  A descrição da tarefa.
      * @param deadline   O prazo da tarefa.
      * @param prioridade A prioridade da tarefa.
+     * @throws BusinessException se houver erro no cadastro.
      */
-    public void cadastrarTarefa(String titulo, String descricao, LocalDate deadline, int prioridade) {
+    public void cadastrarTarefa(String titulo, String descricao, LocalDate deadline, int prioridade) throws BusinessException {
         Tarefa novaTarefa = itemFactory.criarTarefa(titulo, descricao, usuarioLogado.getEmail(), deadline, prioridade);
         taskService.cadastrarTarefa(novaTarefa);
     }
@@ -128,8 +133,9 @@ public class AppController {
      * Exclui uma tarefa do usuário logado.
      *
      * @param tarefa A tarefa a ser excluída.
+     * @throws BusinessException se houver erro na exclusão.
      */
-    public void excluirTarefa(Tarefa tarefa) {
+    public void excluirTarefa(Tarefa tarefa) throws BusinessException {
         taskService.excluirTarefa(tarefa);
     }
 
@@ -141,8 +147,9 @@ public class AppController {
      * @param novaDescricao  A nova descrição.
      * @param novoDeadline   O novo prazo.
      * @param novaPrioridade A nova prioridade.
+     * @throws BusinessException se houver erro na edição.
      */
-    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) {
+    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) throws BusinessException {
         taskService.editarTarefa(tarefaOriginal, novoTitulo, novaDescricao, novoDeadline, novaPrioridade);
     }
 
@@ -150,8 +157,9 @@ public class AppController {
      * Atualiza uma tarefa (ex: marca como concluída).
      *
      * @param tarefa A tarefa a ser atualizada.
+     * @throws BusinessException se houver erro na atualização.
      */
-    public void atualizarTarefa(Tarefa tarefa) {
+    public void atualizarTarefa(Tarefa tarefa) throws BusinessException {
         taskService.atualizarTarefa(tarefa);
     }
 
@@ -180,11 +188,11 @@ public class AppController {
      * @param titulo    O título do evento.
      * @param descricao A descrição do evento.
      * @param deadline  A data do evento.
-     * @return true se o evento foi cadastrado com sucesso, false caso contrário.
+     * @throws BusinessException se houver erro no cadastro.
      */
-    public boolean cadastrarEvento(String titulo, String descricao, LocalDate deadline) {
+    public void cadastrarEvento(String titulo, String descricao, LocalDate deadline) throws BusinessException {
         Evento novoEvento = itemFactory.criarEvento(titulo, descricao, usuarioLogado.getEmail(), deadline);
-        return eventService.cadastrarEvento(novoEvento);
+        eventService.cadastrarEvento(novoEvento);
     }
 
     /**
@@ -200,8 +208,9 @@ public class AppController {
      * Exclui um evento.
      *
      * @param evento O evento a ser excluído.
+     * @throws BusinessException se houver erro na exclusão.
      */
-    public void excluirEvento(Evento evento) {
+    public void excluirEvento(Evento evento) throws BusinessException {
         eventService.excluirEvento(evento);
     }
 
@@ -212,8 +221,9 @@ public class AppController {
      * @param novoTitulo     O novo título.
      * @param novaDescricao  A nova descrição.
      * @param novoDeadline   A nova data.
+     * @throws BusinessException se houver erro na edição.
      */
-    public void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline) {
+    public void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline) throws BusinessException {
         eventService.editarEvento(eventoOriginal, novoTitulo, novaDescricao, novoDeadline);
     }
 

@@ -1,6 +1,7 @@
 package br.com.todolist.repository;
 
 import br.com.todolist.entity.Evento;
+import br.com.todolist.exception.DatabaseException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
@@ -21,7 +22,7 @@ public class EventoRepositoryPostgres implements IEventoRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
+            throw new DatabaseException("Erro ao salvar evento: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -41,7 +42,7 @@ public class EventoRepositoryPostgres implements IEventoRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
+            throw new DatabaseException("Erro ao excluir evento: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -58,7 +59,7 @@ public class EventoRepositoryPostgres implements IEventoRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
+            throw new DatabaseException("Erro ao atualizar evento: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -69,6 +70,8 @@ public class EventoRepositoryPostgres implements IEventoRepository {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             return em.find(Evento.class, id);
+        } catch (Exception e) {
+            throw new DatabaseException("Erro ao buscar evento por ID: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -80,6 +83,8 @@ public class EventoRepositoryPostgres implements IEventoRepository {
         try {
             TypedQuery<Evento> query = em.createQuery("SELECT e FROM Evento e", Evento.class);
             return query.getResultList();
+        } catch (Exception e) {
+            throw new DatabaseException("Erro ao buscar todos os eventos: " + e.getMessage(), e);
         } finally {
             em.close();
         }

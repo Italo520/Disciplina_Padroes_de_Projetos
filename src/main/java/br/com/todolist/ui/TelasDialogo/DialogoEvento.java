@@ -1,8 +1,8 @@
-// Em: src/main/java/br/com/todolist/ui/TelasDialogo/DialogoEvento.java
 package br.com.todolist.ui.TelasDialogo;
 
 import br.com.todolist.controller.EventController;
 import br.com.todolist.entity.Evento;
+import br.com.todolist.exception.BusinessException;
 import br.com.todolist.service.SessionManager;
 
 import javax.swing.*;
@@ -153,13 +153,7 @@ public class DialogoEvento extends JDialog {
             if (this.evento == null) {
                 String user = SessionManager.getInstance().getUsuarioLogado().getEmail();
                 Evento novoEvento = new Evento(titulo, descricao, user, deadline);
-                boolean sucesso = eventController.cadastrarEvento(novoEvento);
-                if (!sucesso) {
-                    JOptionPane.showMessageDialog(this,
-                            "Não foi possível cadastrar o evento.\nVerifique se já não existe um evento com a mesma data para o seu usuário.",
-                            "Erro ao Cadastrar", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
+                eventController.cadastrarEvento(novoEvento);
             } else {
                 eventController.editarEvento(this.evento, titulo, descricao, deadline);
             }
@@ -167,8 +161,10 @@ public class DialogoEvento extends JDialog {
             this.salvo = true;
             dispose();
 
+        } catch (BusinessException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Erro ao Salvar", JOptionPane.WARNING_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Ocorreu um erro ao salvar o evento:\n" + e.getMessage(), "Erro",
+            JOptionPane.showMessageDialog(this, "Ocorreu um erro inesperado: " + e.getMessage(), "Erro",
                     JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }

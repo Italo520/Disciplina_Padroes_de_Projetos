@@ -2,6 +2,7 @@ package br.com.todolist.ui.telaPrincipal;
 
 import br.com.todolist.controller.EventController;
 import br.com.todolist.entity.Evento;
+import br.com.todolist.exception.BusinessException;
 import br.com.todolist.ui.TelasDialogo.DialogoEvento;
 
 import javax.swing.*;
@@ -144,8 +145,12 @@ public class PainelEventos extends PainelBase {
      */
     private void popularListaEventos() {
         modeloListaEventos.clear();
-        for (Evento evento : this.eventController.listarTodosEventos()) {
-            modeloListaEventos.addElement(evento);
+        try {
+            for (Evento evento : this.eventController.listarTodosEventos()) {
+                modeloListaEventos.addElement(evento);
+            }
+        } catch (Exception e) {
+             JOptionPane.showMessageDialog(this, "Erro ao listar eventos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
         atualizarDetalhesEvento(null);
     }
@@ -217,8 +222,14 @@ public class PainelEventos extends PainelBase {
                     "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
 
             if (confirmacao == JOptionPane.YES_OPTION) {
-                eventController.excluirEvento(eventoSelecionado);
-                popularListaEventos();
+                try {
+                    eventController.excluirEvento(eventoSelecionado);
+                    popularListaEventos();
+                } catch (BusinessException ex) {
+                     JOptionPane.showMessageDialog(PainelEventos.this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                } catch (Exception ex) {
+                     JOptionPane.showMessageDialog(PainelEventos.this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }

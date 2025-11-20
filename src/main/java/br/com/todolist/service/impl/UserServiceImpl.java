@@ -1,6 +1,10 @@
 package br.com.todolist.service.impl;
 
 import br.com.todolist.entity.Usuario;
+import br.com.todolist.exception.BusinessException;
+import br.com.todolist.exception.DadosInvalidosException;
+import br.com.todolist.exception.DatabaseException;
+import br.com.todolist.exception.UsuarioJaCadastradoException;
 import br.com.todolist.repository.IUserRepository;
 import br.com.todolist.service.IUserService;
 import org.mindrot.jbcrypt.BCrypt;
@@ -51,17 +55,33 @@ public class UserServiceImpl implements IUserService {
      * @param nome     O nome do usuário.
      * @param email    O e-mail do usuário.
      * @param password A senha do usuário (será hasheada antes de salvar).
-     * @return true se o usuário foi criado com sucesso, false se o e-mail já estiver em uso.
+     * @throws UsuarioJaCadastradoException se o e-mail já estiver em uso.
+     * @throws BusinessException se houver erro na validação.
      */
     @Override
-    public boolean criarNovoUsuario(String nome, String email, String password) {
-        if (userRepository.buscarPorEmail(email) != null) {
-            return false;
+    public void criarNovoUsuario(String nome, String email, String password) throws BusinessException {
+        if (nome == null || nome.trim().isEmpty() || email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            throw new DadosInvalidosException("Nome, e-mail e senha são obrigatórios.");
         }
+
+        // Validação prévia
+        if (userRepository.buscarPorEmail(email) != null) {
+            throw new UsuarioJaCadastradoException(email);
+        }
+
         String senhaHasheada = hashSenha(password);
         Usuario novoUsuario = new Usuario(nome, email, senhaHasheada);
-        userRepository.salvar(novoUsuario);
-        return true;
+
+        try {
+            userRepository.salvar(novoUsuario);
+        } catch (DatabaseException e) {
+            // Tradução de erro de banco para erro de negócio (ex: concorrência)
+            Throwable cause = e.getCause();
+            if (cause != null && cause.getMessage() != null && cause.getMessage().contains("ConstraintViolation")) {
+                throw new UsuarioJaCadastradoException(email);
+            }
+            throw e; // Relança erro de banco se não for conhecido
+        }
     }
 
     /**
@@ -69,15 +89,20 @@ public class UserServiceImpl implements IUserService {
      *
      * @param email    O e-mail do usuário.
      * @param password A senha fornecida.
-     * @return O objeto Usuario se a autenticação for bem-sucedida, ou null caso contrário.
+     * @return O objeto Usuario se a autenticação for bem-sucedida.
+     * @throws BusinessException se o usuário não for encontrado ou a senha estiver incorreta.
      */
     @Override
-    public Usuario autenticarUsuario(String email, String password) {
+    public Usuario autenticarUsuario(String email, String password) throws BusinessException {
+        if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            throw new DadosInvalidosException("E-mail e senha são obrigatórios.");
+        }
+
         Usuario usuario = userRepository.buscarPorEmail(email);
         if (usuario != null && verificarSenha(password, usuario.getPassword())) {
             return usuario;
         }
-        return null;
+        throw new BusinessException("Usuário ou senha inválidos.");
     }
 
     /**

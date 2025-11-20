@@ -1,6 +1,7 @@
 package br.com.todolist.repository;
 
 import br.com.todolist.entity.Tarefa;
+import br.com.todolist.exception.DatabaseException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
@@ -15,17 +16,13 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             em.getTransaction().begin();
-            // Verifica se já existe para evitar erro de chave duplicada, ou usa merge se for intenção de "saveOrUpdate"
-            // Mas o contrato de persistência geralmente separa salvar (novo) de atualizar.
-            // Como o ID é atribuído manualmente (título), persist pode falhar se já existir.
-            // Vamos tentar persist, se falhar, é erro de regra de negócio (título duplicado).
             em.persist(entity);
             em.getTransaction().commit();
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
+            throw new DatabaseException("Erro ao salvar tarefa: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -36,7 +33,6 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             em.getTransaction().begin();
-            // É preciso carregar a entidade no contexto antes de remover, ou usar referência
             Tarefa tarefaParaRemover = em.find(Tarefa.class, entity.getTitulo());
             if (tarefaParaRemover != null) {
                 em.remove(tarefaParaRemover);
@@ -46,7 +42,7 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
+            throw new DatabaseException("Erro ao excluir tarefa: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -63,7 +59,7 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
+            throw new DatabaseException("Erro ao atualizar tarefa: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -74,6 +70,8 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             return em.find(Tarefa.class, id);
+        } catch (Exception e) {
+            throw new DatabaseException("Erro ao buscar tarefa por ID: " + e.getMessage(), e);
         } finally {
             em.close();
         }
@@ -85,6 +83,8 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
         try {
             TypedQuery<Tarefa> query = em.createQuery("SELECT t FROM Tarefa t", Tarefa.class);
             return query.getResultList();
+        } catch (Exception e) {
+            throw new DatabaseException("Erro ao buscar todas as tarefas: " + e.getMessage(), e);
         } finally {
             em.close();
         }

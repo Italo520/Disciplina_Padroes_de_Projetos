@@ -1,6 +1,7 @@
 package br.com.todolist.service;
 
 import br.com.todolist.entity.Evento;
+import br.com.todolist.exception.BusinessException;
 import br.com.todolist.service.util.ISubject;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -16,16 +17,17 @@ public interface IEventService extends ISubject<Evento> {
      * Cadastra um novo evento.
      *
      * @param evento o evento a ser cadastrado.
-     * @return true se o evento foi cadastrado com sucesso, false caso contrário.
+     * @throws BusinessException se o evento for inválido ou houver conflito de datas.
      */
-    boolean cadastrarEvento(Evento evento);
+    void cadastrarEvento(Evento evento) throws BusinessException;
 
     /**
      * Exclui um evento.
      *
      * @param evento o evento a ser excluído.
+     * @throws BusinessException se ocorrer erro ao excluir.
      */
-    void excluirEvento(Evento evento);
+    void excluirEvento(Evento evento) throws BusinessException;
 
     /**
      * Edita um evento.
@@ -34,8 +36,9 @@ public interface IEventService extends ISubject<Evento> {
      * @param novoTitulo o novo título do evento.
      * @param novaDescricao a nova descrição do evento.
      * @param novoDeadline o novo prazo do evento.
+     * @throws BusinessException se ocorrer erro ao editar.
      */
-    void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline);
+    void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline) throws BusinessException;
 
     /**
      * Lista todos os eventos.

@@ -1,6 +1,9 @@
 package br.com.todolist.service.impl;
 
 import br.com.todolist.entity.Tarefa;
+import br.com.todolist.exception.BusinessException;
+import br.com.todolist.exception.DadosInvalidosException;
+import br.com.todolist.exception.DatabaseException;
 import br.com.todolist.repository.ITarefaRepository;
 import br.com.todolist.service.util.IObserver;
 import br.com.todolist.service.ITaskService;
@@ -38,11 +41,19 @@ public class TaskServiceImpl implements ITaskService {
      * Notifica os observadores após o cadastro.
      *
      * @param tarefa A tarefa a ser cadastrada.
+     * @throws BusinessException se houver erro na validação ou persistência.
      */
     @Override
-    public void cadastrarTarefa(Tarefa tarefa) {
-        tarefaRepository.salvar(tarefa);
-        notifyObservers(tarefa);
+    public void cadastrarTarefa(Tarefa tarefa) throws BusinessException {
+        if (tarefa == null) {
+            throw new DadosInvalidosException("Tarefa não pode ser nula.");
+        }
+        try {
+            tarefaRepository.salvar(tarefa);
+            notifyObservers(tarefa);
+        } catch (DatabaseException e) {
+            throw new BusinessException("Erro ao salvar tarefa.", e);
+        }
     }
 
     /**
@@ -50,12 +61,19 @@ public class TaskServiceImpl implements ITaskService {
      * Notifica os observadores após a exclusão.
      *
      * @param tarefa A tarefa a ser excluída.
+     * @throws BusinessException se a tarefa não pertencer ao usuário ou houver erro.
      */
     @Override
-    public void excluirTarefa(Tarefa tarefa) {
+    public void excluirTarefa(Tarefa tarefa) throws BusinessException {
         if (tarefa.getCriado_por().equals(emailUsuario)) {
-            tarefaRepository.excluir(tarefa);
-            notifyObservers(tarefa);
+            try {
+                tarefaRepository.excluir(tarefa);
+                notifyObservers(tarefa);
+            } catch (DatabaseException e) {
+                throw new BusinessException("Erro ao excluir tarefa.", e);
+            }
+        } else {
+            throw new DadosInvalidosException("Tarefa não pertence ao usuário logado.");
         }
     }
 
@@ -67,16 +85,23 @@ public class TaskServiceImpl implements ITaskService {
      * @param novaDescricao  A nova descrição.
      * @param novoDeadline   O novo prazo.
      * @param novaPrioridade A nova prioridade.
+     * @throws BusinessException se houver erro ao editar.
      */
     @Override
-    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) {
+    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) throws BusinessException {
         if (tarefaOriginal.getCriado_por().equals(emailUsuario)) {
             tarefaOriginal.setTitulo(novoTitulo);
             tarefaOriginal.setDescricao(novaDescricao);
             tarefaOriginal.setDeadLine(novoDeadline);
             tarefaOriginal.setPrioridade(novaPrioridade);
-            tarefaRepository.atualizar(tarefaOriginal);
-            notifyObservers(tarefaOriginal);
+            try {
+                tarefaRepository.atualizar(tarefaOriginal);
+                notifyObservers(tarefaOriginal);
+            } catch (DatabaseException e) {
+                throw new BusinessException("Erro ao atualizar tarefa.", e);
+            }
+        } else {
+            throw new DadosInvalidosException("Tarefa não pertence ao usuário logado.");
         }
     }
 
@@ -84,12 +109,19 @@ public class TaskServiceImpl implements ITaskService {
      * Atualiza o estado de uma tarefa (ex: conclusão, subtarefas).
      *
      * @param tarefa A tarefa com os dados atualizados.
+     * @throws BusinessException se houver erro ao atualizar.
      */
     @Override
-    public void atualizarTarefa(Tarefa tarefa) {
+    public void atualizarTarefa(Tarefa tarefa) throws BusinessException {
         if (tarefa.getCriado_por().equals(emailUsuario)) {
-            tarefaRepository.atualizar(tarefa);
-            notifyObservers(tarefa);
+            try {
+                tarefaRepository.atualizar(tarefa);
+                notifyObservers(tarefa);
+            } catch (DatabaseException e) {
+                throw new BusinessException("Erro ao atualizar tarefa.", e);
+            }
+        } else {
+             throw new DadosInvalidosException("Tarefa não pertence ao usuário logado.");
         }
     }
 
@@ -100,6 +132,8 @@ public class TaskServiceImpl implements ITaskService {
      */
     @Override
     public List<Tarefa> listarTodasTarefas() {
+        // DatabaseException pode ocorrer, mas o contrato não prevê checked exception para leitura aqui.
+        // Se falhar, propagará RuntimeException (DatabaseException), o que é aceitável.
         return tarefaRepository.buscarTodos().stream()
                 .filter(tarefa -> tarefa.getCriado_por().equals(emailUsuario))
                 .collect(Collectors.toList());
