@@ -1,4 +1,5 @@
-package br.com.todolist.repository;
+package br.com.todolist.repository.json;
+import br.com.todolist.repository.IUserRepository;
 
 import br.com.todolist.entity.Usuario;
 import com.fasterxml.jackson.core.type.TypeReference;

@@ -1,9 +1,9 @@
-package br.com.todolist.ui.telaPrincipal;
+package br.com.todolist.ui.main;
 
 import br.com.todolist.controller.EventController;
 import br.com.todolist.entity.Evento;
 import br.com.todolist.exception.BusinessException;
-import br.com.todolist.ui.TelasDialogo.DialogoEvento;
+import br.com.todolist.ui.dialogs.DialogoEvento;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

@@ -1,4 +1,4 @@
-package br.com.todolist.ui.telaPrincipal;
+package br.com.todolist.ui.main;
 
 import java.awt.Dimension;
 import javax.swing.JPanel;

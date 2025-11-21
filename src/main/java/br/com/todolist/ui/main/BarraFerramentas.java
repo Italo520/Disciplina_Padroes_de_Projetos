@@ -1,4 +1,4 @@
-package br.com.todolist.ui.telaPrincipal;
+package br.com.todolist.ui.main;
 
 import br.com.todolist.controller.AppController;
 import br.com.todolist.controller.EventController;

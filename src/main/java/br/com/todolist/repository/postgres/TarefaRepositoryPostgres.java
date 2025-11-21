@@ -1,18 +1,19 @@
-package br.com.todolist.repository;
+package br.com.todolist.repository.postgres;
+import br.com.todolist.repository.ITarefaRepository;
 
-import br.com.todolist.entity.Usuario;
+import br.com.todolist.entity.Tarefa;
 import br.com.todolist.exception.DatabaseException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
 /**
- * Implementação do repositório de usuários utilizando PostgreSQL e JPA.
+ * Implementação do repositório de tarefas utilizando PostgreSQL e JPA.
  */
-public class UserRepositoryPostgres implements IUserRepository {
+public class TarefaRepositoryPostgres implements ITarefaRepository {
 
     @Override
-    public void salvar(Usuario entity) {
+    public void salvar(Tarefa entity) {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             em.getTransaction().begin();
@@ -22,34 +23,34 @@ public class UserRepositoryPostgres implements IUserRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new DatabaseException("Erro ao salvar usuário: " + e.getMessage(), e);
+            throw new DatabaseException("Erro ao salvar tarefa: " + e.getMessage(), e);
         } finally {
             em.close();
         }
     }
 
     @Override
-    public void excluir(Usuario entity) {
+    public void excluir(Tarefa entity) {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             em.getTransaction().begin();
-            Usuario usuarioParaRemover = em.find(Usuario.class, entity.getEmail());
-            if (usuarioParaRemover != null) {
-                em.remove(usuarioParaRemover);
+            Tarefa tarefaParaRemover = em.find(Tarefa.class, entity.getTitulo());
+            if (tarefaParaRemover != null) {
+                em.remove(tarefaParaRemover);
             }
             em.getTransaction().commit();
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new DatabaseException("Erro ao excluir usuário: " + e.getMessage(), e);
+            throw new DatabaseException("Erro ao excluir tarefa: " + e.getMessage(), e);
         } finally {
             em.close();
         }
     }
 
     @Override
-    public void atualizar(Usuario entity) {
+    public void atualizar(Tarefa entity) {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             em.getTransaction().begin();
@@ -59,39 +60,34 @@ public class UserRepositoryPostgres implements IUserRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new DatabaseException("Erro ao atualizar usuário: " + e.getMessage(), e);
+            throw new DatabaseException("Erro ao atualizar tarefa: " + e.getMessage(), e);
         } finally {
             em.close();
         }
     }
 
     @Override
-    public Usuario buscarPorId(String id) {
+    public Tarefa buscarPorId(String id) {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
-            return em.find(Usuario.class, id);
+            return em.find(Tarefa.class, id);
         } catch (Exception e) {
-            throw new DatabaseException("Erro ao buscar usuário por ID: " + e.getMessage(), e);
+            throw new DatabaseException("Erro ao buscar tarefa por ID: " + e.getMessage(), e);
         } finally {
             em.close();
         }
     }
 
     @Override
-    public List<Usuario> buscarTodos() {
+    public List<Tarefa> buscarTodos() {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
-            TypedQuery<Usuario> query = em.createQuery("SELECT u FROM Usuario u", Usuario.class);
+            TypedQuery<Tarefa> query = em.createQuery("SELECT t FROM Tarefa t", Tarefa.class);
             return query.getResultList();
         } catch (Exception e) {
-            throw new DatabaseException("Erro ao buscar todos os usuários: " + e.getMessage(), e);
+            throw new DatabaseException("Erro ao buscar todas as tarefas: " + e.getMessage(), e);
         } finally {
             em.close();
         }
-    }
-
-    @Override
-    public Usuario buscarPorEmail(String email) {
-        return buscarPorId(email);
     }
 }

@@ -1,4 +1,4 @@
-package br.com.todolist.ui.telasusuario;
+package br.com.todolist.ui.auth;
 
 import br.com.todolist.controller.AuthController;
 import br.com.todolist.exception.BusinessException;
