@@ -1,4 +1,5 @@
-package br.com.todolist.repository;
+package br.com.todolist.repository.json;
+import br.com.todolist.repository.IEventoRepository;
 
 import br.com.todolist.entity.DadosUsuario;
 import br.com.todolist.entity.Evento;

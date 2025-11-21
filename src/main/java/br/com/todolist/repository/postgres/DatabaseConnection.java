@@ -1,4 +1,4 @@
-package br.com.todolist.repository;
+package br.com.todolist.repository.postgres;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;

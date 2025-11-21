@@ -1,10 +1,10 @@
-package br.com.todolist.ui.telasusuario;
+package br.com.todolist.ui.auth;
 
 import br.com.todolist.controller.AuthController;
 import br.com.todolist.entity.Usuario;
 import br.com.todolist.exception.BusinessException;
 import br.com.todolist.service.SessionManager;
-import br.com.todolist.ui.telaPrincipal.TelaPrincipal;
+import br.com.todolist.ui.main.TelaPrincipal;
 import javax.swing.*;
 
 /**

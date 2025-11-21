@@ -1,5 +1,6 @@
 package br.com.todolist.repository.cache;
 
+import br.com.todolist.log.LogService;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -13,13 +14,16 @@ public class RedisCacheManager {
     private static RedisCacheManager instance;
     private final JedisPool jedisPool;
 
+    private static final String REDIS_HOST = "localhost";
+    private static final int REDIS_PORT = 6379;
+
     /**
      * Construtor privado. Inicializa o pool de conexões com o Redis.
      * Assume localhost e porta padrão 6379.
      */
     private RedisCacheManager() {
         // Configuração simples para localhost
-        this.jedisPool = new JedisPool("localhost", 6379);
+        this.jedisPool = new JedisPool(REDIS_HOST, REDIS_PORT);
     }
 
     /**
@@ -45,7 +49,7 @@ public class RedisCacheManager {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.setex(key, ttlSeconds, jsonValue);
         } catch (Exception e) {
-            System.err.println("Erro ao salvar no cache Redis: " + e.getMessage());
+            LogService.getInstance().logError(e);
         }
     }
 
@@ -59,7 +63,7 @@ public class RedisCacheManager {
         try (Jedis jedis = jedisPool.getResource()) {
             return jedis.get(key);
         } catch (Exception e) {
-            System.err.println("Erro ao buscar no cache Redis: " + e.getMessage());
+            LogService.getInstance().logError(e);
             return null;
         }
     }
@@ -73,7 +77,7 @@ public class RedisCacheManager {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.del(key);
         } catch (Exception e) {
-            System.err.println("Erro ao remover no cache Redis: " + e.getMessage());
+            LogService.getInstance().logError(e);
         }
     }
 }

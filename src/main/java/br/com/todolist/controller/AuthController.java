@@ -3,7 +3,7 @@ package br.com.todolist.controller;
 import br.com.todolist.entity.Usuario;
 import br.com.todolist.exception.BusinessException;
 import br.com.todolist.repository.IUserRepository;
-import br.com.todolist.repository.UserRepositoryPostgres;
+import br.com.todolist.repository.postgres.UserRepositoryPostgres;
 import br.com.todolist.service.IUserService;
 import br.com.todolist.service.impl.UserServiceImpl;
 

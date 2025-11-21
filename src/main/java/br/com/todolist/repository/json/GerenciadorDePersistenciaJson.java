@@ -1,4 +1,4 @@
-package br.com.todolist.repository;
+package br.com.todolist.repository.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

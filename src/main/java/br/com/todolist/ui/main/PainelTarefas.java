@@ -1,10 +1,10 @@
-package br.com.todolist.ui.telaPrincipal;
+package br.com.todolist.ui.main;
 
 import br.com.todolist.controller.TaskController;
 import br.com.todolist.entity.Subtarefa;
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.exception.BusinessException;
-import br.com.todolist.ui.TelasDialogo.DialogoTarefa;
+import br.com.todolist.ui.dialogs.DialogoTarefa;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

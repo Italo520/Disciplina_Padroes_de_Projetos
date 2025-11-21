@@ -1,4 +1,4 @@
-package br.com.todolist.ui.TelasDialogo;
+package br.com.todolist.ui.dialogs;
 
 import br.com.todolist.controller.TaskController;
 import br.com.todolist.entity.Tarefa;

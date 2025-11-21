@@ -8,10 +8,10 @@ import br.com.todolist.log.EventAuditObserver;
 import br.com.todolist.log.ILogRepository;
 import br.com.todolist.log.LogService;
 import br.com.todolist.log.TaskAuditObserver;
-import br.com.todolist.repository.EventoRepositoryPostgres;
+import br.com.todolist.repository.postgres.EventoRepositoryPostgres;
 import br.com.todolist.repository.IEventoRepository;
 import br.com.todolist.repository.ITarefaRepository;
-import br.com.todolist.repository.TarefaRepositoryPostgres;
+import br.com.todolist.repository.postgres.TarefaRepositoryPostgres;
 import br.com.todolist.repository.cache.CachedEventoRepository;
 import br.com.todolist.repository.cache.CachedTarefaRepository;
 import br.com.todolist.service.IEventService;
@@ -87,24 +87,28 @@ public class AppController {
         try {
             usuarioLogado = userService.autenticarUsuario(email, password);
             if (usuarioLogado != null) {
-                ITarefaRepository tarefaRepository = new CachedTarefaRepository(new TarefaRepositoryPostgres());
-                IEventoRepository eventoRepository = new CachedEventoRepository(new EventoRepositoryPostgres());
-
-                this.taskService = new TaskServiceImpl(tarefaRepository, usuarioLogado.getEmail());
-                this.eventService = new EventServiceImpl(eventoRepository, usuarioLogado.getEmail());
-
-                // Configuração de Auditoria (Log)
-                ILogRepository logRepository = LogService.getInstance().getRepository();
-                this.taskService.addObserver(new TaskAuditObserver(logRepository));
-                this.eventService.addObserver(new EventAuditObserver(logRepository));
-
-                this.reportService = new ReportServiceImpl(taskService, mensageiro);
+                configurarRepositorios(usuarioLogado);
                 return true;
             }
         } catch (BusinessException e) {
             // Log or handle? Returning false as per original signature contract
         }
         return false;
+    }
+
+    private void configurarRepositorios(Usuario usuario) {
+        ITarefaRepository tarefaRepository = new CachedTarefaRepository(new TarefaRepositoryPostgres());
+        IEventoRepository eventoRepository = new CachedEventoRepository(new EventoRepositoryPostgres());
+
+        this.taskService = new TaskServiceImpl(tarefaRepository, usuario.getEmail());
+        this.eventService = new EventServiceImpl(eventoRepository, usuario.getEmail());
+
+        // Configuração de Auditoria (Log)
+        ILogRepository logRepository = LogService.getInstance().getRepository();
+        this.taskService.addObserver(new TaskAuditObserver(logRepository));
+        this.eventService.addObserver(new EventAuditObserver(logRepository));
+
+        this.reportService = new ReportServiceImpl(taskService, mensageiro);
     }
 
     /**

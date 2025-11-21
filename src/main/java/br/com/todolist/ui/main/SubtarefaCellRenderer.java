@@ -1,4 +1,4 @@
-package br.com.todolist.ui.telaPrincipal;
+package br.com.todolist.ui.main;
 
 import br.com.todolist.entity.Subtarefa;
 import java.awt.BorderLayout;
