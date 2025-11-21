@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Classe que representa uma subtarefa associada a uma tarefa principal.
@@ -25,6 +26,7 @@ public class Subtarefa {
 
     @ManyToOne
     @JoinColumn(name = "tarefa_titulo")
+    @JsonIgnore
     private Tarefa tarefa;
 
     /**

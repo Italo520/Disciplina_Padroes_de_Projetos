@@ -12,6 +12,8 @@ import br.com.todolist.repository.EventoRepositoryPostgres;
 import br.com.todolist.repository.IEventoRepository;
 import br.com.todolist.repository.ITarefaRepository;
 import br.com.todolist.repository.TarefaRepositoryPostgres;
+import br.com.todolist.repository.cache.CachedEventoRepository;
+import br.com.todolist.repository.cache.CachedTarefaRepository;
 import br.com.todolist.service.IEventService;
 import br.com.todolist.service.IReportService;
 import br.com.todolist.service.ITaskService;
@@ -85,8 +87,8 @@ public class AppController {
         try {
             usuarioLogado = userService.autenticarUsuario(email, password);
             if (usuarioLogado != null) {
-                ITarefaRepository tarefaRepository = new TarefaRepositoryPostgres();
-                IEventoRepository eventoRepository = new EventoRepositoryPostgres();
+                ITarefaRepository tarefaRepository = new CachedTarefaRepository(new TarefaRepositoryPostgres());
+                IEventoRepository eventoRepository = new CachedEventoRepository(new EventoRepositoryPostgres());
 
                 this.taskService = new TaskServiceImpl(tarefaRepository, usuarioLogado.getEmail());
                 this.eventService = new EventServiceImpl(eventoRepository, usuarioLogado.getEmail());
