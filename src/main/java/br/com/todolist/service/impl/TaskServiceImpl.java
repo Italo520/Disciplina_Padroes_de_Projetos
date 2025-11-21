@@ -4,9 +4,11 @@ import br.com.todolist.entity.Tarefa;
 import br.com.todolist.exception.BusinessException;
 import br.com.todolist.exception.DadosInvalidosException;
 import br.com.todolist.exception.DatabaseException;
+import br.com.todolist.log.AuditAction;
 import br.com.todolist.repository.ITarefaRepository;
-import br.com.todolist.service.util.IObserver;
 import br.com.todolist.service.ITaskService;
+import br.com.todolist.service.event.TaskEvent;
+import br.com.todolist.service.util.IObserver;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -23,7 +25,7 @@ public class TaskServiceImpl implements ITaskService {
 
     private final ITarefaRepository tarefaRepository;
     private final String emailUsuario;
-    private final List<IObserver<Tarefa>> observers = new ArrayList<>();
+    private final List<IObserver<TaskEvent>> observers = new ArrayList<>();
 
     /**
      * Construtor da classe TaskServiceImpl.
@@ -50,7 +52,7 @@ public class TaskServiceImpl implements ITaskService {
         }
         try {
             tarefaRepository.salvar(tarefa);
-            notifyObservers(tarefa);
+            notifyObservers(new TaskEvent(AuditAction.CREATE, tarefa));
         } catch (DatabaseException e) {
             throw new BusinessException("Erro ao salvar tarefa.", e);
         }
@@ -68,7 +70,7 @@ public class TaskServiceImpl implements ITaskService {
         if (tarefa.getCriado_por().equals(emailUsuario)) {
             try {
                 tarefaRepository.excluir(tarefa);
-                notifyObservers(tarefa);
+                notifyObservers(new TaskEvent(AuditAction.DELETE, tarefa));
             } catch (DatabaseException e) {
                 throw new BusinessException("Erro ao excluir tarefa.", e);
             }
@@ -90,13 +92,15 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) throws BusinessException {
         if (tarefaOriginal.getCriado_por().equals(emailUsuario)) {
+            Tarefa oldTarefa = tarefaOriginal.copiar();
+
             tarefaOriginal.setTitulo(novoTitulo);
             tarefaOriginal.setDescricao(novaDescricao);
             tarefaOriginal.setDeadLine(novoDeadline);
             tarefaOriginal.setPrioridade(novaPrioridade);
             try {
                 tarefaRepository.atualizar(tarefaOriginal);
-                notifyObservers(tarefaOriginal);
+                notifyObservers(new TaskEvent(AuditAction.UPDATE, tarefaOriginal, oldTarefa));
             } catch (DatabaseException e) {
                 throw new BusinessException("Erro ao atualizar tarefa.", e);
             }
@@ -115,8 +119,13 @@ public class TaskServiceImpl implements ITaskService {
     public void atualizarTarefa(Tarefa tarefa) throws BusinessException {
         if (tarefa.getCriado_por().equals(emailUsuario)) {
             try {
+                // O título é o ID da entidade Tarefa neste sistema (PK).
+                Tarefa oldTarefa = tarefaRepository.buscarPorId(tarefa.getTitulo());
+                if (oldTarefa != null) {
+                    oldTarefa = oldTarefa.copiar();
+                }
                 tarefaRepository.atualizar(tarefa);
-                notifyObservers(tarefa);
+                notifyObservers(new TaskEvent(AuditAction.UPDATE, tarefa, oldTarefa));
             } catch (DatabaseException e) {
                 throw new BusinessException("Erro ao atualizar tarefa.", e);
             }
@@ -132,8 +141,6 @@ public class TaskServiceImpl implements ITaskService {
      */
     @Override
     public List<Tarefa> listarTodasTarefas() {
-        // DatabaseException pode ocorrer, mas o contrato não prevê checked exception para leitura aqui.
-        // Se falhar, propagará RuntimeException (DatabaseException), o que é aceitável.
         return tarefaRepository.buscarTodos().stream()
                 .filter(tarefa -> tarefa.getCriado_por().equals(emailUsuario))
                 .collect(Collectors.toList());
@@ -172,7 +179,7 @@ public class TaskServiceImpl implements ITaskService {
      * @param observer O observador a ser adicionado.
      */
     @Override
-    public void addObserver(IObserver<Tarefa> observer) {
+    public void addObserver(IObserver<TaskEvent> observer) {
         observers.add(observer);
     }
 
@@ -182,19 +189,19 @@ public class TaskServiceImpl implements ITaskService {
      * @param observer O observador a ser removido.
      */
     @Override
-    public void removeObserver(IObserver<Tarefa> observer) {
+    public void removeObserver(IObserver<TaskEvent> observer) {
         observers.remove(observer);
     }
 
     /**
      * Notifica todos os observadores registrados sobre uma mudança em uma tarefa.
      *
-     * @param tarefa A tarefa que sofreu alteração.
+     * @param event O evento de mudança da tarefa.
      */
     @Override
-    public void notifyObservers(Tarefa tarefa) {
-        for (IObserver<Tarefa> observer : observers) {
-            observer.update(tarefa);
+    public void notifyObservers(TaskEvent event) {
+        for (IObserver<TaskEvent> observer : observers) {
+            observer.update(event);
         }
     }
 }

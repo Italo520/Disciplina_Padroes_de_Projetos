@@ -153,4 +153,27 @@ public class Tarefa extends Itens {
     public void setProgressCalculationStrategy(IProgressCalculationStrategy progressCalculationStrategy) {
         this.progressCalculationStrategy = progressCalculationStrategy;
     }
+
+    /**
+     * Cria uma cópia profunda da tarefa.
+     *
+     * @return Uma nova instância de Tarefa com os mesmos dados.
+     */
+    public Tarefa copiar() {
+        Tarefa copia = new Tarefa(getTitulo(), getDescricao(), getCriado_por(), getDeadline(), getPrioridade());
+        copia.setDataConclusao(this.dataConclusao);
+        copia.setTipo(getTipo());
+        copia.setDataCadastro(getDataCadastro());
+
+        List<Subtarefa> subCopia = new ArrayList<>();
+        if (this.subtarefas != null) {
+            for (Subtarefa s : this.subtarefas) {
+                Subtarefa sCopia = s.copiar();
+                sCopia.setTarefa(copia);
+                subCopia.add(sCopia);
+            }
+        }
+        copia.setSubtarefas(subCopia);
+        return copia;
+    }
 }

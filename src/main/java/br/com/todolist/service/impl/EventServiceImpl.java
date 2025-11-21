@@ -4,9 +4,11 @@ import br.com.todolist.entity.Evento;
 import br.com.todolist.exception.BusinessException;
 import br.com.todolist.exception.DadosInvalidosException;
 import br.com.todolist.exception.DatabaseException;
+import br.com.todolist.log.AuditAction;
 import br.com.todolist.repository.IEventoRepository;
-import br.com.todolist.service.util.IObserver;
 import br.com.todolist.service.IEventService;
+import br.com.todolist.service.event.CalendarEvent;
+import br.com.todolist.service.util.IObserver;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -23,7 +25,7 @@ public class EventServiceImpl implements IEventService {
 
     private final IEventoRepository eventoRepository;
     private final String emailUsuario;
-    private final List<IObserver<Evento>> observers = new ArrayList<>();
+    private final List<IObserver<CalendarEvent>> observers = new ArrayList<>();
 
     /**
      * Construtor da classe EventServiceImpl.
@@ -55,7 +57,7 @@ public class EventServiceImpl implements IEventService {
 
         try {
             eventoRepository.salvar(evento);
-            notifyObservers(evento);
+            notifyObservers(new CalendarEvent(AuditAction.CREATE, evento));
         } catch (DatabaseException e) {
             throw new BusinessException("Erro ao salvar evento.", e);
         }
@@ -72,7 +74,7 @@ public class EventServiceImpl implements IEventService {
         if (evento.getCriado_por().equals(emailUsuario)) {
             try {
                 eventoRepository.excluir(evento);
-                notifyObservers(evento);
+                notifyObservers(new CalendarEvent(AuditAction.DELETE, evento));
             } catch (DatabaseException e) {
                 throw new BusinessException("Erro ao excluir evento.", e);
             }
@@ -93,12 +95,14 @@ public class EventServiceImpl implements IEventService {
     @Override
     public void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline) throws BusinessException {
         if (eventoOriginal.getCriado_por().equals(emailUsuario)) {
+            Evento oldEvento = eventoOriginal.copiar();
+
             eventoOriginal.setTitulo(novoTitulo);
             eventoOriginal.setDescricao(novaDescricao);
             eventoOriginal.setDeadLine(novoDeadline);
             try {
                 eventoRepository.atualizar(eventoOriginal);
-                notifyObservers(eventoOriginal);
+                notifyObservers(new CalendarEvent(AuditAction.UPDATE, eventoOriginal, oldEvento));
             } catch (DatabaseException e) {
                 throw new BusinessException("Erro ao atualizar evento.", e);
             }
@@ -151,7 +155,7 @@ public class EventServiceImpl implements IEventService {
      * @param observer O observador a ser adicionado.
      */
     @Override
-    public void addObserver(IObserver<Evento> observer) {
+    public void addObserver(IObserver<CalendarEvent> observer) {
         observers.add(observer);
     }
 
@@ -161,19 +165,19 @@ public class EventServiceImpl implements IEventService {
      * @param observer O observador a ser removido.
      */
     @Override
-    public void removeObserver(IObserver<Evento> observer) {
+    public void removeObserver(IObserver<CalendarEvent> observer) {
         observers.remove(observer);
     }
 
     /**
      * Notifica todos os observadores registrados sobre uma mudança em um evento.
      *
-     * @param evento O evento que sofreu alteração.
+     * @param event O evento que sofreu alteração.
      */
     @Override
-    public void notifyObservers(Evento evento) {
-        for (IObserver<Evento> observer : observers) {
-            observer.update(evento);
+    public void notifyObservers(CalendarEvent event) {
+        for (IObserver<CalendarEvent> observer : observers) {
+            observer.update(event);
         }
     }
 }
