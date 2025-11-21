@@ -111,4 +111,16 @@ public class Evento extends Itens {
         super.setDeadLine(deadline);
     }
 
+    /**
+     * Cria uma cópia do evento.
+     *
+     * @return Uma nova instância de Evento com os mesmos dados.
+     */
+    public Evento copiar() {
+        Evento copia = new Evento(getTitulo(), getDescricao(), getCriado_por(), getDeadline());
+        copia.setTipo(getTipo());
+        copia.setDataCadastro(getDataCadastro());
+        return copia;
+    }
+
 }

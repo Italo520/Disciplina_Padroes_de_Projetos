@@ -158,3 +158,48 @@ private void realizarCadastro() {
 ### Dependency Inversion Principle (DIP)
 *   Os Serviços dependem de abstrações (`IUserRepository`), não de implementações concretas.
 *   As exceções lançadas pelos repositórios (`DatabaseException`) são desacopladas da tecnologia específica (Hibernate/SQL), permitindo que o Serviço trate erros de persistência de forma agnóstica.
+
+---
+
+## 6. Implementação de Logs e Auditoria (MongoDB)
+
+Para atender aos requisitos de auditoria e log de erros, foi implementado um sistema paralelo utilizando MongoDB.
+
+### Registro de Observadores
+Os observadores de auditoria devem ser registrados na inicialização do serviço (ex: em `Main` ou `AppController`).
+
+**Exemplo de Configuração (`Main.java` ou `AppController`):**
+
+```java
+// Inicialização dos Repositórios
+ITarefaRepository tarefaRepo = new TarefaRepositoryPostgres();
+ILogRepository logRepo = new MongoLogRepository();
+
+// Inicialização do Serviço
+ITaskService taskService = new TaskServiceImpl(tarefaRepo, usuarioLogado);
+
+// Registro do Observador de Auditoria
+TaskAuditObserver auditObserver = new TaskAuditObserver(logRepo);
+taskService.addObserver(auditObserver);
+
+// Agora, qualquer alteração via taskService será auditada automaticamente.
+```
+
+### Log de Erros nos Controllers
+Para capturar e persistir erros inesperados ou de negócio, utilizamos o `LogService` nos blocos `catch` dos Controllers ou Views (dependendo de onde a exceção é tratada).
+
+**Exemplo de Uso (`TelaCadastro` ou `TaskController`):**
+
+```java
+try {
+    taskController.cadastrarTarefa(novaTarefa);
+} catch (BusinessException e) {
+    // Loga o erro de negócio antes de exibir ao usuário
+    LogService.getInstance().logError(e);
+    JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.WARNING_MESSAGE);
+} catch (Exception e) {
+    // Loga erros inesperados (NullPointerException, DatabaseException não tratada, etc)
+    LogService.getInstance().logError(e);
+    JOptionPane.showMessageDialog(this, "Erro inesperado. Contate o suporte.", "Erro Crítico", JOptionPane.ERROR_MESSAGE);
+}
+```

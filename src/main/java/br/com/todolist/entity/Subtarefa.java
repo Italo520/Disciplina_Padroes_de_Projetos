@@ -116,4 +116,16 @@ public class Subtarefa {
         this.tarefa = tarefa;
     }
 
+    /**
+     * Cria uma cópia da subtarefa.
+     *
+     * @return Uma nova instância de Subtarefa com os mesmos dados.
+     */
+    public Subtarefa copiar() {
+        Subtarefa copia = new Subtarefa(this.titulo);
+        copia.setId(this.id);
+        copia.setStatus(this.status);
+        return copia;
+    }
+
 }

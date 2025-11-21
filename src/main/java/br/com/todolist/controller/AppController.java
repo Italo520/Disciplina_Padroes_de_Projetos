@@ -4,18 +4,22 @@ import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.entity.Usuario;
 import br.com.todolist.exception.BusinessException;
+import br.com.todolist.log.EventAuditObserver;
+import br.com.todolist.log.ILogRepository;
+import br.com.todolist.log.LogService;
+import br.com.todolist.log.TaskAuditObserver;
 import br.com.todolist.repository.EventoRepositoryPostgres;
 import br.com.todolist.repository.IEventoRepository;
 import br.com.todolist.repository.ITarefaRepository;
 import br.com.todolist.repository.TarefaRepositoryPostgres;
 import br.com.todolist.service.IEventService;
-import br.com.todolist.service.impl.EventServiceImpl;
 import br.com.todolist.service.IReportService;
-import br.com.todolist.service.impl.ReportServiceImpl;
 import br.com.todolist.service.ITaskService;
-import br.com.todolist.service.util.IItemFactory;
-import br.com.todolist.service.impl.TaskServiceImpl;
 import br.com.todolist.service.IUserService;
+import br.com.todolist.service.impl.EventServiceImpl;
+import br.com.todolist.service.impl.ReportServiceImpl;
+import br.com.todolist.service.impl.TaskServiceImpl;
+import br.com.todolist.service.util.IItemFactory;
 import br.com.todolist.util.Mensageiro;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -83,8 +87,15 @@ public class AppController {
             if (usuarioLogado != null) {
                 ITarefaRepository tarefaRepository = new TarefaRepositoryPostgres();
                 IEventoRepository eventoRepository = new EventoRepositoryPostgres();
+
                 this.taskService = new TaskServiceImpl(tarefaRepository, usuarioLogado.getEmail());
                 this.eventService = new EventServiceImpl(eventoRepository, usuarioLogado.getEmail());
+
+                // Configuração de Auditoria (Log)
+                ILogRepository logRepository = LogService.getInstance().getRepository();
+                this.taskService.addObserver(new TaskAuditObserver(logRepository));
+                this.eventService.addObserver(new EventAuditObserver(logRepository));
+
                 this.reportService = new ReportServiceImpl(taskService, mensageiro);
                 return true;
             }
