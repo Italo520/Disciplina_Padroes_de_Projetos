@@ -22,7 +22,10 @@ import br.com.todolist.service.impl.EventServiceImpl;
 import br.com.todolist.service.impl.ReportServiceImpl;
 import br.com.todolist.service.impl.TaskServiceImpl;
 import br.com.todolist.service.util.IItemFactory;
-import br.com.todolist.util.Mensageiro;
+import br.com.todolist.util.notificacao.INotificador;
+import br.com.todolist.util.relatorio.GeradorRelatorioPDF;
+import br.com.todolist.util.relatorio.GeradorRelatorioExcel;
+
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -36,16 +39,16 @@ public class AppController {
 
     private static AppController instance;
     private final IUserService userService;
-    private final Mensageiro mensageiro;
+    private final INotificador notificador;
     private final IItemFactory itemFactory;
     private ITaskService taskService;
     private IEventService eventService;
     private IReportService reportService;
     private Usuario usuarioLogado;
 
-    private AppController(IUserService userService, Mensageiro mensageiro, IItemFactory itemFactory) {
+    private AppController(IUserService userService, INotificador notificador, IItemFactory itemFactory) {
         this.userService = userService;
-        this.mensageiro = mensageiro;
+        this.notificador = notificador;
         this.itemFactory = itemFactory;
     }
 
@@ -54,12 +57,12 @@ public class AppController {
      * Este método deve ser chamado apenas uma vez na inicialização da aplicação.
      *
      * @param userService o serviço de usuário.
-     * @param mensageiro o utilitário de mensageria.
+     * @param notificador o notificador (e-mail, WhatsApp, etc.).
      * @param itemFactory a fábrica de itens.
      */
-    public static void init(IUserService userService, Mensageiro mensageiro, IItemFactory itemFactory) {
+    public static void init(IUserService userService, INotificador notificador, IItemFactory itemFactory) {
         if (instance == null) {
-            instance = new AppController(userService, mensageiro, itemFactory);
+            instance = new AppController(userService, notificador, itemFactory);
         }
     }
 
@@ -108,7 +111,12 @@ public class AppController {
         this.taskService.addObserver(new TaskAuditObserver(logRepository));
         this.eventService.addObserver(new EventAuditObserver(logRepository));
 
-        this.reportService = new ReportServiceImpl(taskService, mensageiro);
+        // Instancia os geradores de relatório seguindo o padrão Strategy
+        this.reportService = new ReportServiceImpl(
+                taskService,
+                notificador,
+                new GeradorRelatorioPDF(),
+                new GeradorRelatorioExcel());
     }
 
     /**
@@ -132,7 +140,8 @@ public class AppController {
      * @param prioridade A prioridade da tarefa.
      * @throws BusinessException se houver erro no cadastro.
      */
-    public void cadastrarTarefa(String titulo, String descricao, LocalDate deadline, int prioridade) throws BusinessException {
+    public void cadastrarTarefa(String titulo, String descricao, LocalDate deadline, int prioridade)
+            throws BusinessException {
         Tarefa novaTarefa = itemFactory.criarTarefa(titulo, descricao, usuarioLogado.getEmail(), deadline, prioridade);
         taskService.cadastrarTarefa(novaTarefa);
     }
@@ -166,7 +175,8 @@ public class AppController {
      * @param novaPrioridade A nova prioridade.
      * @throws BusinessException se houver erro na edição.
      */
-    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) throws BusinessException {
+    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline,
+            int novaPrioridade) throws BusinessException {
         taskService.editarTarefa(tarefaOriginal, novoTitulo, novaDescricao, novoDeadline, novaPrioridade);
     }
 
@@ -240,7 +250,8 @@ public class AppController {
      * @param novoDeadline   A nova data.
      * @throws BusinessException se houver erro na edição.
      */
-    public void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline) throws BusinessException {
+    public void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline)
+            throws BusinessException {
         eventService.editarEvento(eventoOriginal, novoTitulo, novaDescricao, novoDeadline);
     }
 

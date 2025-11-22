@@ -10,6 +10,7 @@
 .classpath
 .project
 .settings/
+.vscode/
 
 # Arquivos de sistema
 .DS_Store
@@ -35,3 +36,21 @@ build/
 # Arquivos de testes
 test/
 *.test
+
+# Docker - Arquivos sensíveis
+.env
+docker-compose.override.yml
+
+# Arquivos temporários
+*.tmp
+*.swp
+*.swo
+*~
+.cache/
+
+# Volumes e dados locais
+data/
+volumes/
+postgres-data/
+mongodb-data/
+redis-data/

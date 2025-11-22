@@ -8,7 +8,8 @@ import br.com.todolist.repository.postgres.UserRepositoryPostgres;
 import br.com.todolist.service.IUserService;
 import br.com.todolist.service.impl.UserServiceImpl;
 import br.com.todolist.ui.auth.TelaLogin;
-import br.com.todolist.util.Mensageiro;
+import br.com.todolist.util.notificacao.INotificador;
+import br.com.todolist.util.notificacao.NotificadorEmail;
 import javax.swing.SwingUtilities;
 import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
 
@@ -38,11 +39,11 @@ public class Main {
         // Inicializa as dependências (Repositórios, Serviços, Utilitários)
         IUserRepository userRepository = new UserRepositoryPostgres();
         IUserService userService = new UserServiceImpl(userRepository);
-        Mensageiro mensageiro = new Mensageiro();
+        INotificador notificador = new NotificadorEmail();
         IItemFactory itemFactory = new DefaultItemFactory();
 
         // Inicializa a fachada (AppController) com as dependências injetadas
-        AppController.init(userService, mensageiro, itemFactory);
+        AppController.init(userService, notificador, itemFactory);
 
         // Inicia a interface gráfica na Thread de Eventos do Swing
         SwingUtilities.invokeLater(() -> {

@@ -1,4 +1,4 @@
-package br.com.todolist.util;
+package br.com.todolist.util.notificacao;
 
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
@@ -12,10 +12,14 @@ import java.io.File;
 import java.util.Properties;
 
 /**
- * Classe utilitária para envio de e-mails.
+ * Implementação concreta de INotificador para envio de notificações via e-mail.
  * Utiliza o servidor SMTP do Gmail.
+ * 
+ * Esta classe implementa o Padrão Strategy, permitindo que o tipo de
+ * notificação
+ * seja trocado facilmente sem modificar o código que utiliza o notificador.
  */
-public class Mensageiro {
+public class NotificadorEmail implements INotificador {
 
     private static final String USERNAME = "ads.ifpb.testes@gmail.com";
     private static final String PASSWORD = "bjjgvzasdhjieabu";
@@ -25,10 +29,10 @@ public class Mensageiro {
     private final Session session;
 
     /**
-     * Construtor da classe Mensageiro.
+     * Construtor da classe NotificadorEmail.
      * Configura as propriedades da sessão de e-mail (SMTP, autenticação, TLS).
      */
-    public Mensageiro() {
+    public NotificadorEmail() {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -43,22 +47,23 @@ public class Mensageiro {
     }
 
     /**
-     * Envia um e-mail simples (apenas texto).
+     * Envia uma notificação simples por e-mail (apenas texto).
      *
-     * @param emailDestino  O endereço de e-mail do destinatário.
-     * @param assunto       O assunto do e-mail.
-     * @param corpoMensagem O corpo (texto) da mensagem.
+     * @param destinatario O endereço de e-mail do destinatário.
+     * @param assunto      O assunto do e-mail.
+     * @param mensagem     O corpo (texto) da mensagem.
      * @return true se o e-mail foi enviado com sucesso, false caso contrário.
      */
-    public boolean enviarEmail(String emailDestino, String assunto, String corpoMensagem) { // Sem arquivo, só a mensagem!
+    @Override
+    public boolean enviarNotificacao(String destinatario, String assunto, String mensagem) {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(USERNAME));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailDestino));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
             message.setSubject(assunto);
-            message.setText(corpoMensagem);
+            message.setText(mensagem);
             Transport.send(message);
-            System.out.println("Email enviado para " + emailDestino + " com sucesso!");
+            System.out.println("Email enviado para " + destinatario + " com sucesso!");
             return true;
         } catch (MessagingException e) {
             System.err.println("Erro ao enviar o email: " + e.getMessage());
@@ -68,35 +73,39 @@ public class Mensageiro {
     }
 
     /**
-     * Envia um e-mail com um arquivo em anexo.
+     * Envia uma notificação por e-mail com um arquivo em anexo.
      *
-     * @param emailDestino  O endereço de e-mail do destinatário.
-     * @param assunto       O assunto do e-mail.
-     * @param corpoMensagem O corpo (texto) da mensagem.
+     * @param destinatario   O endereço de e-mail do destinatário.
+     * @param assunto        O assunto do e-mail.
+     * @param mensagem       O corpo (texto) da mensagem.
      * @param caminhoArquivo O caminho do arquivo a ser anexado.
-     * @return true se o e-mail foi enviado com sucesso, false caso contrário ou se o arquivo não existir.
+     * @return true se o e-mail foi enviado com sucesso, false caso contrário ou se
+     *         o arquivo não existir.
      */
-    public boolean enviarEmailComAnexo(String emailDestino, String assunto, String corpoMensagem, String caminhoArquivo) {
+    @Override
+    public boolean enviarNotificacaoComAnexo(String destinatario, String assunto, String mensagem,
+            String caminhoArquivo) {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(USERNAME));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailDestino));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
             message.setSubject(assunto);
 
             // Parte 1: O texto do e-mail
             MimeBodyPart textoBodyPart = new MimeBodyPart();
-            textoBodyPart.setText(corpoMensagem);
+            textoBodyPart.setText(mensagem);
 
             // Parte 2: O anexo
             MimeBodyPart anexoBodyPart = new MimeBodyPart();
             File arquivoAnexo = new File(caminhoArquivo);
-            
+
             if (arquivoAnexo.exists() && arquivoAnexo.isFile()) {
                 DataSource source = new FileDataSource(arquivoAnexo);
                 anexoBodyPart.setDataHandler(new DataHandler(source));
                 anexoBodyPart.setFileName(arquivoAnexo.getName());
             } else {
-                System.err.println("Aviso: O arquivo '" + caminhoArquivo + "' não foi encontrado. E-mail não será enviado.");
+                System.err.println(
+                        "Aviso: O arquivo '" + caminhoArquivo + "' não foi encontrado. E-mail não será enviado.");
                 return false;
             }
 
@@ -107,7 +116,7 @@ public class Mensageiro {
             message.setContent(multipart);
 
             Transport.send(message);
-            System.out.println("Email com anexo enviado para " + emailDestino + " com sucesso!");
+            System.out.println("Email com anexo enviado para " + destinatario + " com sucesso!");
             return true;
 
         } catch (MessagingException e) {

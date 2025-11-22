@@ -32,13 +32,58 @@ public class DatabaseConfig {
     }
 
     /**
-     * Obtém uma propriedade do arquivo de configuração.
+     * Obtém uma propriedade do arquivo de configuração ou de variável de ambiente.
+     * Prioridade: Variável de ambiente > Arquivo de propriedades
+     * 
+     * Suporta sintaxe ${VAR_NAME:default_value} no arquivo properties.
      *
      * @param key A chave da propriedade.
      * @return O valor da propriedade.
      */
     public static String getProperty(String key) {
-        return properties.getProperty(key);
+        String value = properties.getProperty(key);
+        if (value == null) {
+            return null;
+        }
+
+        // Processa variáveis de ambiente no formato ${VAR_NAME:default}
+        return processEnvironmentVariables(value);
+    }
+
+    /**
+     * Processa e substitui variáveis de ambiente no valor da propriedade.
+     * Suporta formato: ${VARIABLE_NAME:default_value}
+     * 
+     * @param value O valor da propriedade que pode conter variáveis.
+     * @return O valor com variáveis substituídas.
+     */
+    private static String processEnvironmentVariables(String value) {
+        if (value == null || !value.contains("${")) {
+            return value;
+        }
+
+        String result = value;
+        int startIndex;
+
+        while ((startIndex = result.indexOf("${")) != -1) {
+            int endIndex = result.indexOf("}", startIndex);
+            if (endIndex == -1) {
+                break;
+            }
+
+            String varExpression = result.substring(startIndex + 2, endIndex);
+            String[] parts = varExpression.split(":", 2);
+            String varName = parts[0];
+            String defaultValue = parts.length > 1 ? parts[1] : "";
+
+            // Tenta obter da variável de ambiente, senão usa o valor padrão
+            String envValue = System.getenv(varName);
+            String replacement = envValue != null ? envValue : defaultValue;
+
+            result = result.substring(0, startIndex) + replacement + result.substring(endIndex + 1);
+        }
+
+        return result;
     }
 
     /**
