@@ -18,6 +18,9 @@ Thumbs.db
 # Pasta de arquivos
 arquivos/*
 
+# Configurações sensíveis de banco de dados
+src/main/resources/database.properties
+
 # Arquivos de front-end
 index.html
 script.js

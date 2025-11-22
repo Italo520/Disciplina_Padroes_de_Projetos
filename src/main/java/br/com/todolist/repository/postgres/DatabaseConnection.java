@@ -1,8 +1,11 @@
 package br.com.todolist.repository.postgres;
 
+import br.com.todolist.util.DatabaseConfig;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Singleton para gerenciar a conexão com o banco de dados via JPA.
@@ -13,7 +16,18 @@ public class DatabaseConnection {
     private EntityManagerFactory entityManagerFactory;
 
     private DatabaseConnection() {
-        this.entityManagerFactory = Persistence.createEntityManagerFactory("todolist-pu");
+        // Carrega as configurações do arquivo database.properties
+        Map<String, String> properties = new HashMap<>();
+        properties.put("jakarta.persistence.jdbc.driver", DatabaseConfig.getDbDriver());
+        properties.put("jakarta.persistence.jdbc.url", DatabaseConfig.getDbUrl());
+        properties.put("jakarta.persistence.jdbc.user", DatabaseConfig.getDbUser());
+        properties.put("jakarta.persistence.jdbc.password", DatabaseConfig.getDbPassword());
+        properties.put("hibernate.dialect", DatabaseConfig.getHibernateDialect());
+        properties.put("hibernate.show_sql", DatabaseConfig.getHibernateShowSql());
+        properties.put("hibernate.format_sql", DatabaseConfig.getHibernateFormatSql());
+        properties.put("hibernate.hbm2ddl.auto", DatabaseConfig.getHibernateHbm2ddlAuto());
+
+        this.entityManagerFactory = Persistence.createEntityManagerFactory("todolist-pu", properties);
     }
 
     public static synchronized DatabaseConnection getInstance() {

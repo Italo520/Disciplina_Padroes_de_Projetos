@@ -8,7 +8,7 @@ import br.com.todolist.log.AuditAction;
 import br.com.todolist.repository.IEventoRepository;
 import br.com.todolist.service.IEventService;
 import br.com.todolist.service.event.CalendarEvent;
-import br.com.todolist.service.util.IObserver;
+import br.com.todolist.service.util.IEventObserver;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -18,14 +18,15 @@ import java.util.stream.Collectors;
 
 /**
  * Implementação do serviço de eventos.
- * Contém a lógica de negócio para gerenciar eventos e notificar observadores sobre mudanças.
+ * Contém a lógica de negócio para gerenciar eventos e notificar observadores
+ * sobre mudanças.
  * Filtra os eventos pelo e-mail do usuário logado.
  */
 public class EventServiceImpl implements IEventService {
 
     private final IEventoRepository eventoRepository;
     private final String emailUsuario;
-    private final List<IObserver<CalendarEvent>> observers = new ArrayList<>();
+    private final List<IEventObserver> observers = new ArrayList<>();
 
     /**
      * Construtor da classe EventServiceImpl.
@@ -43,7 +44,8 @@ public class EventServiceImpl implements IEventService {
      * Verifica se já existe um evento na mesma data para o usuário.
      *
      * @param evento O evento a ser cadastrado.
-     * @throws BusinessException se a data já estiver ocupada ou houver erro de persistência.
+     * @throws BusinessException se a data já estiver ocupada ou houver erro de
+     *                           persistência.
      */
     @Override
     public void cadastrarEvento(Evento evento) throws BusinessException {
@@ -79,7 +81,7 @@ public class EventServiceImpl implements IEventService {
                 throw new BusinessException("Erro ao excluir evento.", e);
             }
         } else {
-             throw new DadosInvalidosException("Evento não pertence ao usuário.");
+            throw new DadosInvalidosException("Evento não pertence ao usuário.");
         }
     }
 
@@ -93,7 +95,8 @@ public class EventServiceImpl implements IEventService {
      * @throws BusinessException se ocorrer erro ao editar.
      */
     @Override
-    public void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline) throws BusinessException {
+    public void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline)
+            throws BusinessException {
         if (eventoOriginal.getCriado_por().equals(emailUsuario)) {
             Evento oldEvento = eventoOriginal.copiar();
 
@@ -107,7 +110,7 @@ public class EventServiceImpl implements IEventService {
                 throw new BusinessException("Erro ao atualizar evento.", e);
             }
         } else {
-             throw new DadosInvalidosException("Evento não pertence ao usuário.");
+            throw new DadosInvalidosException("Evento não pertence ao usuário.");
         }
     }
 
@@ -155,7 +158,7 @@ public class EventServiceImpl implements IEventService {
      * @param observer O observador a ser adicionado.
      */
     @Override
-    public void addObserver(IObserver<CalendarEvent> observer) {
+    public void addObserver(IEventObserver observer) {
         observers.add(observer);
     }
 
@@ -165,7 +168,7 @@ public class EventServiceImpl implements IEventService {
      * @param observer O observador a ser removido.
      */
     @Override
-    public void removeObserver(IObserver<CalendarEvent> observer) {
+    public void removeObserver(IEventObserver observer) {
         observers.remove(observer);
     }
 
@@ -176,7 +179,7 @@ public class EventServiceImpl implements IEventService {
      */
     @Override
     public void notifyObservers(CalendarEvent event) {
-        for (IObserver<CalendarEvent> observer : observers) {
+        for (IEventObserver observer : observers) {
             observer.update(event);
         }
     }

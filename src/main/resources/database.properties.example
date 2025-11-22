@@ -1,0 +1,20 @@
+# Configurações do Banco de Dados PostgreSQL
+# EXEMPLO: Copie este arquivo para database.properties e ajuste as configurações
+db.driver=org.postgresql.Driver
+db.url=jdbc:postgresql://localhost:5432/todolist
+db.user=postgres
+db.password=SUA_SENHA_AQUI
+
+# Configurações do Hibernate
+hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+hibernate.show_sql=true
+hibernate.format_sql=true
+hibernate.hbm2ddl.auto=update
+
+# Configurações do Redis
+redis.host=localhost
+redis.port=6379
+
+# Configurações do MongoDB
+mongo.uri=mongodb://localhost:27017
+mongo.database=todolist_logs

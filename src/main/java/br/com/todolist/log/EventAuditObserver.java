@@ -2,7 +2,7 @@ package br.com.todolist.log;
 
 import br.com.todolist.entity.Evento;
 import br.com.todolist.service.event.CalendarEvent;
-import br.com.todolist.service.util.IObserver;
+import br.com.todolist.service.util.IEventObserver;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Map;
  * Observador responsável por auditar ações em Eventos.
  * Persiste as mudanças no MongoDB.
  */
-public class EventAuditObserver implements IObserver<CalendarEvent> {
+public class EventAuditObserver implements IEventObserver {
 
     private final ILogRepository logRepository;
 
@@ -44,8 +44,7 @@ public class EventAuditObserver implements IObserver<CalendarEvent> {
                 "Evento",
                 event.getEvento().getCriado_por(),
                 oldData,
-                newData
-        );
+                newData);
 
         logRepository.salvarLog(entry);
     }

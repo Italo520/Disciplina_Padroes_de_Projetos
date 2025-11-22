@@ -1,6 +1,7 @@
 package br.com.todolist.repository.cache;
 
 import br.com.todolist.log.LogService;
+import br.com.todolist.util.DatabaseConfig;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -14,16 +15,15 @@ public class RedisCacheManager {
     private static RedisCacheManager instance;
     private final JedisPool jedisPool;
 
-    private static final String REDIS_HOST = "localhost";
-    private static final int REDIS_PORT = 6379;
-
     /**
      * Construtor privado. Inicializa o pool de conexões com o Redis.
-     * Assume localhost e porta padrão 6379.
+     * Usa configurações do arquivo database.properties.
      */
     private RedisCacheManager() {
-        // Configuração simples para localhost
-        this.jedisPool = new JedisPool(REDIS_HOST, REDIS_PORT);
+        // Carrega configurações do arquivo de propriedades
+        String redisHost = DatabaseConfig.getRedisHost();
+        int redisPort = DatabaseConfig.getRedisPort();
+        this.jedisPool = new JedisPool(redisHost, redisPort);
     }
 
     /**

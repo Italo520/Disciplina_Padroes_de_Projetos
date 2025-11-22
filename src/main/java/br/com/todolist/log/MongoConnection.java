@@ -1,5 +1,6 @@
 package br.com.todolist.log;
 
+import br.com.todolist.util.DatabaseConfig;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
@@ -14,9 +15,11 @@ public class MongoConnection {
     private final MongoDatabase database;
 
     private MongoConnection() {
-        // Conexão padrão com o MongoDB local
-        this.mongoClient = MongoClients.create("mongodb://localhost:27017");
-        this.database = mongoClient.getDatabase("todolist_logs");
+        // Carrega configurações do arquivo de propriedades
+        String mongoUri = DatabaseConfig.getMongoUri();
+        String databaseName = DatabaseConfig.getMongoDatabase();
+        this.mongoClient = MongoClients.create(mongoUri);
+        this.database = mongoClient.getDatabase(databaseName);
     }
 
     /**

@@ -2,7 +2,7 @@ package br.com.todolist.log;
 
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.service.event.TaskEvent;
-import br.com.todolist.service.util.IObserver;
+import br.com.todolist.service.util.ITaskObserver;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Map;
  * Observador responsável por auditar ações em Tarefas.
  * Persiste as mudanças no MongoDB.
  */
-public class TaskAuditObserver implements IObserver<TaskEvent> {
+public class TaskAuditObserver implements ITaskObserver {
 
     private final ILogRepository logRepository;
 
@@ -44,8 +44,7 @@ public class TaskAuditObserver implements IObserver<TaskEvent> {
                 "Tarefa",
                 event.getTarefa().getCriado_por(),
                 oldData,
-                newData
-        );
+                newData);
 
         logRepository.salvarLog(entry);
     }

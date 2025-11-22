@@ -8,7 +8,7 @@ import br.com.todolist.log.AuditAction;
 import br.com.todolist.repository.ITarefaRepository;
 import br.com.todolist.service.ITaskService;
 import br.com.todolist.service.event.TaskEvent;
-import br.com.todolist.service.util.IObserver;
+import br.com.todolist.service.util.ITaskObserver;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -18,14 +18,15 @@ import java.util.stream.Collectors;
 
 /**
  * Implementação do serviço de tarefas.
- * Contém a lógica de negócio para gerenciar tarefas e notificar observadores sobre mudanças.
+ * Contém a lógica de negócio para gerenciar tarefas e notificar observadores
+ * sobre mudanças.
  * Filtra as tarefas pelo e-mail do usuário logado.
  */
 public class TaskServiceImpl implements ITaskService {
 
     private final ITarefaRepository tarefaRepository;
     private final String emailUsuario;
-    private final List<IObserver<TaskEvent>> observers = new ArrayList<>();
+    private final List<ITaskObserver> observers = new ArrayList<>();
 
     /**
      * Construtor da classe TaskServiceImpl.
@@ -63,7 +64,8 @@ public class TaskServiceImpl implements ITaskService {
      * Notifica os observadores após a exclusão.
      *
      * @param tarefa A tarefa a ser excluída.
-     * @throws BusinessException se a tarefa não pertencer ao usuário ou houver erro.
+     * @throws BusinessException se a tarefa não pertencer ao usuário ou houver
+     *                           erro.
      */
     @Override
     public void excluirTarefa(Tarefa tarefa) throws BusinessException {
@@ -90,7 +92,8 @@ public class TaskServiceImpl implements ITaskService {
      * @throws BusinessException se houver erro ao editar.
      */
     @Override
-    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) throws BusinessException {
+    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline,
+            int novaPrioridade) throws BusinessException {
         if (tarefaOriginal.getCriado_por().equals(emailUsuario)) {
             Tarefa oldTarefa = tarefaOriginal.copiar();
 
@@ -130,7 +133,7 @@ public class TaskServiceImpl implements ITaskService {
                 throw new BusinessException("Erro ao atualizar tarefa.", e);
             }
         } else {
-             throw new DadosInvalidosException("Tarefa não pertence ao usuário logado.");
+            throw new DadosInvalidosException("Tarefa não pertence ao usuário logado.");
         }
     }
 
@@ -179,7 +182,7 @@ public class TaskServiceImpl implements ITaskService {
      * @param observer O observador a ser adicionado.
      */
     @Override
-    public void addObserver(IObserver<TaskEvent> observer) {
+    public void addObserver(ITaskObserver observer) {
         observers.add(observer);
     }
 
@@ -189,7 +192,7 @@ public class TaskServiceImpl implements ITaskService {
      * @param observer O observador a ser removido.
      */
     @Override
-    public void removeObserver(IObserver<TaskEvent> observer) {
+    public void removeObserver(ITaskObserver observer) {
         observers.remove(observer);
     }
 
@@ -200,7 +203,7 @@ public class TaskServiceImpl implements ITaskService {
      */
     @Override
     public void notifyObservers(TaskEvent event) {
-        for (IObserver<TaskEvent> observer : observers) {
+        for (ITaskObserver observer : observers) {
             observer.update(event);
         }
     }
