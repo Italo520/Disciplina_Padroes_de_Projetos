@@ -63,10 +63,3 @@ DatabaseConfig.getDbUser();      // Usuário do PostgreSQL
 DatabaseConfig.getRedisHost();   // Host do Redis
 DatabaseConfig.getMongoUri();    // URI do MongoDB
 ```
-
-## Segurança
-
-⚠️ **IMPORTANTE**: 
-- Nunca commite credenciais reais no repositório
-- Use senhas fortes em ambientes de produção
-- Considere usar variáveis de ambiente para produção
