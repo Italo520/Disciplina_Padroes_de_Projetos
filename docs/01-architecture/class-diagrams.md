@@ -88,9 +88,9 @@ classDiagram
 ```mermaid
 graph TD
     Service[ReportServiceImpl]
-    INot[<<interface>> INotificador]
-    IGer[<<interface>> IGeradorRelatorio]
-    IGerAdv[<<interface>> IGeradorRelatorioAvancado]
+    INot["<<interface>> INotificador"]
+    IGer["<<interface>> IGeradorRelatorio"]
+    IGerAdv["<<interface>> IGeradorRelatorioAvancado"]
     
     Email[NotificadorEmail]
     PDF[GeradorRelatorioPDF]
@@ -100,7 +100,7 @@ graph TD
     Service --> IGer
     Service --> IGerAdv
 
-    INot <|.. Email
-    IGer <|.. PDF
-    IGerAdv <|.. Excel
+    Email -.-> INot
+    PDF -.-> IGer
+    Excel -.-> IGerAdv
 ```
