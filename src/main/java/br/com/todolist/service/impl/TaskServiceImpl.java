@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementação do serviço de tarefas.
@@ -146,7 +145,7 @@ public class TaskServiceImpl implements ITaskService {
     public List<Tarefa> listarTodasTarefas() {
         return tarefaRepository.buscarTodos().stream()
                 .filter(tarefa -> tarefa.getCriado_por().equals(emailUsuario))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -159,7 +158,7 @@ public class TaskServiceImpl implements ITaskService {
     public List<Tarefa> listarTarefasPorDia(LocalDate dia) {
         return listarTodasTarefas().stream()
                 .filter(tarefa -> tarefa.getDeadline().isEqual(dia))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -173,7 +172,7 @@ public class TaskServiceImpl implements ITaskService {
         LocalDate hoje = LocalDate.now();
         return listarTodasTarefas().stream()
                 .filter(tarefa -> ChronoUnit.DAYS.between(hoje, tarefa.getDeadline()) - tarefa.getPrioridade() < 0)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**

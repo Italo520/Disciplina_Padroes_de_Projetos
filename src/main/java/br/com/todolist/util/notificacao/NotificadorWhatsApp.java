@@ -1,5 +1,8 @@
 package br.com.todolist.util.notificacao;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Implementação concreta de INotificador para envio de notificações via
  * WhatsApp.
@@ -14,6 +17,8 @@ package br.com.todolist.util.notificacao;
  * seja trocado facilmente sem modificar o código que utiliza o notificador.
  */
 public class NotificadorWhatsApp implements INotificador {
+
+    private static final Logger LOGGER = Logger.getLogger(NotificadorWhatsApp.class.getName());
 
     /**
      * Envia uma notificação simples via WhatsApp.
@@ -34,19 +39,16 @@ public class NotificadorWhatsApp implements INotificador {
             // Aqui seria implementada a lógica de integração com a API do WhatsApp
             // Por exemplo, usando a API do Twilio, WhatsApp Business API, etc.
 
-            System.out.println("=== NOTIFICAÇÃO WHATSAPP ===");
-            System.out.println("Para: " + destinatario);
-            System.out.println("Assunto: " + assunto);
-            System.out.println("Mensagem: " + mensagem);
-            System.out.println("===========================");
+            LOGGER.info(() -> String.format(
+                    "=== NOTIFICAÇÃO WHATSAPP ===%nPara: %s%nAssunto: %s%nMensagem: %s%n===========================",
+                    destinatario, assunto, mensagem));
 
             // Simulação de envio bem-sucedido
-            System.out.println("Mensagem WhatsApp enviada para " + destinatario + " com sucesso!");
+            LOGGER.info(() -> "Mensagem WhatsApp enviada para " + destinatario + " com sucesso!");
             return true;
 
         } catch (Exception e) {
-            System.err.println("Erro ao enviar mensagem WhatsApp: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e, () -> "Erro ao enviar mensagem WhatsApp: " + e.getMessage());
             return false;
         }
     }
@@ -70,20 +72,16 @@ public class NotificadorWhatsApp implements INotificador {
         try {
             // Aqui seria implementada a lógica de envio de arquivo via WhatsApp
 
-            System.out.println("=== NOTIFICAÇÃO WHATSAPP COM ANEXO ===");
-            System.out.println("Para: " + destinatario);
-            System.out.println("Assunto: " + assunto);
-            System.out.println("Mensagem: " + mensagem);
-            System.out.println("Arquivo: " + caminhoArquivo);
-            System.out.println("======================================");
+            LOGGER.info(() -> String.format(
+                    "=== NOTIFICAÇÃO WHATSAPP COM ANEXO ===%nPara: %s%nAssunto: %s%nMensagem: %s%nArquivo: %s%n======================================",
+                    destinatario, assunto, mensagem, caminhoArquivo));
 
             // Simulação de envio bem-sucedido
-            System.out.println("Mensagem WhatsApp com anexo enviada para " + destinatario + " com sucesso!");
+            LOGGER.info(() -> "Mensagem WhatsApp com anexo enviada para " + destinatario + " com sucesso!");
             return true;
 
         } catch (Exception e) {
-            System.err.println("Erro ao enviar mensagem WhatsApp com anexo: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e, () -> "Erro ao enviar mensagem WhatsApp com anexo: " + e.getMessage());
             return false;
         }
     }

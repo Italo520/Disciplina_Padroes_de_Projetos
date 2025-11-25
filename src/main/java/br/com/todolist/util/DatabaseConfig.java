@@ -17,11 +17,11 @@ public class DatabaseConfig {
     static {
         try (InputStream input = DatabaseConfig.class.getClassLoader().getResourceAsStream(CONFIG_FILE)) {
             if (input == null) {
-                throw new RuntimeException("Arquivo de configuração não encontrado: " + CONFIG_FILE);
+                throw new IllegalStateException("Arquivo de configuração não encontrado: " + CONFIG_FILE);
             }
             properties.load(input);
         } catch (IOException e) {
-            throw new RuntimeException("Erro ao carregar arquivo de configuração: " + e.getMessage(), e);
+            throw new IllegalStateException("Erro ao carregar arquivo de configuração: " + e.getMessage(), e);
         }
     }
 

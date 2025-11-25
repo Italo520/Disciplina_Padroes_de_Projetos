@@ -27,7 +27,7 @@ public class TelaCadastro extends JDialog {
     private JButton botaoCancelar;
 
     /** Controlador de autenticação. */
-    private final AuthController authController;
+    private final transient AuthController authController;
 
     /** Armazena o e-mail cadastrado com sucesso. */
     private String emailCadastrado = null;
@@ -36,7 +36,8 @@ public class TelaCadastro extends JDialog {
      * Construtor da classe TelaCadastro.
      *
      * @param owner          O frame pai (geralmente a tela de login).
-     * @param authController O controlador de autenticação para processar o cadastro.
+     * @param authController O controlador de autenticação para processar o
+     *                       cadastro.
      */
     public TelaCadastro(Frame owner, AuthController authController) {
         super(owner, "Criar Nova Conta", true);
@@ -121,13 +122,15 @@ public class TelaCadastro extends JDialog {
 
         try {
             authController.cadastrarUsuario(nome, email, senha);
-            JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!", "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
             emailCadastrado = email;
             dispose();
         } catch (BusinessException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Erro no Cadastro", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Ocorreu um erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ocorreu um erro inesperado: " + e.getMessage(), "Erro",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 }

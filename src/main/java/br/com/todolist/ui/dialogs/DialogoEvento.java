@@ -18,7 +18,7 @@ import java.time.format.DateTimeParseException;
 public class DialogoEvento extends JDialog {
 
     /** Controlador de eventos para persistência dos dados. */
-    private final EventController eventController;
+    private final transient EventController eventController;
 
     /** Evento a ser editado (null se for cadastro). */
     private Evento evento;
@@ -47,7 +47,7 @@ public class DialogoEvento extends JDialog {
     /**
      * Construtor para criação de um novo evento.
      *
-     * @param frame          O frame pai da janela.
+     * @param frame           O frame pai da janela.
      * @param eventController O controlador de eventos.
      */
     public DialogoEvento(Frame frame, EventController eventController) {
@@ -61,8 +61,8 @@ public class DialogoEvento extends JDialog {
     /**
      * Construtor para edição de um evento existente.
      *
-     * @param frame           O frame pai da janela.
-     * @param eventController O controlador de eventos.
+     * @param frame            O frame pai da janela.
+     * @param eventController  O controlador de eventos.
      * @param eventoParaEditar O evento a ser editado.
      */
     public DialogoEvento(Frame frame, EventController eventController, Evento eventoParaEditar) {
@@ -73,7 +73,7 @@ public class DialogoEvento extends JDialog {
         preencherCampos();
         configurarAcoes();
     }
-    
+
     /**
      * Inicializa e posiciona os componentes da interface gráfica.
      */
@@ -89,7 +89,7 @@ public class DialogoEvento extends JDialog {
         add(labelTitulo);
 
         campoTitulo = new JTextField();
-        campoTitulo.setBounds(600, 230, 400 , 30);
+        campoTitulo.setBounds(600, 230, 400, 30);
         add(campoTitulo);
 
         JLabel labelDescricao = new JLabel("Descrição:");
@@ -116,7 +116,7 @@ public class DialogoEvento extends JDialog {
         botaoCancelar.setBounds(750, 425, 120, 30);
         add(botaoCancelar);
     }
-    
+
     /**
      * Preenche os campos do formulário com os dados do evento em edição.
      */

@@ -11,7 +11,8 @@ import javax.swing.JTabbedPane;
 
 /**
  * A tela principal da aplicação.
- * Contém as abas para gerenciamento de tarefas e eventos, além da barra de ferramentas.
+ * Contém as abas para gerenciamento de tarefas e eventos, além da barra de
+ * ferramentas.
  * Exibe o nome do usuário logado no título.
  */
 public class TelaPrincipal extends JFrame {
@@ -26,10 +27,10 @@ public class TelaPrincipal extends JFrame {
     private JTabbedPane painelComAbas;
 
     /** Controlador de tarefas. */
-    private TaskController taskController;
+    private transient TaskController taskController;
 
     /** Controlador de eventos. */
-    private EventController eventController;
+    private transient EventController eventController;
 
     /**
      * Construtor da classe TelaPrincipal.
@@ -58,7 +59,8 @@ public class TelaPrincipal extends JFrame {
     }
 
     /**
-     * Monta o layout da tela, adicionando a barra de ferramentas e o painel de abas.
+     * Monta o layout da tela, adicionando a barra de ferramentas e o painel de
+     * abas.
      */
     private void montarLayout() {
         setJMenuBar(BarraFerramentas.criarBarraFerramentas(this, taskController, eventController));
@@ -83,7 +85,8 @@ public class TelaPrincipal extends JFrame {
     }
 
     /**
-     * Atualiza o painel de tarefas com uma lista específica de tarefas e seleciona a aba de tarefas.
+     * Atualiza o painel de tarefas com uma lista específica de tarefas e seleciona
+     * a aba de tarefas.
      * Útil para exibir resultados de filtros.
      *
      * @param tarefas A lista de tarefas a ser exibida.
@@ -94,7 +97,8 @@ public class TelaPrincipal extends JFrame {
     }
 
     /**
-     * Atualiza o painel de eventos com uma lista específica de eventos e seleciona a aba de eventos.
+     * Atualiza o painel de eventos com uma lista específica de eventos e seleciona
+     * a aba de eventos.
      * Útil para exibir resultados de filtros.
      *
      * @param eventos A lista de eventos a ser exibida.

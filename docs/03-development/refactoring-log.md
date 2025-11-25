@@ -37,6 +37,23 @@ O código original misturava lógica de apresentação (Swing) com lógica de ba
 
 ---
 
+## 🔄 Fase 3: Qualidade de Código e Integração SonarQube
+
+### Integração Contínua e Análise Estática
+Implementação de análise estática de código utilizando **SonarQube** via MCP (Model Context Protocol) e Docker.
+
+### Melhorias Realizadas
+1.  **Segurança e Serialização**:
+    *   Correção de problemas de serialização em classes de UI (`TelaPrincipal`, `TelaLogin`, etc.) tornando os controladores `transient`.
+2.  **Performance e Boas Práticas**:
+    *   Substituição de `Stream.collect(Collectors.toList())` por `.toList()` (Java 16+).
+    *   Otimização de Logs: Uso de `Supplier<String>` (Lambdas) nos Loggers para evitar processamento desnecessário de strings.
+3.  **Manutenibilidade**:
+    *   Remoção de "Magic Strings" e literais duplicados (ex: constantes para mensagens de erro e prefixos de cache).
+    *   Substituição de `System.out/err` por `java.util.logging.Logger`.
+
+---
+
 ## 📊 Comparativo: Antes vs Depois
 
 ### Fluxo de Dependências

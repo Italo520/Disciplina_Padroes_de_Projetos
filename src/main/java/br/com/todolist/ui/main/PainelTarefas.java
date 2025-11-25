@@ -24,7 +24,7 @@ import java.util.List;
 public class PainelTarefas extends PainelBase {
 
     /** Controlador de tarefas para operações de negócio. */
-    private final TaskController taskController;
+    private final transient TaskController taskController;
 
     /** Modelo de lista para as tarefas exibidas. */
     private DefaultListModel<Tarefa> modeloListaTarefas;
@@ -52,6 +52,8 @@ public class PainelTarefas extends PainelBase {
 
     /** Formatador de data padrão para exibição (dd/MM/yyyy). */
     private final DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+    private static final String ERROR_PREFIX = "Erro: ";
 
     /**
      * Construtor da classe PainelTarefas.
@@ -91,7 +93,8 @@ public class PainelTarefas extends PainelBase {
     }
 
     /**
-     * Cria o painel de conteúdo principal, contendo a lista de tarefas e o painel de detalhes.
+     * Cria o painel de conteúdo principal, contendo a lista de tarefas e o painel
+     * de detalhes.
      *
      * @return O painel de conteúdo.
      */
@@ -217,7 +220,8 @@ public class PainelTarefas extends PainelBase {
                 tarefas.forEach(modeloListaTarefas::addElement);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao listar tarefas: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao listar tarefas: " + e.getMessage(), "Erro",
+                    JOptionPane.ERROR_MESSAGE);
         }
         atualizarListaSubtarefas(null);
         atualizarDetalhesTarefa(null);
@@ -234,7 +238,7 @@ public class PainelTarefas extends PainelBase {
             tarefa.getSubtarefas().forEach(modeloListaSubtarefas::addElement);
         }
     }
-    
+
     /**
      * Filtra a lista para exibir apenas as tarefas de um dia específico.
      *
@@ -248,7 +252,7 @@ public class PainelTarefas extends PainelBase {
         atualizarListaSubtarefas(null);
         atualizarDetalhesTarefa(null);
     }
-    
+
     // OUVINTES
 
     /**
@@ -256,7 +260,8 @@ public class PainelTarefas extends PainelBase {
      */
     private class OuvinteBotaoNovaTarefa implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this), taskController);
+            DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this),
+                    taskController);
             dialogo.setVisible(true);
             if (dialogo.foiSalvo()) {
                 popularListaTarefas();
@@ -271,10 +276,12 @@ public class PainelTarefas extends PainelBase {
         public void actionPerformed(ActionEvent e) {
             Tarefa tarefaSelecionada = listaDeTarefas.getSelectedValue();
             if (tarefaSelecionada == null) {
-                JOptionPane.showMessageDialog(PainelTarefas.this, "Por favor, selecione uma tarefa para editar.", "Nenhuma Tarefa Selecionada", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(PainelTarefas.this, "Por favor, selecione uma tarefa para editar.",
+                        "Nenhuma Tarefa Selecionada", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this), taskController, tarefaSelecionada);
+            DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this),
+                    taskController, tarefaSelecionada);
             dialogo.setVisible(true);
             if (dialogo.foiSalvo()) {
                 popularListaTarefas();
@@ -289,7 +296,8 @@ public class PainelTarefas extends PainelBase {
         public void actionPerformed(ActionEvent e) {
             Tarefa tarefaSelecionada = listaDeTarefas.getSelectedValue();
             if (tarefaSelecionada == null) {
-                JOptionPane.showMessageDialog(PainelTarefas.this, "Por favor, selecione uma tarefa para excluir.", "Nenhuma Tarefa Selecionada", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(PainelTarefas.this, "Por favor, selecione uma tarefa para excluir.",
+                        "Nenhuma Tarefa Selecionada", JOptionPane.WARNING_MESSAGE);
                 return;
             }
             int resposta = JOptionPane.showConfirmDialog(PainelTarefas.this,
@@ -302,14 +310,16 @@ public class PainelTarefas extends PainelBase {
                     taskController.excluirTarefa(tarefaSelecionada);
                     popularListaTarefas();
                 } catch (BusinessException ex) {
-                    JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro",
+                            JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(PainelTarefas.this, "Erro ao excluir tarefa: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(PainelTarefas.this, "Erro ao excluir tarefa: " + ex.getMessage(),
+                            "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
     }
-    
+
     /**
      * Listener para mudanças na seleção da lista de tarefas.
      */
@@ -340,15 +350,17 @@ public class PainelTarefas extends PainelBase {
                         listaDeSubtarefas.repaint(listaDeSubtarefas.getCellBounds(index, index));
                         listaDeTarefas.repaint();
                     } catch (BusinessException ex) {
-                         JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro ao Atualizar", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro ao Atualizar",
+                                JOptionPane.ERROR_MESSAGE);
                     } catch (Exception ex) {
-                         JOptionPane.showMessageDialog(PainelTarefas.this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(PainelTarefas.this, ERROR_PREFIX + ex.getMessage(), "Erro",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
         }
     }
-    
+
     /**
      * Listener para o botão "Nova Subtarefa".
      */
@@ -356,10 +368,13 @@ public class PainelTarefas extends PainelBase {
         public void actionPerformed(ActionEvent e) {
             Tarefa tarefaPai = listaDeTarefas.getSelectedValue();
             if (tarefaPai == null) {
-                JOptionPane.showMessageDialog(PainelTarefas.this, "Selecione uma tarefa principal para adicionar uma subtarefa.", "Nenhuma Tarefa Selecionada", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(PainelTarefas.this,
+                        "Selecione uma tarefa principal para adicionar uma subtarefa.", "Nenhuma Tarefa Selecionada",
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            String descricao = JOptionPane.showInputDialog(PainelTarefas.this, "Descrição da nova subtarefa:", "Nova Subtarefa", JOptionPane.PLAIN_MESSAGE);
+            String descricao = JOptionPane.showInputDialog(PainelTarefas.this, "Descrição da nova subtarefa:",
+                    "Nova Subtarefa", JOptionPane.PLAIN_MESSAGE);
             if (descricao != null && !descricao.trim().isEmpty()) {
                 tarefaPai.adicionarSubtarefa(new Subtarefa(descricao));
                 try {
@@ -368,14 +383,16 @@ public class PainelTarefas extends PainelBase {
                     atualizarDetalhesTarefa(tarefaPai);
                     listaDeTarefas.repaint();
                 } catch (BusinessException ex) {
-                    JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro",
+                            JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(PainelTarefas.this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(PainelTarefas.this, ERROR_PREFIX + ex.getMessage(), "Erro",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
     }
-    
+
     /**
      * Listener para o botão "Editar Subtarefa".
      */
@@ -384,19 +401,23 @@ public class PainelTarefas extends PainelBase {
             Tarefa tarefaPai = listaDeTarefas.getSelectedValue();
             Subtarefa subtarefa = listaDeSubtarefas.getSelectedValue();
             if (tarefaPai == null || subtarefa == null) {
-                JOptionPane.showMessageDialog(PainelTarefas.this, "Selecione uma subtarefa para editar.", "Nenhuma Subtarefa Selecionada", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(PainelTarefas.this, "Selecione uma subtarefa para editar.",
+                        "Nenhuma Subtarefa Selecionada", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            String novoTitulo = (String) JOptionPane.showInputDialog(PainelTarefas.this, "Nova descrição:", "Editar Subtarefa", JOptionPane.PLAIN_MESSAGE, null, null, subtarefa.getTitulo());
+            String novoTitulo = (String) JOptionPane.showInputDialog(PainelTarefas.this, "Nova descrição:",
+                    "Editar Subtarefa", JOptionPane.PLAIN_MESSAGE, null, null, subtarefa.getTitulo());
             if (novoTitulo != null && !novoTitulo.trim().isEmpty()) {
                 subtarefa.setTitulo(novoTitulo);
                 try {
                     taskController.atualizarTarefa(tarefaPai);
                     atualizarListaSubtarefas(tarefaPai);
                 } catch (BusinessException ex) {
-                    JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro",
+                            JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(PainelTarefas.this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(PainelTarefas.this, ERROR_PREFIX + ex.getMessage(), "Erro",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -410,10 +431,13 @@ public class PainelTarefas extends PainelBase {
             Tarefa tarefaPai = listaDeTarefas.getSelectedValue();
             Subtarefa subtarefa = listaDeSubtarefas.getSelectedValue();
             if (tarefaPai == null || subtarefa == null) {
-                JOptionPane.showMessageDialog(PainelTarefas.this, "Selecione uma subtarefa para excluir.", "Nenhuma Subtarefa Selecionada", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(PainelTarefas.this, "Selecione uma subtarefa para excluir.",
+                        "Nenhuma Subtarefa Selecionada", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            int resposta = JOptionPane.showConfirmDialog(PainelTarefas.this, "Excluir a subtarefa '" + subtarefa.getTitulo() + "'?", "Confirmar Exclusão", JOptionPane.YES_NO_OPTION);
+            int resposta = JOptionPane.showConfirmDialog(PainelTarefas.this,
+                    "Excluir a subtarefa '" + subtarefa.getTitulo() + "'?", "Confirmar Exclusão",
+                    JOptionPane.YES_NO_OPTION);
             if (resposta == JOptionPane.YES_OPTION) {
                 tarefaPai.removerSubtarefa(subtarefa);
                 try {
@@ -422,9 +446,11 @@ public class PainelTarefas extends PainelBase {
                     atualizarDetalhesTarefa(tarefaPai);
                     listaDeTarefas.repaint();
                 } catch (BusinessException ex) {
-                     JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro",
+                            JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
-                     JOptionPane.showMessageDialog(PainelTarefas.this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(PainelTarefas.this, "Erro: " + ex.getMessage(), "Erro",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

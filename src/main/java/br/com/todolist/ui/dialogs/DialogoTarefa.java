@@ -12,12 +12,13 @@ import java.time.format.DateTimeParseException;
 
 /**
  * Diálogo modal para cadastro e edição de Tarefas.
- * Oferece um formulário para preencher título, descrição, prioridade e prazo da tarefa.
+ * Oferece um formulário para preencher título, descrição, prioridade e prazo da
+ * tarefa.
  */
 public class DialogoTarefa extends JDialog {
 
     /** Controlador de tarefas para persistência dos dados. */
-    private final TaskController taskController;
+    private final transient TaskController taskController;
 
     /** Tarefa a ser editada (null se for cadastro). */
     private Tarefa tarefa;
@@ -63,8 +64,8 @@ public class DialogoTarefa extends JDialog {
     /**
      * Construtor para edição de uma tarefa existente.
      *
-     * @param frame           O frame pai da janela.
-     * @param taskController  O controlador de tarefas.
+     * @param frame            O frame pai da janela.
+     * @param taskController   O controlador de tarefas.
      * @param tarefaParaEditar A tarefa a ser editada.
      */
     public DialogoTarefa(Frame frame, TaskController taskController, Tarefa tarefaParaEditar) {
@@ -91,7 +92,7 @@ public class DialogoTarefa extends JDialog {
         add(labelTitulo);
 
         campoTitulo = new JTextField();
-        campoTitulo.setBounds(600, 230, 400 , 30);
+        campoTitulo.setBounds(600, 230, 400, 30);
         add(campoTitulo);
 
         JLabel labelDescricao = new JLabel("Descrição:");
@@ -126,7 +127,7 @@ public class DialogoTarefa extends JDialog {
         botaoCancelar.setBounds(750, 425, 120, 30);
         add(botaoCancelar);
     }
-    
+
     /**
      * Preenche os campos do formulário com os dados da tarefa em edição.
      */
@@ -155,7 +156,8 @@ public class DialogoTarefa extends JDialog {
         try {
             String titulo = campoTitulo.getText().trim();
             if (titulo.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "O campo 'Título' é obrigatório.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "O campo 'Título' é obrigatório.", "Erro de Validação",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
             String descricao = campoDescricao.getText().trim();
@@ -174,14 +176,16 @@ public class DialogoTarefa extends JDialog {
             dispose();
 
         } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy.", "Erro de Formato",
+                    JOptionPane.ERROR_MESSAGE);
         } catch (BusinessException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro inesperado: " + e.getMessage(), "Erro",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     /**
      * Indica se a operação de salvar foi concluída com sucesso.
      *

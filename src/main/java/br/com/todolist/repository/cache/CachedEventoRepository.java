@@ -5,16 +5,21 @@ import br.com.todolist.repository.IEventoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Decorator para adicionar cache Redis ao repositório de Eventos.
  */
 public class CachedEventoRepository implements IEventoRepository {
 
+    private static final Logger LOGGER = Logger.getLogger(CachedEventoRepository.class.getName());
+    private static final String CACHE_KEY_PREFIX = "evento:";
+    private static final int TTL = 300; // 5 minutos
+
     private final IEventoRepository decoratedRepository;
     private final RedisCacheManager cacheManager;
     private final ObjectMapper objectMapper;
-    private static final int TTL = 300; // 5 minutos
 
     public CachedEventoRepository(IEventoRepository decoratedRepository) {
         this.decoratedRepository = decoratedRepository;
@@ -25,14 +30,14 @@ public class CachedEventoRepository implements IEventoRepository {
 
     @Override
     public Evento buscarPorId(String id) {
-        String key = "evento:" + id;
+        String key = CACHE_KEY_PREFIX + id;
         String json = cacheManager.buscar(key);
 
         if (json != null) {
             try {
                 return objectMapper.readValue(json, Evento.class);
             } catch (Exception e) {
-                System.err.println("Erro ao deserializar Evento do cache: " + e.getMessage());
+                LOGGER.log(Level.SEVERE, e, () -> "Erro ao deserializar Evento do cache: " + e.getMessage());
             }
         }
 
@@ -42,7 +47,7 @@ public class CachedEventoRepository implements IEventoRepository {
                 String jsonValue = objectMapper.writeValueAsString(evento);
                 cacheManager.salvar(key, jsonValue, TTL);
             } catch (Exception e) {
-                System.err.println("Erro ao serializar Evento para o cache: " + e.getMessage());
+                LOGGER.log(Level.SEVERE, e, () -> "Erro ao serializar Evento para o cache: " + e.getMessage());
             }
         }
         return evento;
@@ -51,19 +56,19 @@ public class CachedEventoRepository implements IEventoRepository {
     @Override
     public void salvar(Evento entity) {
         decoratedRepository.salvar(entity);
-        cacheManager.remover("evento:" + entity.getTitulo());
+        cacheManager.remover(CACHE_KEY_PREFIX + entity.getTitulo());
     }
 
     @Override
     public void atualizar(Evento entity) {
         decoratedRepository.atualizar(entity);
-        cacheManager.remover("evento:" + entity.getTitulo());
+        cacheManager.remover(CACHE_KEY_PREFIX + entity.getTitulo());
     }
 
     @Override
     public void excluir(Evento entity) {
         decoratedRepository.excluir(entity);
-        cacheManager.remover("evento:" + entity.getTitulo());
+        cacheManager.remover(CACHE_KEY_PREFIX + entity.getTitulo());
     }
 
     @Override

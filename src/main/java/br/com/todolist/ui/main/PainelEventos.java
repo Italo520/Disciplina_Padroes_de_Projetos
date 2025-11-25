@@ -17,12 +17,13 @@ import java.util.List;
 
 /**
  * Painel responsável pela gestão visual dos eventos.
- * Exibe a lista de eventos e seus detalhes, incluindo o tempo restante para o prazo.
+ * Exibe a lista de eventos e seus detalhes, incluindo o tempo restante para o
+ * prazo.
  */
 public class PainelEventos extends PainelBase {
 
     /** Controlador responsável pelas operações de eventos. */
-    private final EventController eventController;
+    private final transient EventController eventController;
 
     /** Modelo de lista para armazenar os eventos exibidos. */
     private DefaultListModel<Evento> modeloListaEventos;
@@ -70,7 +71,8 @@ public class PainelEventos extends PainelBase {
     }
 
     /**
-     * Cria o painel de conteúdo principal, contendo a lista de eventos e os detalhes.
+     * Cria o painel de conteúdo principal, contendo a lista de eventos e os
+     * detalhes.
      *
      * @return O painel de conteúdo.
      */
@@ -111,7 +113,6 @@ public class PainelEventos extends PainelBase {
         return painelDeConteudo;
     }
 
-
     /**
      * Atualiza os campos de detalhes com as informações do evento selecionado.
      * Calcula e exibe o tempo restante para o evento.
@@ -150,7 +151,8 @@ public class PainelEventos extends PainelBase {
                 modeloListaEventos.addElement(evento);
             }
         } catch (Exception e) {
-             JOptionPane.showMessageDialog(this, "Erro ao listar eventos: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erro ao listar eventos: " + e.getMessage(), "Erro",
+                    JOptionPane.ERROR_MESSAGE);
         }
         atualizarDetalhesEvento(null);
     }
@@ -167,9 +169,9 @@ public class PainelEventos extends PainelBase {
         }
         atualizarDetalhesEvento(null);
     }
-    
+
     // OUVINTES
-    
+
     /**
      * Listener para o botão "Novo Evento".
      */
@@ -192,7 +194,8 @@ public class PainelEventos extends PainelBase {
         public void actionPerformed(ActionEvent e) {
             Evento eventoSelecionado = listaDeEventos.getSelectedValue();
             if (eventoSelecionado == null) {
-                JOptionPane.showMessageDialog(PainelEventos.this, "Selecione um evento para editar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(PainelEventos.this, "Selecione um evento para editar.", "Aviso",
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
@@ -213,7 +216,8 @@ public class PainelEventos extends PainelBase {
         public void actionPerformed(ActionEvent e) {
             Evento eventoSelecionado = listaDeEventos.getSelectedValue();
             if (eventoSelecionado == null) {
-                JOptionPane.showMessageDialog(PainelEventos.this, "Selecione um evento para excluir.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(PainelEventos.this, "Selecione um evento para excluir.", "Aviso",
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
@@ -226,9 +230,11 @@ public class PainelEventos extends PainelBase {
                     eventController.excluirEvento(eventoSelecionado);
                     popularListaEventos();
                 } catch (BusinessException ex) {
-                     JOptionPane.showMessageDialog(PainelEventos.this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(PainelEventos.this, ex.getMessage(), "Erro",
+                            JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
-                     JOptionPane.showMessageDialog(PainelEventos.this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(PainelEventos.this, "Erro: " + ex.getMessage(), "Erro",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

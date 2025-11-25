@@ -13,6 +13,12 @@ volumes:
     driver: local
   redis-data:
     driver: local
+  sonarqube-data:
+    driver: local
+  sonarqube-extensions:
+    driver: local
+  sonarqube-logs:
+    driver: local
 
 services:
   # Banco de dados PostgreSQL
@@ -120,3 +126,25 @@ services:
     #   DISPLAY: ${DISPLAY}
     # volumes:
     #   - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+  # SonarQube (Análise de Código)
+  sonarqube:
+    image: sonarqube:community
+    container_name: todolist-sonarqube
+    restart: unless-stopped
+    environment:
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    ports:
+      - "9000:9000"
+    networks:
+      - todolist-network
+    volumes:
+      - sonarqube-data:/opt/sonarqube/data
+      - sonarqube-extensions:/opt/sonarqube/extensions
+      - sonarqube-logs:/opt/sonarqube/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/api/system/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s

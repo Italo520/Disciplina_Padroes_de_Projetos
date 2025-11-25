@@ -10,6 +10,8 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import java.io.File;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Implementação concreta de INotificador para envio de notificações via e-mail.
@@ -21,6 +23,7 @@ import java.util.Properties;
  */
 public class NotificadorEmail implements INotificador {
 
+    private static final Logger LOGGER = Logger.getLogger(NotificadorEmail.class.getName());
     private static final String USERNAME = "ads.ifpb.testes@gmail.com";
     private static final String PASSWORD = "bjjgvzasdhjieabu";
     private static final String HOST = "smtp.gmail.com";
@@ -63,11 +66,10 @@ public class NotificadorEmail implements INotificador {
             message.setSubject(assunto);
             message.setText(mensagem);
             Transport.send(message);
-            System.out.println("Email enviado para " + destinatario + " com sucesso!");
+            LOGGER.info(() -> "Email enviado para " + destinatario + " com sucesso!");
             return true;
         } catch (MessagingException e) {
-            System.err.println("Erro ao enviar o email: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e, () -> "Erro ao enviar o email: " + e.getMessage());
             return false;
         }
     }
@@ -104,8 +106,8 @@ public class NotificadorEmail implements INotificador {
                 anexoBodyPart.setDataHandler(new DataHandler(source));
                 anexoBodyPart.setFileName(arquivoAnexo.getName());
             } else {
-                System.err.println(
-                        "Aviso: O arquivo '" + caminhoArquivo + "' não foi encontrado. E-mail não será enviado.");
+                LOGGER.warning(
+                        () -> "Aviso: O arquivo '" + caminhoArquivo + "' não foi encontrado. E-mail não será enviado.");
                 return false;
             }
 
@@ -116,12 +118,11 @@ public class NotificadorEmail implements INotificador {
             message.setContent(multipart);
 
             Transport.send(message);
-            System.out.println("Email com anexo enviado para " + destinatario + " com sucesso!");
+            LOGGER.info(() -> "Email com anexo enviado para " + destinatario + " com sucesso!");
             return true;
 
         } catch (MessagingException e) {
-            System.err.println("Erro ao enviar o email com anexo: " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, e, () -> "Erro ao enviar o email com anexo: " + e.getMessage());
             return false;
         }
     }

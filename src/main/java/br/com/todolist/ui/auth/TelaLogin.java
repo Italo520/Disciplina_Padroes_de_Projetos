@@ -26,7 +26,7 @@ public class TelaLogin extends JFrame {
     private JButton botaoCriarConta;
 
     /** Controlador de autenticação. */
-    private final AuthController authController;
+    private final transient AuthController authController;
 
     /**
      * Construtor padrão da classe TelaLogin.
@@ -38,7 +38,7 @@ public class TelaLogin extends JFrame {
         configurarLayout();
         configurarAcoes();
     }
-    
+
     /**
      * Configura o layout e os componentes da tela de login.
      */
@@ -47,7 +47,7 @@ public class TelaLogin extends JFrame {
         setSize(1280, 720);
         setLocationRelativeTo(null);
         setResizable(false);
-        setLayout(null); 
+        setLayout(null);
 
         // Campo de Email
         JLabel labelEmail = new JLabel("Email:");
@@ -56,12 +56,12 @@ public class TelaLogin extends JFrame {
 
         campoEmail = new JTextField();
         campoEmail.setBounds(550, 260, 250, 30);
-        add(campoEmail); 
-        
+        add(campoEmail);
+
         // Campo de Senha
         JLabel labelSenha = new JLabel("Senha:");
         labelSenha.setBounds(440, 305, 100, 30);
-        add(labelSenha); 
+        add(labelSenha);
 
         campoSenha = new JPasswordField();
         campoSenha.setBounds(550, 305, 250, 30);
@@ -104,7 +104,8 @@ public class TelaLogin extends JFrame {
         } catch (BusinessException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Erro de Login", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Ocorreu um erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Ocorreu um erro inesperado: " + e.getMessage(), "Erro",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 

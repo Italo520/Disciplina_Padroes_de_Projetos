@@ -54,3 +54,11 @@ volumes/
 postgres-data/
 mongodb-data/
 redis-data/
+sonarqube-data/
+sonarqube-extensions/
+sonarqube-logs/
+
+# Relatórios SonarQube
+sonar_issues*.json
+
+!.vscode/mcp.json

@@ -28,6 +28,7 @@ import java.util.List;
  */
 public class ReportServiceImpl implements IReportService {
 
+    private static final String DATE_PATTERN = "dd/MM/yyyy";
     private final ITaskService taskService;
     private final INotificador notificador;
     private final IGeradorRelatorio geradorPDF;
@@ -68,7 +69,7 @@ public class ReportServiceImpl implements IReportService {
             return false;
         }
         String nomeArquivo = "Relatorio_Tarefas_" + dia.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + ".pdf";
-        String tituloRelatorio = "Relatório de Tarefas - " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String tituloRelatorio = "Relatório de Tarefas - " + dia.format(DateTimeFormatter.ofPattern(DATE_PATTERN));
         String[] cabecalhos = { "Título", "Descrição", "Prioridade" };
         List<String[]> dados = new ArrayList<>();
         for (Tarefa t : tarefas) {
@@ -78,9 +79,9 @@ public class ReportServiceImpl implements IReportService {
         // Usa o gerador de PDF através da interface
         geradorPDF.gerarRelatorio(nomeArquivo, tituloRelatorio, cabecalhos, dados);
 
-        String assunto = "Seu Relatório de Tarefas do Dia: " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String assunto = "Seu Relatório de Tarefas do Dia: " + dia.format(DateTimeFormatter.ofPattern(DATE_PATTERN));
         String corpo = "Olá!\n\nSegue em anexo o relatório com suas tarefas para o dia "
-                + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ".\n\nAtenciosamente,\nSistema ToDoList.";
+                + dia.format(DateTimeFormatter.ofPattern(DATE_PATTERN)) + ".\n\nAtenciosamente,\nSistema ToDoList.";
 
         // Usa o notificador através da interface
         boolean sucesso = notificador.enviarNotificacaoComAnexo(usuario.getEmail(), assunto, corpo, nomeArquivo);
@@ -100,7 +101,7 @@ public class ReportServiceImpl implements IReportService {
     public void gerarRelatorioTarefasPorMes(YearMonth mes, String nomeArquivo) {
         List<Tarefa> tarefasDoMes = new ArrayList<>();
         for (Tarefa t : taskService.listarTodasTarefas()) {
-            if (YearMonth.from(t.getDeadline()).equals(mes)) {
+            if (t.getDeadline() != null && YearMonth.from(t.getDeadline()).equals(mes)) {
                 tarefasDoMes.add(t);
             }
         }
@@ -111,7 +112,7 @@ public class ReportServiceImpl implements IReportService {
                     t.getTitulo(),
                     t.getDescricao(),
                     String.valueOf(t.getPrioridade()),
-                    t.getDeadline().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                    t.getDeadline().format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
             });
         }
         List<String> colunaExtra = new ArrayList<>();

@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Implementação do serviço de eventos.
@@ -123,7 +122,7 @@ public class EventServiceImpl implements IEventService {
     public List<Evento> listarTodosEventos() {
         return eventoRepository.buscarTodos().stream()
                 .filter(evento -> evento.getCriado_por().equals(emailUsuario))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -136,7 +135,7 @@ public class EventServiceImpl implements IEventService {
     public List<Evento> listarEventosPorDia(LocalDate dia) {
         return listarTodosEventos().stream()
                 .filter(evento -> evento.getDeadline().isEqual(dia))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -149,7 +148,7 @@ public class EventServiceImpl implements IEventService {
     public List<Evento> listarEventosPorMes(YearMonth mes) {
         return listarTodosEventos().stream()
                 .filter(evento -> YearMonth.from(evento.getDeadline()).equals(mes))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
