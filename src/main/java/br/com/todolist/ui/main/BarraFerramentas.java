@@ -22,7 +22,8 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Classe utilitária responsável por criar a barra de menu (ferramentas) da aplicação.
+ * Classe utilitária responsável por criar a barra de menu (ferramentas) da
+ * aplicação.
  * Contém as opções de arquivo, tarefas, eventos, aparência e ajuda.
  */
 public class BarraFerramentas {
@@ -45,7 +46,8 @@ public class BarraFerramentas {
      * @param eventController O controlador de eventos.
      * @return Um objeto JMenuBar configurado.
      */
-    public static JMenuBar criarBarraFerramentas(TelaPrincipal frame, TaskController taskController, EventController eventController) {
+    public static JMenuBar criarBarraFerramentas(TelaPrincipal frame, TaskController taskController,
+            EventController eventController) {
         JMenuBar menuBar = new JMenuBar();
         AppController appController = AppController.getInstance();
 
@@ -63,7 +65,7 @@ public class BarraFerramentas {
 
         JMenuItem listarTarefasPorDia = new JMenuItem("Listar Tarefas por Dia");
         listarTarefasPorDia.addActionListener(new OuvinteListarTarefasPorDia(frame, taskController));
-        
+
         JMenuItem listarTarefasCriticas = new JMenuItem("Listar Tarefas Críticas");
         listarTarefasCriticas.addActionListener(new OuvinteListarTarefasCriticas(frame, taskController));
 
@@ -72,28 +74,30 @@ public class BarraFerramentas {
 
         JMenuItem enviarEmailTarefas = new JMenuItem("Enviar Tarefas do Dia por Email");
         enviarEmailTarefas.addActionListener(new OuvinteEnviarEmailTarefas(frame, appController));
-        
+
         JMenuItem relatorioTarefasPorMes = new JMenuItem("Relatório de Tarefas por Mês (Excel)");
         relatorioTarefasPorMes.addActionListener(new OuvinteGerarExcelTarefas(frame, appController));
-        
+
         JMenuItem listarEventosPorDia = new JMenuItem("Listar Eventos por Dia");
         listarEventosPorDia.addActionListener(new OuvinteListarEventosPorDia(frame, eventController));
-        
+
         JMenuItem listarEventosMesEspecifico = new JMenuItem("Listar Eventos por Mês");
         listarEventosMesEspecifico.addActionListener(new OuvinteListarEventosPorMes(frame, eventController));
 
         JMenuItem itemSobre = new JMenuItem("Sobre");
         itemSobre.addActionListener(e -> JOptionPane.showMessageDialog(frame,
                 "Aplicação de Lista de Tarefas\nVersão 2.0\nCriado Por: Ítalo Santos e Rickson Costa\n"
-                + "Disciplina de POO\nCurso ADS - IFPB\n2025",
+                        + "Disciplina de POO\nCurso ADS - IFPB\n2025",
                 "Sobre", JOptionPane.INFORMATION_MESSAGE));
 
         ButtonGroup grupoDeTemas = new ButtonGroup();
 
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Carbon (Padrão)", FlatCarbonIJTheme.class.getName(), true);
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Dracula", FlatDraculaIJTheme.class.getName(), false);
-        adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Solarized Light", FlatSolarizedLightIJTheme.class.getName(), false);
-        adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "High Contrast", FlatHighContrastIJTheme.class.getName(), false);
+        adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Solarized Light", FlatSolarizedLightIJTheme.class.getName(),
+                false);
+        adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "High Contrast", FlatHighContrastIJTheme.class.getName(),
+                false);
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Vuesion", FlatVuesionIJTheme.class.getName(), false);
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Light", FlatLightLaf.class.getName(), false);
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Dark", FlatDarkLaf.class.getName(), false);
@@ -120,13 +124,14 @@ public class BarraFerramentas {
     /**
      * Adiciona uma opção de tema ao menu de aparência.
      *
-     * @param menu         O menu onde o item será adicionado.
-     * @param grupo        O grupo de botões (para garantir seleção única).
-     * @param nome         O nome visível do tema.
-     * @param className    O nome da classe do Look and Feel.
-     * @param selecionado  Se o tema deve vir selecionado por padrão.
+     * @param menu        O menu onde o item será adicionado.
+     * @param grupo       O grupo de botões (para garantir seleção única).
+     * @param nome        O nome visível do tema.
+     * @param className   O nome da classe do Look and Feel.
+     * @param selecionado Se o tema deve vir selecionado por padrão.
      */
-    private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String nome, String className, boolean selecionado) {
+    private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String nome, String className,
+            boolean selecionado) {
         JRadioButtonMenuItem itemMenu = new JRadioButtonMenuItem(nome, selecionado);
         itemMenu.addActionListener(e -> {
             try {
@@ -158,7 +163,8 @@ public class BarraFerramentas {
         try {
             return Optional.of(LocalDate.parse(dataInput, FORMATADOR_DATA));
         } catch (DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(frame, "Formato de data inválido! Use dd/MM/yyyy.", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Formato de data inválido! Use dd/MM/yyyy.", "Erro",
+                    JOptionPane.ERROR_MESSAGE);
             return Optional.empty();
         }
     }
@@ -178,7 +184,8 @@ public class BarraFerramentas {
         try {
             return Optional.of(YearMonth.parse(mesAnoInput, FORMATADOR_MES_ANO));
         } catch (DateTimeParseException ex) {
-            JOptionPane.showMessageDialog(frame, "Formato de data inválido! Use MM/yyyy.", "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Formato de data inválido! Use MM/yyyy.", "Erro",
+                    JOptionPane.ERROR_MESSAGE);
             return Optional.empty();
         }
     }
@@ -194,15 +201,17 @@ public class BarraFerramentas {
             this.frame = frame;
             this.taskController = taskController;
         }
+
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para listar as tarefas (dd/MM/yyyy):")
-                .ifPresent(dia -> {
-                    List<Tarefa> tarefas = taskController.listarTarefasPorDia(dia);
-                    if (tarefas.isEmpty()) {
-                        JOptionPane.showMessageDialog(frame, "Nenhuma tarefa encontrada para esta data.", "Informação", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                    frame.atualizarPainelDeTarefas(tarefas);
-                });
+                    .ifPresent(dia -> {
+                        List<Tarefa> tarefas = taskController.listarTarefasPorDia(dia);
+                        if (tarefas.isEmpty()) {
+                            JOptionPane.showMessageDialog(frame, "Nenhuma tarefa encontrada para esta data.",
+                                    "Informação", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                        frame.atualizarPainelDeTarefas(tarefas);
+                    });
         }
     }
 
@@ -217,10 +226,12 @@ public class BarraFerramentas {
             this.frame = frame;
             this.taskController = taskController;
         }
+
         public void actionPerformed(ActionEvent e) {
             List<Tarefa> tarefas = taskController.listarTarefasCriticas();
             if (tarefas.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Nenhuma tarefa crítica encontrada.", "Informação", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Nenhuma tarefa crítica encontrada.", "Informação",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
             frame.atualizarPainelDeTarefas(tarefas);
         }
@@ -237,41 +248,45 @@ public class BarraFerramentas {
             this.frame = frame;
             this.eventController = eventController;
         }
+
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para listar os eventos (dd/MM/yyyy):")
-                .ifPresent(dia -> {
-                    List<Evento> eventos = eventController.listarEventosPorDia(dia);
-                     if (eventos.isEmpty()) {
-                        JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para esta data.", "Informação", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                    frame.atualizarPainelDeEventos(eventos);
-                });
+                    .ifPresent(dia -> {
+                        List<Evento> eventos = eventController.listarEventosPorDia(dia);
+                        if (eventos.isEmpty()) {
+                            JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para esta data.",
+                                    "Informação", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                        frame.atualizarPainelDeEventos(eventos);
+                    });
         }
     }
-    
+
     /**
      * Listener para listar eventos de um mês específico.
      */
     private static class OuvinteListarEventosPorMes implements ActionListener {
         private final TelaPrincipal frame;
         private final EventController eventController;
-        
+
         public OuvinteListarEventosPorMes(TelaPrincipal frame, EventController eventController) {
             this.frame = frame;
             this.eventController = eventController;
         }
+
         public void actionPerformed(ActionEvent e) {
             obterMesAnoDoUsuario(frame, "Digite o mês e ano (MM/yyyy):")
-                .ifPresent(mes -> {
-                    List<Evento> eventos = eventController.listarEventosPorMes(mes);
-                    if (eventos.isEmpty()) {
-                        JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para este mês.", "Informação", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                    frame.atualizarPainelDeEventos(eventos);
-                });
+                    .ifPresent(mes -> {
+                        List<Evento> eventos = eventController.listarEventosPorMes(mes);
+                        if (eventos.isEmpty()) {
+                            JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para este mês.",
+                                    "Informação", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                        frame.atualizarPainelDeEventos(eventos);
+                    });
         }
     }
-    
+
     /**
      * Listener para gerar PDF das tarefas do dia.
      */
@@ -283,12 +298,14 @@ public class BarraFerramentas {
             this.frame = frame;
             this.appController = appController;
         }
+
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para gerar o PDF (dd/MM/yyyy):")
-                .ifPresent(dia -> {
-                    appController.enviarRelatorioTarefasDoDiaPorEmail(dia);
-                    JOptionPane.showMessageDialog(frame, "PDF gerado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                });
+                    .ifPresent(dia -> {
+                        appController.enviarRelatorioTarefasDoDiaPorEmail(dia);
+                        JOptionPane.showMessageDialog(frame, "PDF gerado com sucesso!", "Sucesso",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    });
         }
     }
 
@@ -307,35 +324,47 @@ public class BarraFerramentas {
 
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para o envio do relatório (dd/MM/yyyy):")
-                .ifPresent(dia -> {
-                    frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                    JOptionPane.showMessageDialog(frame, "Enviando e-mail em segundo plano...", "Aguarde", JOptionPane.INFORMATION_MESSAGE);
+                    .ifPresent(dia -> {
+                        frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                        JOptionPane.showMessageDialog(frame, "Enviando e-mail em segundo plano...", "Aguarde",
+                                JOptionPane.INFORMATION_MESSAGE);
 
-                    SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
-                        @Override
-                        protected Boolean doInBackground() throws Exception {
-                            return appController.enviarRelatorioTarefasDoDiaPorEmail(dia);
-                        }
-
-                        protected void done() {
-                            try {
-                                boolean sucesso = get();
-                                if (sucesso) {
-                                    JOptionPane.showMessageDialog(frame, "Email com o relatório em anexo enviado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                                } else {
-                                    JOptionPane.showMessageDialog(frame, "Não foi possível enviar o email.\nVerifique se existem tarefas para a data informada.", "Erro", JOptionPane.ERROR_MESSAGE);
-                                }
-                            } catch (InterruptedException | ExecutionException ex) {
-                                JOptionPane.showMessageDialog(frame, "Ocorreu um erro inesperado ao enviar o e-mail.", "Erro Crítico", JOptionPane.ERROR_MESSAGE);
-                                ex.printStackTrace();
-                            } finally {
-                                frame.setCursor(Cursor.getDefaultCursor());
+                        SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
+                            @Override
+                            protected Boolean doInBackground() throws Exception {
+                                return appController.enviarRelatorioTarefasDoDiaPorEmail(dia);
                             }
-                        }
-                    };
-                    
-                    worker.execute();
-                });
+
+                            protected void done() {
+                                try {
+                                    boolean sucesso = get();
+                                    if (sucesso) {
+                                        JOptionPane.showMessageDialog(frame,
+                                                "Email com o relatório em anexo enviado com sucesso!", "Sucesso",
+                                                JOptionPane.INFORMATION_MESSAGE);
+                                    } else {
+                                        JOptionPane.showMessageDialog(frame,
+                                                "Não foi possível enviar o email.\nVerifique se existem tarefas para a data informada.",
+                                                "Erro", JOptionPane.ERROR_MESSAGE);
+                                    }
+                                } catch (InterruptedException ex) {
+                                    Thread.currentThread().interrupt();
+                                    JOptionPane.showMessageDialog(frame,
+                                            "Operação de envio de e-mail foi interrompida.", "Operação Interrompida",
+                                            JOptionPane.WARNING_MESSAGE);
+                                } catch (ExecutionException ex) {
+                                    JOptionPane.showMessageDialog(frame,
+                                            "Ocorreu um erro inesperado ao enviar o e-mail.", "Erro Crítico",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    ex.printStackTrace();
+                                } finally {
+                                    frame.setCursor(Cursor.getDefaultCursor());
+                                }
+                            }
+                        };
+
+                        worker.execute();
+                    });
         }
     }
 
@@ -345,17 +374,22 @@ public class BarraFerramentas {
     private static class OuvinteGerarExcelTarefas implements ActionListener {
         private final JFrame frame;
         private final AppController appController;
+
         public OuvinteGerarExcelTarefas(JFrame frame, AppController appController) {
             this.frame = frame;
             this.appController = appController;
         }
+
         public void actionPerformed(ActionEvent e) {
             obterMesAnoDoUsuario(frame, "Digite o mês e ano para o relatório (MM/yyyy):")
-                .ifPresent(mes -> {
-                    String nomeArquivo = "Relatorio_Tarefas_" + mes.format(DateTimeFormatter.ofPattern("MM_yyyy")) + ".xlsx";
-                    appController.gerarRelatorioTarefasPorMes(mes, nomeArquivo);
-                    JOptionPane.showMessageDialog(frame, "Relatório Excel '" + nomeArquivo + "' gerado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                });
+                    .ifPresent(mes -> {
+                        String nomeArquivo = "Relatorio_Tarefas_" + mes.format(DateTimeFormatter.ofPattern("MM_yyyy"))
+                                + ".xlsx";
+                        appController.gerarRelatorioTarefasPorMes(mes, nomeArquivo);
+                        JOptionPane.showMessageDialog(frame,
+                                "Relatório Excel '" + nomeArquivo + "' gerado com sucesso!", "Sucesso",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    });
         }
     }
 }

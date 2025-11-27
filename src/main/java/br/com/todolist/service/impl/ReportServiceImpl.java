@@ -8,7 +8,6 @@ import br.com.todolist.util.notificacao.INotificador;
 import br.com.todolist.util.relatorio.IGeradorRelatorio;
 import br.com.todolist.util.relatorio.IGeradorRelatorioAvancado;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -86,7 +85,13 @@ public class ReportServiceImpl implements IReportService {
         // Usa o notificador através da interface
         boolean sucesso = notificador.enviarNotificacaoComAnexo(usuario.getEmail(), assunto, corpo, nomeArquivo);
 
-        new File(nomeArquivo).delete();
+        // Tenta deletar o arquivo temporário
+        try {
+            java.nio.file.Files.delete(java.nio.file.Paths.get(nomeArquivo));
+        } catch (java.io.IOException e) {
+            // Log de falha na exclusão, mas não afeta o retorno do sucesso do envio
+            System.err.println("Aviso: Não foi possível deletar o arquivo temporário: " + nomeArquivo);
+        }
         return sucesso;
     }
 
