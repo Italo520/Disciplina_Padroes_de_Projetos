@@ -43,7 +43,7 @@ public class TelaLogin extends JFrame {
      * Configura o layout e os componentes da tela de login.
      */
     private void configurarLayout() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(1280, 720);
         setLocationRelativeTo(null);
         setResizable(false);

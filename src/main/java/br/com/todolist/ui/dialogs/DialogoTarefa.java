@@ -21,7 +21,7 @@ public class DialogoTarefa extends JDialog {
     private final transient TaskController taskController;
 
     /** Tarefa a ser editada (null se for cadastro). */
-    private Tarefa tarefa;
+    private transient Tarefa tarefa;
 
     /** Campo de texto para o título da tarefa. */
     private JTextField campoTitulo;
@@ -45,7 +45,8 @@ public class DialogoTarefa extends JDialog {
     private boolean salvo = false;
 
     /** Formatador de data utilizado nos campos de texto (dd/MM/yyyy). */
-    private final DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final String DATE_PATTERN = "dd/MM/yyyy";
+    private final transient DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     /**
      * Construtor para criação de uma nova tarefa.
@@ -176,7 +177,8 @@ public class DialogoTarefa extends JDialog {
             dispose();
 
         } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Formato de data inválido. Use dd/MM/yyyy.", "Erro de Formato",
+            JOptionPane.showMessageDialog(this, "Formato de data inválido. Use " + DATE_PATTERN + ".",
+                    "Erro de Formato",
                     JOptionPane.ERROR_MESSAGE);
         } catch (BusinessException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);

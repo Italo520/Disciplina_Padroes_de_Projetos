@@ -26,7 +26,7 @@ public class PainelEventos extends PainelBase {
     private final transient EventController eventController;
 
     /** Modelo de lista para armazenar os eventos exibidos. */
-    private DefaultListModel<Evento> modeloListaEventos;
+    private transient DefaultListModel<Evento> modeloListaEventos;
 
     /** Componente gráfico de lista para exibir os eventos. */
     private JList<Evento> listaDeEventos;

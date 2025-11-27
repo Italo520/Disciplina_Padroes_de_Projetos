@@ -21,7 +21,7 @@ public class DialogoEvento extends JDialog {
     private final transient EventController eventController;
 
     /** Evento a ser editado (null se for cadastro). */
-    private Evento evento;
+    private transient Evento evento;
 
     /** Campo de texto para o título do evento. */
     private JTextField campoTitulo;
@@ -42,7 +42,8 @@ public class DialogoEvento extends JDialog {
     private boolean salvo = false;
 
     /** Formatador de data utilizado nos campos de texto (dd/MM/yyyy). */
-    private final DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final String DATE_PATTERN = "dd/MM/yyyy";
+    private final transient DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     /**
      * Construtor para criação de um novo evento.
@@ -184,7 +185,8 @@ public class DialogoEvento extends JDialog {
         try {
             LocalDate.parse(campoData.getText(), formatadorDeData);
         } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "O formato da data é inválido. Use dd/MM/yyyy.", "Erro de Validação",
+            JOptionPane.showMessageDialog(this, "O formato da data é inválido. Use " + DATE_PATTERN + ".",
+                    "Erro de Validação",
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }

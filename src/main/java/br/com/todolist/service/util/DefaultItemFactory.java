@@ -14,6 +14,7 @@ public class DefaultItemFactory implements IItemFactory {
      * Construtor padrão da classe DefaultItemFactory.
      */
     public DefaultItemFactory() {
+        // Construtor padrão intencionalmente vazio
     }
 
     @Override

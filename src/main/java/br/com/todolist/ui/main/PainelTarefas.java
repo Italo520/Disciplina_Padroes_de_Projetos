@@ -27,10 +27,10 @@ public class PainelTarefas extends PainelBase {
     private final transient TaskController taskController;
 
     /** Modelo de lista para as tarefas exibidas. */
-    private DefaultListModel<Tarefa> modeloListaTarefas;
+    private transient DefaultListModel<Tarefa> modeloListaTarefas;
 
     /** Modelo de lista para as subtarefas da tarefa selecionada. */
-    private DefaultListModel<Subtarefa> modeloListaSubtarefas;
+    private transient DefaultListModel<Subtarefa> modeloListaSubtarefas;
 
     /** Componente visual da lista de tarefas. */
     private JList<Tarefa> listaDeTarefas;
@@ -51,9 +51,11 @@ public class PainelTarefas extends PainelBase {
     private JLabel valorConclusao;
 
     /** Formatador de data padrão para exibição (dd/MM/yyyy). */
-    private final DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final String DATE_PATTERN = "dd/MM/yyyy";
+    private final transient DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     private static final String ERROR_PREFIX = "Erro: ";
+    private static final String NO_TASK_SELECTED = "Nenhuma Tarefa Selecionada";
 
     /**
      * Construtor da classe PainelTarefas.
@@ -277,7 +279,7 @@ public class PainelTarefas extends PainelBase {
             Tarefa tarefaSelecionada = listaDeTarefas.getSelectedValue();
             if (tarefaSelecionada == null) {
                 JOptionPane.showMessageDialog(PainelTarefas.this, "Por favor, selecione uma tarefa para editar.",
-                        "Nenhuma Tarefa Selecionada", JOptionPane.WARNING_MESSAGE);
+                        NO_TASK_SELECTED, JOptionPane.WARNING_MESSAGE);
                 return;
             }
             DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this),
@@ -297,7 +299,7 @@ public class PainelTarefas extends PainelBase {
             Tarefa tarefaSelecionada = listaDeTarefas.getSelectedValue();
             if (tarefaSelecionada == null) {
                 JOptionPane.showMessageDialog(PainelTarefas.this, "Por favor, selecione uma tarefa para excluir.",
-                        "Nenhuma Tarefa Selecionada", JOptionPane.WARNING_MESSAGE);
+                        NO_TASK_SELECTED, JOptionPane.WARNING_MESSAGE);
                 return;
             }
             int resposta = JOptionPane.showConfirmDialog(PainelTarefas.this,
@@ -369,7 +371,7 @@ public class PainelTarefas extends PainelBase {
             Tarefa tarefaPai = listaDeTarefas.getSelectedValue();
             if (tarefaPai == null) {
                 JOptionPane.showMessageDialog(PainelTarefas.this,
-                        "Selecione uma tarefa principal para adicionar uma subtarefa.", "Nenhuma Tarefa Selecionada",
+                        "Selecione uma tarefa principal para adicionar uma subtarefa.", NO_TASK_SELECTED,
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -449,7 +451,7 @@ public class PainelTarefas extends PainelBase {
                     JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro",
                             JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(PainelTarefas.this, "Erro: " + ex.getMessage(), "Erro",
+                    JOptionPane.showMessageDialog(PainelTarefas.this, ERROR_PREFIX + ex.getMessage(), "Erro",
                             JOptionPane.ERROR_MESSAGE);
                 }
             }

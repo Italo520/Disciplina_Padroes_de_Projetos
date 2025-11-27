@@ -30,6 +30,8 @@ public class BarraFerramentas {
 
     private static final DateTimeFormatter FORMATADOR_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter FORMATADOR_MES_ANO = DateTimeFormatter.ofPattern("MM/yyyy");
+    private static final String SUCCESS_TITLE = "Sucesso";
+    private static final String INFO_TITLE = "Informação";
 
     /**
      * Construtor privado para impedir a instanciação da classe utilitária.
@@ -208,7 +210,7 @@ public class BarraFerramentas {
                         List<Tarefa> tarefas = taskController.listarTarefasPorDia(dia);
                         if (tarefas.isEmpty()) {
                             JOptionPane.showMessageDialog(frame, "Nenhuma tarefa encontrada para esta data.",
-                                    "Informação", JOptionPane.INFORMATION_MESSAGE);
+                                    INFO_TITLE, JOptionPane.INFORMATION_MESSAGE);
                         }
                         frame.atualizarPainelDeTarefas(tarefas);
                     });
@@ -230,7 +232,7 @@ public class BarraFerramentas {
         public void actionPerformed(ActionEvent e) {
             List<Tarefa> tarefas = taskController.listarTarefasCriticas();
             if (tarefas.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Nenhuma tarefa crítica encontrada.", "Informação",
+                JOptionPane.showMessageDialog(frame, "Nenhuma tarefa crítica encontrada.", INFO_TITLE,
                         JOptionPane.INFORMATION_MESSAGE);
             }
             frame.atualizarPainelDeTarefas(tarefas);
@@ -255,7 +257,7 @@ public class BarraFerramentas {
                         List<Evento> eventos = eventController.listarEventosPorDia(dia);
                         if (eventos.isEmpty()) {
                             JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para esta data.",
-                                    "Informação", JOptionPane.INFORMATION_MESSAGE);
+                                    INFO_TITLE, JOptionPane.INFORMATION_MESSAGE);
                         }
                         frame.atualizarPainelDeEventos(eventos);
                     });
@@ -280,7 +282,7 @@ public class BarraFerramentas {
                         List<Evento> eventos = eventController.listarEventosPorMes(mes);
                         if (eventos.isEmpty()) {
                             JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para este mês.",
-                                    "Informação", JOptionPane.INFORMATION_MESSAGE);
+                                    INFO_TITLE, JOptionPane.INFORMATION_MESSAGE);
                         }
                         frame.atualizarPainelDeEventos(eventos);
                     });
@@ -303,7 +305,7 @@ public class BarraFerramentas {
             obterDataDoUsuario(frame, "Digite a data para gerar o PDF (dd/MM/yyyy):")
                     .ifPresent(dia -> {
                         appController.enviarRelatorioTarefasDoDiaPorEmail(dia);
-                        JOptionPane.showMessageDialog(frame, "PDF gerado com sucesso!", "Sucesso",
+                        JOptionPane.showMessageDialog(frame, "PDF gerado com sucesso!", SUCCESS_TITLE,
                                 JOptionPane.INFORMATION_MESSAGE);
                     });
         }
@@ -340,7 +342,7 @@ public class BarraFerramentas {
                                     boolean sucesso = get();
                                     if (sucesso) {
                                         JOptionPane.showMessageDialog(frame,
-                                                "Email com o relatório em anexo enviado com sucesso!", "Sucesso",
+                                                "Email com o relatório em anexo enviado com sucesso!", SUCCESS_TITLE,
                                                 JOptionPane.INFORMATION_MESSAGE);
                                     } else {
                                         JOptionPane.showMessageDialog(frame,
@@ -387,7 +389,7 @@ public class BarraFerramentas {
                                 + ".xlsx";
                         appController.gerarRelatorioTarefasPorMes(mes, nomeArquivo);
                         JOptionPane.showMessageDialog(frame,
-                                "Relatório Excel '" + nomeArquivo + "' gerado com sucesso!", "Sucesso",
+                                "Relatório Excel '" + nomeArquivo + "' gerado com sucesso!", SUCCESS_TITLE,
                                 JOptionPane.INFORMATION_MESSAGE);
                     });
         }

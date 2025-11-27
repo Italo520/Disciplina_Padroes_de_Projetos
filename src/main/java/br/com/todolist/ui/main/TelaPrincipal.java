@@ -51,7 +51,7 @@ public class TelaPrincipal extends JFrame {
      * Configura as propriedades básicas da janela principal.
      */
     private void configurarJanela() {
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(1280, 720);
         setResizable(false);
         setLocationRelativeTo(null);
