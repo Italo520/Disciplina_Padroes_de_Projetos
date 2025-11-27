@@ -13,7 +13,7 @@
 | Métrica | Inicial | Após Correções | Redução |
 |---------|---------|----------------|---------|
 | **Total de Issues** | 86 | 67 | -22% |
-| **BLOCKER** | 1 | 1 | 0 |
+| **BLOCKER** | 1 | 0 | -100% ✅ |
 | **CRITICAL** | 15 | 13 | -13% |
 | **MAJOR** | 38 | 31 | -18% |
 | **BUG** | 4 | 0 | -100% ✅ |
@@ -114,7 +114,24 @@
 
 ---
 
-### 4️⃣ **Fase 4: Correção de Bugs (27/11/2025)** ⚠️ **NOVO**
+### 4️⃣ **Fase 4: Correção de Bugs e Segurança (27/11/2025)** ⚠️ **NOVO**
+
+#### **BLOCKER:** `java:S6437` - Credenciais Hardcoded
+**Severidade:** BLOCKER → **RESOLVIDO** ✅
+**Arquivo:** `NotificadorEmail.java`
+**Linha:** 28
+
+**Problema:**
+```java
+private static final String PASSWORD = "bjjgvzasdhjieabu"; // ❌ Senha exposta
+```
+
+**Solução:**
+```java
+private static final String PASSWORD = System.getenv("EMAIL_PASSWORD"); // ✅ Variável de ambiente
+```
+
+**Impacto:** ✅ Remoção de credenciais sensíveis do código fonte.
 
 #### **BUG #1:** `java:S2142` - InterruptedException não preservada
 **Severidade:** MAJOR → **RESOLVIDO** ✅  
@@ -183,6 +200,7 @@ try {
 
 ### Métricas de Dívida Técnica
 
+- **Redução de Issues BLOCKER:** 1 issue resolvida (-100%) ✅
 - **Redução de Issues CRITICAL:** 2 issues resolvidas (-13%)
 - **Redução de Issues MAJOR:** 7 issues resolvidas (-18%)
 - **Eliminação de BUGS:** 2 bugs corrigidos (-100%) ✅
@@ -193,14 +211,12 @@ try {
 
 ### Issues Pendentes (Prioridade Alta)
 
-1. **BLOCKER (1)** - Requer atenção imediata
-2. **VULNERABILITY (1)** - Questão de segurança
-3. **CRITICAL (13)** - Issues restantes de alta prioridade
-4. **CODE_SMELL MAJOR (31)** - Problemas de manutenibilidade
+1. **VULNERABILITY (1)** - Questão de segurança
+2. **CRITICAL (13)** - Issues restantes de alta prioridade
+3. **CODE_SMELL MAJOR (31)** - Problemas de manutenibilidade
 
 ### Recomendações
 
-- [ ] Revisar e corrigir issue BLOCKER
 - [ ] Investigar e remediar a VULNERABILITY
 - [ ] Continuar abordando CODE_SMELLs de alta severidade
 - [ ] Implementar integração contínua com SonarQube no CI/CD

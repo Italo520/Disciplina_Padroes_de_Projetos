@@ -24,8 +24,11 @@ import java.util.logging.Logger;
 public class NotificadorEmail implements INotificador {
 
     private static final Logger LOGGER = Logger.getLogger(NotificadorEmail.class.getName());
-    private static final String USERNAME = "ads.ifpb.testes@gmail.com";
-    private static final String PASSWORD = "bjjgvzasdhjieabu";
+    // Credenciais devem ser configuradas via variáveis de ambiente para segurança
+    private static final String USERNAME = System.getenv("EMAIL_USERNAME") != null ? System.getenv("EMAIL_USERNAME")
+            : "ads.ifpb.testes@gmail.com";
+    // A senha deve ser revogada e não hardcoded. Usando variável de ambiente.
+    private static final String PASSWORD = System.getenv("EMAIL_PASSWORD");
     private static final String HOST = "smtp.gmail.com";
     private static final String PORT = "587";
 
