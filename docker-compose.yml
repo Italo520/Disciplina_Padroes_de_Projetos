@@ -39,7 +39,7 @@ services:
     networks:
       - todolist-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U todolist_user -d todolist"]
+      test: [ "CMD-SHELL", "pg_isready -U todolist_user -d todolist" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -58,7 +58,7 @@ services:
     networks:
       - todolist-network
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -79,7 +79,7 @@ services:
     networks:
       - todolist-network
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 5

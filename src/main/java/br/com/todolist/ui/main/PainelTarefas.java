@@ -347,10 +347,19 @@ public class PainelTarefas extends PainelBase {
                 subtarefa.mudarStatus();
                 if (tarefaPai != null) {
                     try {
-                        taskController.atualizarTarefa(tarefaPai);
-                        atualizarDetalhesTarefa(tarefaPai);
-                        listaDeSubtarefas.repaint(listaDeSubtarefas.getCellBounds(index, index));
-                        listaDeTarefas.repaint();
+                        Tarefa tarefaAtualizada = taskController.atualizarTarefa(tarefaPai);
+
+                        // Atualiza a referência na lista de tarefas
+                        int indexTarefa = modeloListaTarefas.indexOf(tarefaPai);
+                        if (indexTarefa != -1) {
+                            modeloListaTarefas.set(indexTarefa, tarefaAtualizada);
+                            listaDeTarefas.setSelectedValue(tarefaAtualizada, false);
+                        }
+
+                        atualizarDetalhesTarefa(tarefaAtualizada);
+                        // Não precisamos repintar manualmente se atualizarmos o modelo
+                        // listaDeSubtarefas.repaint(listaDeSubtarefas.getCellBounds(index, index));
+                        // listaDeTarefas.repaint();
                     } catch (BusinessException ex) {
                         JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro ao Atualizar",
                                 JOptionPane.ERROR_MESSAGE);
@@ -380,10 +389,17 @@ public class PainelTarefas extends PainelBase {
             if (descricao != null && !descricao.trim().isEmpty()) {
                 tarefaPai.adicionarSubtarefa(new Subtarefa(descricao));
                 try {
-                    taskController.atualizarTarefa(tarefaPai);
-                    atualizarListaSubtarefas(tarefaPai);
-                    atualizarDetalhesTarefa(tarefaPai);
-                    listaDeTarefas.repaint();
+                    Tarefa tarefaAtualizada = taskController.atualizarTarefa(tarefaPai);
+
+                    // Atualiza a referência na lista de tarefas
+                    int indexTarefa = modeloListaTarefas.indexOf(tarefaPai);
+                    if (indexTarefa != -1) {
+                        modeloListaTarefas.set(indexTarefa, tarefaAtualizada);
+                        listaDeTarefas.setSelectedValue(tarefaAtualizada, false);
+                    }
+
+                    atualizarListaSubtarefas(tarefaAtualizada);
+                    atualizarDetalhesTarefa(tarefaAtualizada);
                 } catch (BusinessException ex) {
                     JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro",
                             JOptionPane.ERROR_MESSAGE);
@@ -412,8 +428,16 @@ public class PainelTarefas extends PainelBase {
             if (novoTitulo != null && !novoTitulo.trim().isEmpty()) {
                 subtarefa.setTitulo(novoTitulo);
                 try {
-                    taskController.atualizarTarefa(tarefaPai);
-                    atualizarListaSubtarefas(tarefaPai);
+                    Tarefa tarefaAtualizada = taskController.atualizarTarefa(tarefaPai);
+
+                    // Atualiza a referência na lista de tarefas
+                    int indexTarefa = modeloListaTarefas.indexOf(tarefaPai);
+                    if (indexTarefa != -1) {
+                        modeloListaTarefas.set(indexTarefa, tarefaAtualizada);
+                        listaDeTarefas.setSelectedValue(tarefaAtualizada, false);
+                    }
+
+                    atualizarListaSubtarefas(tarefaAtualizada);
                 } catch (BusinessException ex) {
                     JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro",
                             JOptionPane.ERROR_MESSAGE);
@@ -443,10 +467,17 @@ public class PainelTarefas extends PainelBase {
             if (resposta == JOptionPane.YES_OPTION) {
                 tarefaPai.removerSubtarefa(subtarefa);
                 try {
-                    taskController.atualizarTarefa(tarefaPai);
-                    atualizarListaSubtarefas(tarefaPai);
-                    atualizarDetalhesTarefa(tarefaPai);
-                    listaDeTarefas.repaint();
+                    Tarefa tarefaAtualizada = taskController.atualizarTarefa(tarefaPai);
+
+                    // Atualiza a referência na lista de tarefas
+                    int indexTarefa = modeloListaTarefas.indexOf(tarefaPai);
+                    if (indexTarefa != -1) {
+                        modeloListaTarefas.set(indexTarefa, tarefaAtualizada);
+                        listaDeTarefas.setSelectedValue(tarefaAtualizada, false);
+                    }
+
+                    atualizarListaSubtarefas(tarefaAtualizada);
+                    atualizarDetalhesTarefa(tarefaAtualizada);
                 } catch (BusinessException ex) {
                     JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro",
                             JOptionPane.ERROR_MESSAGE);

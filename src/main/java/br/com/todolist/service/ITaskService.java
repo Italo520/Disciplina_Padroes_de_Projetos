@@ -47,9 +47,10 @@ public interface ITaskService {
      * Atualiza uma tarefa.
      *
      * @param tarefa a tarefa a ser atualizada.
+     * @return a tarefa atualizada e gerenciada pelo contexto de persistência.
      * @throws BusinessException se houver erro ao atualizar.
      */
-    void atualizarTarefa(Tarefa tarefa) throws BusinessException;
+    Tarefa atualizarTarefa(Tarefa tarefa) throws BusinessException;
 
     /**
      * Lista todas as tarefas.

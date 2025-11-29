@@ -96,6 +96,30 @@ public class ReportServiceImpl implements IReportService {
     }
 
     /**
+     * Gera um relatório em PDF com as tarefas de um dia específico (apenas salva o
+     * arquivo).
+     *
+     * @param dia         O dia para o qual o relatório será gerado.
+     * @param nomeArquivo O nome do arquivo PDF a ser criado.
+     */
+    @Override
+    public void gerarRelatorioPDFTarefasDoDia(LocalDate dia, String nomeArquivo) {
+        List<Tarefa> tarefas = taskService.listarTarefasPorDia(dia);
+        if (tarefas == null || tarefas.isEmpty()) {
+            throw new IllegalArgumentException("Não existem tarefas para a data especificada.");
+        }
+        String tituloRelatorio = "Relatório de Tarefas - " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String[] cabecalhos = { "Título", "Descrição", "Prioridade" };
+        List<String[]> dados = new ArrayList<>();
+        for (Tarefa t : tarefas) {
+            dados.add(new String[] { t.getTitulo(), t.getDescricao(), String.valueOf(t.getPrioridade()) });
+        }
+
+        // Usa o gerador de PDF através da interface
+        geradorPDF.gerarRelatorio(nomeArquivo, tituloRelatorio, cabecalhos, dados);
+    }
+
+    /**
      * Gera um relatório em formato Excel (XLSX) com todas as tarefas de um mês
      * específico.
      *

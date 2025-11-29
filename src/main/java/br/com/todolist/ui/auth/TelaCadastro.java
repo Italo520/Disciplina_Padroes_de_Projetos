@@ -1,6 +1,6 @@
 package br.com.todolist.ui.auth;
 
-import br.com.todolist.controller.AuthController;
+import br.com.todolist.controller.AppController;
 import br.com.todolist.exception.BusinessException;
 import javax.swing.*;
 import java.awt.*;
@@ -26,22 +26,16 @@ public class TelaCadastro extends JDialog {
     /** Botão para cancelar o cadastro. */
     private JButton botaoCancelar;
 
-    /** Controlador de autenticação. */
-    private final transient AuthController authController;
-
     /** Armazena o e-mail cadastrado com sucesso. */
     private String emailCadastrado = null;
 
     /**
      * Construtor da classe TelaCadastro.
      *
-     * @param owner          O frame pai (geralmente a tela de login).
-     * @param authController O controlador de autenticação para processar o
-     *                       cadastro.
+     * @param owner O frame pai (geralmente a tela de login).
      */
-    public TelaCadastro(Frame owner, AuthController authController) {
+    public TelaCadastro(Frame owner) {
         super(owner, "Criar Nova Conta", true);
-        this.authController = authController;
         configurarLayout();
         configurarAcoes();
     }
@@ -121,7 +115,7 @@ public class TelaCadastro extends JDialog {
         String senha = new String(campoSenha.getPassword());
 
         try {
-            authController.cadastrarUsuario(nome, email, senha);
+            AppController.getInstance().cadastrarUsuario(nome, email, senha);
             JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!", "Sucesso",
                     JOptionPane.INFORMATION_MESSAGE);
             emailCadastrado = email;

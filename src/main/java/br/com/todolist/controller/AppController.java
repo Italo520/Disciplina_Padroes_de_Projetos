@@ -184,10 +184,11 @@ public class AppController {
      * Atualiza uma tarefa (ex: marca como concluída).
      *
      * @param tarefa A tarefa a ser atualizada.
+     * @return A tarefa atualizada.
      * @throws BusinessException se houver erro na atualização.
      */
-    public void atualizarTarefa(Tarefa tarefa) throws BusinessException {
-        taskService.atualizarTarefa(tarefa);
+    public Tarefa atualizarTarefa(Tarefa tarefa) throws BusinessException {
+        return taskService.atualizarTarefa(tarefa);
     }
 
     /**
@@ -280,8 +281,10 @@ public class AppController {
      *
      * @param dia O dia do relatório.
      * @return true se o e-mail foi enviado com sucesso.
+     * @throws IllegalStateException se o usuário não estiver logado.
      */
     public boolean enviarRelatorioTarefasDoDiaPorEmail(LocalDate dia) {
+        verificarUsuarioLogado();
         return reportService.enviarRelatorioTarefasDoDiaPorEmail(dia, usuarioLogado);
     }
 
@@ -290,9 +293,40 @@ public class AppController {
      *
      * @param mes         O mês do relatório.
      * @param nomeArquivo O nome do arquivo a ser gerado.
+     * @throws IllegalStateException se o usuário não estiver logado.
      */
     public void gerarRelatorioTarefasPorMes(YearMonth mes, String nomeArquivo) {
+        verificarUsuarioLogado();
         reportService.gerarRelatorioTarefasPorMes(mes, nomeArquivo);
+    }
+
+    /**
+     * Gera um relatório em PDF das tarefas do dia (apenas salva o arquivo, sem
+     * envio de e-mail).
+     *
+     * @param dia         O dia do relatório.
+     * @param nomeArquivo O nome do arquivo a ser gerado.
+     * @throws IllegalStateException se o usuário não estiver logado.
+     */
+    public void gerarRelatorioPDFTarefasDoDia(LocalDate dia, String nomeArquivo) {
+        verificarUsuarioLogado();
+        reportService.gerarRelatorioPDFTarefasDoDia(dia, nomeArquivo);
+    }
+
+    /**
+     * Verifica se o usuário está logado e se os serviços foram inicializados.
+     *
+     * @throws IllegalStateException se o usuário não estiver logado ou serviços não
+     *                               inicializados.
+     */
+    private void verificarUsuarioLogado() {
+        if (usuarioLogado == null) {
+            throw new IllegalStateException("Você precisa estar logado para realizar esta operação.");
+        }
+        if (reportService == null || taskService == null || eventService == null) {
+            throw new IllegalStateException(
+                    "Serviços não foram inicializados corretamente. Tente fazer login novamente.");
+        }
     }
 
     /**

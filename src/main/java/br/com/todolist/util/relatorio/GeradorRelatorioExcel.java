@@ -65,6 +65,7 @@ public class GeradorRelatorioExcel implements IGeradorRelatorioAvancado {
             System.out.println("Excel gerado com sucesso: " + nomeArquivo);
         } catch (IOException e) {
             System.err.println("Erro ao gerar o Excel: " + e.getMessage());
+            throw new RuntimeException("Erro ao gerar o Excel: " + e.getMessage(), e);
         }
     }
 
@@ -124,6 +125,7 @@ public class GeradorRelatorioExcel implements IGeradorRelatorioAvancado {
             System.out.println("Excel gerado com sucesso: " + nomeArquivo);
         } catch (IOException e) {
             System.err.println("Erro ao gerar o Excel: " + e.getMessage());
+            throw new RuntimeException("Erro ao gerar o Excel: " + e.getMessage(), e);
         }
     }
 }

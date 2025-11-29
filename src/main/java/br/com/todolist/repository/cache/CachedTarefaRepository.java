@@ -61,9 +61,10 @@ public class CachedTarefaRepository implements ITarefaRepository {
     }
 
     @Override
-    public void atualizar(Tarefa entity) {
-        decoratedRepository.atualizar(entity);
+    public Tarefa atualizar(Tarefa entity) {
+        Tarefa updated = decoratedRepository.atualizar(entity);
         cacheManager.remover(CACHE_KEY_PREFIX + entity.getTitulo());
+        return updated;
     }
 
     @Override

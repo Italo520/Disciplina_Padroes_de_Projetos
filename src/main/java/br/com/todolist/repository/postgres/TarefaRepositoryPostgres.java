@@ -1,4 +1,5 @@
 package br.com.todolist.repository.postgres;
+
 import br.com.todolist.repository.ITarefaRepository;
 
 import br.com.todolist.entity.Tarefa;
@@ -50,12 +51,13 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
     }
 
     @Override
-    public void atualizar(Tarefa entity) {
+    public Tarefa atualizar(Tarefa entity) {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             em.getTransaction().begin();
-            em.merge(entity);
+            Tarefa merged = em.merge(entity);
             em.getTransaction().commit();
+            return merged;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

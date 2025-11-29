@@ -63,6 +63,7 @@ public class GeradorRelatorioPDF implements IGeradorRelatorio {
             System.out.println("PDF gerado com sucesso: " + nomeArquivo);
         } catch (IOException e) {
             System.err.println("Erro ao gerar o PDF: " + e.getMessage());
+            throw new RuntimeException("Erro ao gerar o PDF: " + e.getMessage(), e);
         }
     }
 }
