@@ -26,9 +26,7 @@ public class EventAuditObserver implements IEventObserver {
 
         if (event.getAction() == AuditAction.DELETE) {
             oldData = mapEvento(event.getEvento());
-            newData = null;
         } else if (event.getAction() == AuditAction.CREATE) {
-            oldData = null;
             newData = mapEvento(event.getEvento());
         } else if (event.getAction() == AuditAction.UPDATE) {
             if (event.getOldEvento() != null) {

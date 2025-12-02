@@ -28,6 +28,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class BarraFerramentas {
 
+    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger
+            .getLogger(BarraFerramentas.class.getName());
     private static final DateTimeFormatter FORMATADOR_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter FORMATADOR_MES_ANO = DateTimeFormatter.ofPattern("MM/yyyy");
     private static final String SUCCESS_TITLE = "Sucesso";
@@ -88,8 +90,13 @@ public class BarraFerramentas {
 
         JMenuItem itemSobre = new JMenuItem("Sobre");
         itemSobre.addActionListener(e -> JOptionPane.showMessageDialog(frame,
-                "Aplicação de Lista de Tarefas\nVersão 2.0\nCriado Por: Ítalo Santos e Rickson Costa\n"
-                        + "Disciplina de POO\nCurso ADS - IFPB\n2025",
+                """
+                        Aplicação de Lista de Tarefas
+                        Versão 2.0
+                        Criado Por: Ítalo Santos e Rickson Costa
+                        Disciplina de POO
+                        Curso ADS - IFPB
+                        2025""",
                 "Sobre", JOptionPane.INFORMATION_MESSAGE));
 
         ButtonGroup grupoDeTemas = new ButtonGroup();
@@ -142,8 +149,7 @@ public class BarraFerramentas {
                     SwingUtilities.updateComponentTreeUI(window);
                 }
             } catch (Exception ex) {
-                System.err.println("Falha ao aplicar o tema: " + className);
-                ex.printStackTrace();
+                LOGGER.log(java.util.logging.Level.SEVERE, ex, () -> "Falha ao aplicar o tema: " + className);
             }
         });
         grupo.add(itemMenu);
@@ -204,6 +210,7 @@ public class BarraFerramentas {
             this.taskController = taskController;
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para listar as tarefas (dd/MM/yyyy):")
                     .ifPresent(dia -> {
@@ -229,6 +236,7 @@ public class BarraFerramentas {
             this.taskController = taskController;
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             List<Tarefa> tarefas = taskController.listarTarefasCriticas();
             if (tarefas.isEmpty()) {
@@ -251,6 +259,7 @@ public class BarraFerramentas {
             this.eventController = eventController;
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para listar os eventos (dd/MM/yyyy):")
                     .ifPresent(dia -> {
@@ -276,6 +285,7 @@ public class BarraFerramentas {
             this.eventController = eventController;
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             obterMesAnoDoUsuario(frame, "Digite o mês e ano (MM/yyyy):")
                     .ifPresent(mes -> {
@@ -301,6 +311,7 @@ public class BarraFerramentas {
             this.appController = appController;
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para gerar o PDF (dd/MM/yyyy):")
                     .ifPresent(dia -> {
@@ -324,6 +335,7 @@ public class BarraFerramentas {
             this.appController = appController;
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para o envio do relatório (dd/MM/yyyy):")
                     .ifPresent(dia -> {
@@ -337,6 +349,7 @@ public class BarraFerramentas {
                                 return appController.enviarRelatorioTarefasDoDiaPorEmail(dia);
                             }
 
+                            @Override
                             protected void done() {
                                 try {
                                     boolean sucesso = get();
@@ -382,6 +395,7 @@ public class BarraFerramentas {
             this.appController = appController;
         }
 
+        @Override
         public void actionPerformed(ActionEvent e) {
             obterMesAnoDoUsuario(frame, "Digite o mês e ano para o relatório (MM/yyyy):")
                     .ifPresent(mes -> {

@@ -46,7 +46,7 @@ public class DatabaseConfig {
             return null;
         }
 
-        // Processa variáveis de ambiente no formato ${VAR_NAME:default}
+        // Processa variáveis de ambiente usando a sintaxe de placeholder
         return processEnvironmentVariables(value);
     }
 

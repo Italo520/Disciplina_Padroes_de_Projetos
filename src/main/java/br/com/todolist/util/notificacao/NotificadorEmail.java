@@ -46,6 +46,7 @@ public class NotificadorEmail implements INotificador {
         props.put("mail.smtp.port", PORT);
 
         this.session = Session.getInstance(props, new Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(USERNAME, PASSWORD);
             }

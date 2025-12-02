@@ -24,6 +24,9 @@ import java.util.List;
  */
 public class GeradorRelatorioExcel implements IGeradorRelatorioAvancado {
 
+    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger
+            .getLogger(GeradorRelatorioExcel.class.getName());
+
     /**
      * Gera um arquivo Excel (XLSX) básico com os dados fornecidos.
      * O título será usado como nome da planilha.
@@ -62,9 +65,9 @@ public class GeradorRelatorioExcel implements IGeradorRelatorioAvancado {
             }
 
             workbook.write(outputStream);
-            System.out.println("Excel gerado com sucesso: " + nomeArquivo);
+            LOGGER.info(() -> "Excel gerado com sucesso: " + nomeArquivo);
         } catch (IOException e) {
-            System.err.println("Erro ao gerar o Excel: " + e.getMessage());
+            LOGGER.log(java.util.logging.Level.SEVERE, e, () -> "Erro ao gerar o Excel: " + e.getMessage());
         }
     }
 
@@ -88,8 +91,7 @@ public class GeradorRelatorioExcel implements IGeradorRelatorioAvancado {
 
             // Valida se a quantidade de linhas de dados e da coluna extra é a mesma
             if (dados.size() != colunaExtra.size()) {
-                System.err.println(
-                        "Erro: O número de linhas de dados não corresponde ao número de itens na coluna extra.");
+                LOGGER.severe("Erro: O número de linhas de dados não corresponde ao número de itens na coluna extra.");
                 return;
             }
 
@@ -121,9 +123,9 @@ public class GeradorRelatorioExcel implements IGeradorRelatorioAvancado {
             }
 
             workbook.write(outputStream);
-            System.out.println("Excel gerado com sucesso: " + nomeArquivo);
+            LOGGER.info(() -> "Excel gerado com sucesso: " + nomeArquivo);
         } catch (IOException e) {
-            System.err.println("Erro ao gerar o Excel: " + e.getMessage());
+            LOGGER.log(java.util.logging.Level.SEVERE, e, () -> "Erro ao gerar o Excel: " + e.getMessage());
         }
     }
 }

@@ -27,6 +27,8 @@ import java.util.List;
  */
 public class ReportServiceImpl implements IReportService {
 
+    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger
+            .getLogger(ReportServiceImpl.class.getName());
     private static final String DATE_PATTERN = "dd/MM/yyyy";
     private final ITaskService taskService;
     private final INotificador notificador;
@@ -90,7 +92,8 @@ public class ReportServiceImpl implements IReportService {
             java.nio.file.Files.delete(java.nio.file.Paths.get(nomeArquivo));
         } catch (java.io.IOException e) {
             // Log de falha na exclusão, mas não afeta o retorno do sucesso do envio
-            System.err.println("Aviso: Não foi possível deletar o arquivo temporário: " + nomeArquivo);
+            LOGGER.log(java.util.logging.Level.WARNING, "Aviso: Não foi possível deletar o arquivo temporário: {0}",
+                    nomeArquivo);
         }
         return sucesso;
     }
