@@ -15,13 +15,13 @@ public class Evento extends Itens {
     /**
      * Construtor da classe Evento.
      *
-     * @param titulo     O título do evento.
-     * @param descricao  A descrição do evento.
-     * @param criado_por O e-mail do usuário que criou o evento.
-     * @param deadline   A data do evento.
+     * @param titulo    O título do evento.
+     * @param descricao A descrição do evento.
+     * @param criadoPor O e-mail do usuário que criou o evento.
+     * @param deadline  A data do evento.
      */
-    public Evento(String titulo, String descricao, String criado_por, LocalDate deadline) {
-        super(titulo, descricao, "Evento", criado_por, deadline);
+    public Evento(String titulo, String descricao, String criadoPor, LocalDate deadline) {
+        super(titulo, descricao, "Evento", criadoPor, deadline);
     }
 
     /**
@@ -41,92 +41,12 @@ public class Evento extends Itens {
     }
 
     /**
-     * Obtém o título do evento.
-     *
-     * @return O título do evento.
-     */
-    @Override
-    public String getTitulo() {
-        return super.getTitulo();
-    }
-
-    /**
-     * Define o título do evento.
-     *
-     * @param titulo O novo título.
-     */
-    @Override
-    public void setTitulo(String titulo) {
-        super.setTitulo(titulo);
-    }
-
-    /**
-     * Obtém a descrição do evento.
-     *
-     * @return A descrição do evento.
-     */
-    @Override
-    public String getDescricao() {
-        return super.getDescricao();
-    }
-
-    /**
-     * Define a descrição do evento.
-     *
-     * @param descricao A nova descrição.
-     */
-    @Override
-    public void setDescricao(String descricao) {
-        super.setDescricao(descricao);
-    }
-
-    /**
-     * Obtém a data de cadastro do evento.
-     *
-     * @return A data de cadastro.
-     */
-    @Override
-    public LocalDate getDataCadastro() {
-        return super.getDataCadastro();
-    }
-
-    /**
-     * Define a data de cadastro do evento.
-     *
-     * @param dataCadastro A nova data de cadastro.
-     */
-    @Override
-    public void setDataCadastro(LocalDate dataCadastro) {
-        super.setDataCadastro(dataCadastro);
-    }
-
-    /**
-     * Obtém a data do evento (deadline).
-     *
-     * @return A data do evento.
-     */
-    @Override
-    public LocalDate getDeadline() {
-        return super.getDeadline();
-    }
-
-    /**
-     * Define a data do evento (deadline).
-     *
-     * @param deadline A nova data do evento.
-     */
-    @Override
-    public void setDeadLine(LocalDate deadline) {
-        super.setDeadLine(deadline);
-    }
-
-    /**
      * Cria uma cópia do evento.
      *
      * @return Uma nova instância de Evento com os mesmos dados.
      */
     public Evento copiar() {
-        Evento copia = new Evento(getTitulo(), getDescricao(), getCriado_por(), getDeadline());
+        Evento copia = new Evento(getTitulo(), getDescricao(), getCriadoPor(), getDeadline());
         copia.setTipo(getTipo());
         copia.setDataCadastro(getDataCadastro());
         return copia;

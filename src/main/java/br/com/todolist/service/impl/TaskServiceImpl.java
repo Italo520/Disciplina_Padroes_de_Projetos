@@ -68,7 +68,7 @@ public class TaskServiceImpl implements ITaskService {
      */
     @Override
     public void excluirTarefa(Tarefa tarefa) throws BusinessException {
-        if (tarefa.getCriado_por().equals(emailUsuario)) {
+        if (tarefa.getCriadoPor().equals(emailUsuario)) {
             try {
                 tarefaRepository.excluir(tarefa);
                 notifyObservers(new TaskEvent(AuditAction.DELETE, tarefa));
@@ -93,7 +93,7 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline,
             int novaPrioridade) throws BusinessException {
-        if (tarefaOriginal.getCriado_por().equals(emailUsuario)) {
+        if (tarefaOriginal.getCriadoPor().equals(emailUsuario)) {
             Tarefa oldTarefa = tarefaOriginal.copiar();
 
             tarefaOriginal.setTitulo(novoTitulo);
@@ -119,7 +119,7 @@ public class TaskServiceImpl implements ITaskService {
      */
     @Override
     public void atualizarTarefa(Tarefa tarefa) throws BusinessException {
-        if (tarefa.getCriado_por().equals(emailUsuario)) {
+        if (tarefa.getCriadoPor().equals(emailUsuario)) {
             try {
                 // O título é o ID da entidade Tarefa neste sistema (PK).
                 Tarefa oldTarefa = tarefaRepository.buscarPorId(tarefa.getTitulo());
@@ -144,7 +144,7 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public List<Tarefa> listarTodasTarefas() {
         return tarefaRepository.buscarTodos().stream()
-                .filter(tarefa -> tarefa.getCriado_por().equals(emailUsuario))
+                .filter(tarefa -> tarefa.getCriadoPor().equals(emailUsuario))
                 .toList();
     }
 

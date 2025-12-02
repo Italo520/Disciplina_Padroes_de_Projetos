@@ -14,7 +14,8 @@ import java.time.LocalDate;
 
 /**
  * Classe que representa uma Tarefa no sistema.
- * Estende a classe abstrata Itens e adiciona funcionalidades específicas como prioridade,
+ * Estende a classe abstrata Itens e adiciona funcionalidades específicas como
+ * prioridade,
  * data de conclusão, subtarefas e cálculo de progresso.
  */
 @Entity
@@ -37,14 +38,14 @@ public class Tarefa extends Itens {
     /**
      * Construtor da classe Tarefa.
      *
-     * @param titulo       O título da tarefa.
-     * @param descricao    A descrição da tarefa.
-     * @param criado_por   O e-mail do usuário que criou a tarefa.
-     * @param deadline     A data limite da tarefa.
-     * @param prioridade   A prioridade da tarefa.
+     * @param titulo     O título da tarefa.
+     * @param descricao  A descrição da tarefa.
+     * @param criadoPor  O e-mail do usuário que criou a tarefa.
+     * @param deadline   A data limite da tarefa.
+     * @param prioridade A prioridade da tarefa.
      */
-    public Tarefa(String titulo, String descricao, String criado_por, LocalDate deadline, int prioridade) {
-        super(titulo, descricao, "Tarefa", criado_por, deadline);
+    public Tarefa(String titulo, String descricao, String criadoPor, LocalDate deadline, int prioridade) {
+        super(titulo, descricao, "Tarefa", criadoPor, deadline);
         this.prioridade = prioridade;
         this.dataConclusao = null;
         this.subtarefas = new ArrayList<>();
@@ -160,7 +161,7 @@ public class Tarefa extends Itens {
      * @return Uma nova instância de Tarefa com os mesmos dados.
      */
     public Tarefa copiar() {
-        Tarefa copia = new Tarefa(getTitulo(), getDescricao(), getCriado_por(), getDeadline(), getPrioridade());
+        Tarefa copia = new Tarefa(getTitulo(), getDescricao(), getCriadoPor(), getDeadline(), getPrioridade());
         copia.setDataConclusao(this.dataConclusao);
         copia.setTipo(getTipo());
         copia.setDataCadastro(getDataCadastro());

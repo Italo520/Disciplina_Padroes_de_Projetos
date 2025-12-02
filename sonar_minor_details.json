@@ -1,0 +1,104 @@
+﻿[
+    {
+        "rule":  "java:S6203",
+        "message":  "Move this text block out of the lambda body and refactor it to a local variable or a static final field.",
+        "file":  "src/main/java/br/com/todolist/ui/main/BarraFerramentas.java",
+        "line":  93
+    },
+    {
+        "rule":  "java:S117",
+        "message":  "Rename this local variable to match the regular expression \u0027^[a-z][a-zA-Z0-9]*$\u0027.",
+        "file":  "src/main/java/br/com/todolist/entity/Evento.java",
+        "line":  23
+    },
+    {
+        "rule":  "java:S1185",
+        "message":  "Remove this method to simply inherit it.",
+        "file":  "src/main/java/br/com/todolist/entity/Evento.java",
+        "line":  49
+    },
+    {
+        "rule":  "java:S1185",
+        "message":  "Remove this method to simply inherit it.",
+        "file":  "src/main/java/br/com/todolist/entity/Evento.java",
+        "line":  59
+    },
+    {
+        "rule":  "java:S1185",
+        "message":  "Remove this method to simply inherit it.",
+        "file":  "src/main/java/br/com/todolist/entity/Evento.java",
+        "line":  69
+    },
+    {
+        "rule":  "java:S1185",
+        "message":  "Remove this method to simply inherit it.",
+        "file":  "src/main/java/br/com/todolist/entity/Evento.java",
+        "line":  79
+    },
+    {
+        "rule":  "java:S1185",
+        "message":  "Remove this method to simply inherit it.",
+        "file":  "src/main/java/br/com/todolist/entity/Evento.java",
+        "line":  89
+    },
+    {
+        "rule":  "java:S1185",
+        "message":  "Remove this method to simply inherit it.",
+        "file":  "src/main/java/br/com/todolist/entity/Evento.java",
+        "line":  99
+    },
+    {
+        "rule":  "java:S1185",
+        "message":  "Remove this method to simply inherit it.",
+        "file":  "src/main/java/br/com/todolist/entity/Evento.java",
+        "line":  109
+    },
+    {
+        "rule":  "java:S1185",
+        "message":  "Remove this method to simply inherit it.",
+        "file":  "src/main/java/br/com/todolist/entity/Evento.java",
+        "line":  119
+    },
+    {
+        "rule":  "java:S116",
+        "message":  "Rename this field \"criado_por\" to match the regular expression \u0027^[a-z][a-zA-Z0-9]*$\u0027.",
+        "file":  "src/main/java/br/com/todolist/entity/Itens.java",
+        "line":  18
+    },
+    {
+        "rule":  "java:S117",
+        "message":  "Rename this local variable to match the regular expression \u0027^[a-z][a-zA-Z0-9]*$\u0027.",
+        "file":  "src/main/java/br/com/todolist/entity/Itens.java",
+        "line":  31
+    },
+    {
+        "rule":  "java:S100",
+        "message":  "Rename this method name to match the regular expression \u0027^[a-z][a-zA-Z0-9]*$\u0027.",
+        "file":  "src/main/java/br/com/todolist/entity/Itens.java",
+        "line":  105
+    },
+    {
+        "rule":  "java:S117",
+        "message":  "Rename this local variable to match the regular expression \u0027^[a-z][a-zA-Z0-9]*$\u0027.",
+        "file":  "src/main/java/br/com/todolist/entity/Itens.java",
+        "line":  114
+    },
+    {
+        "rule":  "java:S100",
+        "message":  "Rename this method name to match the regular expression \u0027^[a-z][a-zA-Z0-9]*$\u0027.",
+        "file":  "src/main/java/br/com/todolist/entity/Itens.java",
+        "line":  114
+    },
+    {
+        "rule":  "java:S1125",
+        "message":  "Remove the unnecessary boolean literal.",
+        "file":  "src/main/java/br/com/todolist/entity/Subtarefa.java",
+        "line":  71
+    },
+    {
+        "rule":  "java:S117",
+        "message":  "Rename this local variable to match the regular expression \u0027^[a-z][a-zA-Z0-9]*$\u0027.",
+        "file":  "src/main/java/br/com/todolist/entity/Tarefa.java",
+        "line":  46
+    }
+]

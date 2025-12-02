@@ -15,24 +15,24 @@ public abstract class Itens {
     private String titulo;
     private String descricao;
     private String tipo;
-    private String criado_por;
+    private String criadoPor;
     private LocalDate dataCadastro;
     private LocalDate deadline;
 
     /**
      * Construtor completo da classe Itens.
      *
-     * @param titulo     O título do item.
-     * @param descricao  A descrição do item.
-     * @param tipo       O tipo do item (ex: "Tarefa", "Evento").
-     * @param criado_por O e-mail do usuário que criou o item.
-     * @param deadline   A data limite ou data do evento.
+     * @param titulo    O título do item.
+     * @param descricao A descrição do item.
+     * @param tipo      O tipo do item (ex: "Tarefa", "Evento").
+     * @param criadoPor O e-mail do usuário que criou o item.
+     * @param deadline  A data limite ou data do evento.
      */
-    protected Itens(String titulo, String descricao, String tipo, String criado_por, LocalDate deadline) {
+    protected Itens(String titulo, String descricao, String tipo, String criadoPor, LocalDate deadline) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.tipo = tipo;
-        this.criado_por = criado_por;
+        this.criadoPor = criadoPor;
         this.deadline = deadline;
         this.dataCadastro = LocalDate.now();
     }
@@ -102,17 +102,17 @@ public abstract class Itens {
      *
      * @return O e-mail do criador.
      */
-    public String getCriado_por() {
-        return criado_por;
+    public String getCriadoPor() {
+        return criadoPor;
     }
 
     /**
      * Define o e-mail do criador do item.
      *
-     * @param criado_por O novo e-mail do criador.
+     * @param criadoPor O novo e-mail do criador.
      */
-    public void setCriado_por(String criado_por) {
-        this.criado_por = criado_por;
+    public void setCriadoPor(String criadoPor) {
+        this.criadoPor = criadoPor;
     }
 
     /**

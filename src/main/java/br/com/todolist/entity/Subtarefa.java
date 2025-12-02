@@ -68,11 +68,7 @@ public class Subtarefa {
      * Alterna o status da subtarefa entre concluído e não concluído.
      */
     public void mudarStatus() {
-        if (status == false) {
-            status = true;
-        } else {
-            status = false;
-        }
+        status = !status;
     }
 
     /**

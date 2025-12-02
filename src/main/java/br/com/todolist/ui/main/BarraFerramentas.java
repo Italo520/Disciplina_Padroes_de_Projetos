@@ -34,6 +34,13 @@ public class BarraFerramentas {
     private static final DateTimeFormatter FORMATADOR_MES_ANO = DateTimeFormatter.ofPattern("MM/yyyy");
     private static final String SUCCESS_TITLE = "Sucesso";
     private static final String INFO_TITLE = "Informação";
+    private static final String SOBRE_MENSAGEM = """
+            Aplicação de Lista de Tarefas
+            Versão 2.0
+            Criado Por: Ítalo Santos e Rickson Costa
+            Disciplina de POO
+            Curso ADS - IFPB
+            2025""";
 
     /**
      * Construtor privado para impedir a instanciação da classe utilitária.
@@ -90,13 +97,7 @@ public class BarraFerramentas {
 
         JMenuItem itemSobre = new JMenuItem("Sobre");
         itemSobre.addActionListener(e -> JOptionPane.showMessageDialog(frame,
-                """
-                        Aplicação de Lista de Tarefas
-                        Versão 2.0
-                        Criado Por: Ítalo Santos e Rickson Costa
-                        Disciplina de POO
-                        Curso ADS - IFPB
-                        2025""",
+                SOBRE_MENSAGEM,
                 "Sobre", JOptionPane.INFORMATION_MESSAGE));
 
         ButtonGroup grupoDeTemas = new ButtonGroup();

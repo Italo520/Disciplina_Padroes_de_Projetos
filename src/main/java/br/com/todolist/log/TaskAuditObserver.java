@@ -40,7 +40,7 @@ public class TaskAuditObserver implements ITaskObserver {
         LogEntry entry = new LogEntry(
                 event.getAction(),
                 "Tarefa",
-                event.getTarefa().getCriado_por(),
+                event.getTarefa().getCriadoPor(),
                 oldData,
                 newData);
 

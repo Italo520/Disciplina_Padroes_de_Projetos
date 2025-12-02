@@ -72,7 +72,7 @@ public class EventServiceImpl implements IEventService {
      */
     @Override
     public void excluirEvento(Evento evento) throws BusinessException {
-        if (evento.getCriado_por().equals(emailUsuario)) {
+        if (evento.getCriadoPor().equals(emailUsuario)) {
             try {
                 eventoRepository.excluir(evento);
                 notifyObservers(new CalendarEvent(AuditAction.DELETE, evento));
@@ -96,7 +96,7 @@ public class EventServiceImpl implements IEventService {
     @Override
     public void editarEvento(Evento eventoOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline)
             throws BusinessException {
-        if (eventoOriginal.getCriado_por().equals(emailUsuario)) {
+        if (eventoOriginal.getCriadoPor().equals(emailUsuario)) {
             Evento oldEvento = eventoOriginal.copiar();
 
             eventoOriginal.setTitulo(novoTitulo);
@@ -121,7 +121,7 @@ public class EventServiceImpl implements IEventService {
     @Override
     public List<Evento> listarTodosEventos() {
         return eventoRepository.buscarTodos().stream()
-                .filter(evento -> evento.getCriado_por().equals(emailUsuario))
+                .filter(evento -> evento.getCriadoPor().equals(emailUsuario))
                 .toList();
     }
 

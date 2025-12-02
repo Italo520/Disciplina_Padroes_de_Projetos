@@ -40,7 +40,7 @@ public class EventAuditObserver implements IEventObserver {
         LogEntry entry = new LogEntry(
                 event.getAction(),
                 "Evento",
-                event.getEvento().getCriado_por(),
+                event.getEvento().getCriadoPor(),
                 oldData,
                 newData);
 
