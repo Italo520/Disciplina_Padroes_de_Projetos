@@ -3,13 +3,15 @@ package br.com.todolist.ui.auth;
 import br.com.todolist.controller.AppController;
 import br.com.todolist.exception.BusinessException;
 import javax.swing.*;
-import java.awt.*;
 
 /**
  * Tela de cadastro de novos usuários.
  * Exibida como um diálogo modal sobre a tela de login.
  */
-public class TelaCadastro extends JDialog {
+public class TelaCadastro extends JPanel {
+
+    /** Referência para a tela de login para navegação. */
+    private TelaLogin telaLogin;
 
     /** Campo de texto para o nome do usuário. */
     private JTextField campoNome;
@@ -26,39 +28,23 @@ public class TelaCadastro extends JDialog {
     /** Botão para cancelar o cadastro. */
     private JButton botaoCancelar;
 
-    /** Armazena o e-mail cadastrado com sucesso. */
-    private String emailCadastrado = null;
-
     /**
      * Construtor da classe TelaCadastro.
      *
-     * @param owner O frame pai (geralmente a tela de login).
+     * @param telaLogin A tela de login para permitir a navegação de volta.
      */
-    public TelaCadastro(Frame owner) {
-        super(owner, "Criar Nova Conta", true);
+    public TelaCadastro(TelaLogin telaLogin) {
+        this.telaLogin = telaLogin;
         configurarLayout();
         configurarAcoes();
-    }
-
-    /**
-     * Retorna o e-mail do usuário cadastrado com sucesso.
-     * Útil para preencher automaticamente o campo de e-mail na tela de login.
-     *
-     * @return O e-mail cadastrado, ou null se o cadastro não foi concluído.
-     */
-    public String getEmailCadastrado() {
-        return emailCadastrado;
     }
 
     /**
      * Configura o layout e adiciona os componentes à janela.
      */
     private void configurarLayout() {
-        setTitle("Criar Nova Conta");
         setSize(1280, 720);
-        setResizable(false);
         setLayout(null);
-        setLocationRelativeTo(null);
 
         // Campo Nome
         JLabel labelNome = new JLabel("Nome:");
@@ -102,7 +88,7 @@ public class TelaCadastro extends JDialog {
      */
     private void configurarAcoes() {
         botaoCadastrar.addActionListener(e -> realizarCadastro());
-        botaoCancelar.addActionListener(e -> dispose());
+        botaoCancelar.addActionListener(e -> telaLogin.exibirPainelLogin(null));
     }
 
     /**
@@ -118,8 +104,7 @@ public class TelaCadastro extends JDialog {
             AppController.getInstance().cadastrarUsuario(nome, email, senha);
             JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!", "Sucesso",
                     JOptionPane.INFORMATION_MESSAGE);
-            emailCadastrado = email;
-            dispose();
+            telaLogin.exibirPainelLogin(email);
         } catch (BusinessException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Erro no Cadastro", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
