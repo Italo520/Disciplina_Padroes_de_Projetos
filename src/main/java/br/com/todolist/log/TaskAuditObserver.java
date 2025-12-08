@@ -26,9 +26,7 @@ public class TaskAuditObserver implements ITaskObserver {
 
         if (event.getAction() == AuditAction.DELETE) {
             oldData = mapTarefa(event.getTarefa());
-            newData = null;
         } else if (event.getAction() == AuditAction.CREATE) {
-            oldData = null;
             newData = mapTarefa(event.getTarefa());
         } else if (event.getAction() == AuditAction.UPDATE) {
             if (event.getOldTarefa() != null) {

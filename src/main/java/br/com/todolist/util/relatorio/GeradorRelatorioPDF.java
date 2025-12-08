@@ -24,6 +24,9 @@ import java.util.List;
  */
 public class GeradorRelatorioPDF implements IGeradorRelatorio {
 
+    private static final java.util.logging.Logger LOGGER = java.util.logging.Logger
+            .getLogger(GeradorRelatorioPDF.class.getName());
+
     /**
      * Gera um arquivo PDF contendo uma tabela com os dados fornecidos.
      *
@@ -60,10 +63,9 @@ public class GeradorRelatorioPDF implements IGeradorRelatorio {
 
             document.add(table);
             document.close();
-            System.out.println("PDF gerado com sucesso: " + nomeArquivo);
+            LOGGER.info(() -> "PDF gerado com sucesso: " + nomeArquivo);
         } catch (IOException e) {
-            System.err.println("Erro ao gerar o PDF: " + e.getMessage());
-            throw new RuntimeException("Erro ao gerar o PDF: " + e.getMessage(), e);
+            LOGGER.log(java.util.logging.Level.SEVERE, e, () -> "Erro ao gerar o PDF: " + e.getMessage());
         }
     }
 }

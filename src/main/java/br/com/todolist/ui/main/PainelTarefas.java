@@ -339,6 +339,7 @@ public class PainelTarefas extends PainelBase {
      * Listener para cliques na lista de subtarefas (para alternar status).
      */
     private class OuvinteCliqueSubtarefa extends MouseAdapter {
+        @Override
         public void mouseClicked(MouseEvent e) {
             int index = listaDeSubtarefas.locationToIndex(e.getPoint());
             if (index != -1) {
@@ -415,6 +416,7 @@ public class PainelTarefas extends PainelBase {
      * Listener para o botão "Editar Subtarefa".
      */
     private class OuvinteBotaoEditarSubtarefa implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             Tarefa tarefaPai = listaDeTarefas.getSelectedValue();
             Subtarefa subtarefa = listaDeSubtarefas.getSelectedValue();
@@ -453,6 +455,7 @@ public class PainelTarefas extends PainelBase {
      * Listener para o botão "Excluir Subtarefa".
      */
     private class OuvinteBotaoExcluirSubtarefa implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             Tarefa tarefaPai = listaDeTarefas.getSelectedValue();
             Subtarefa subtarefa = listaDeSubtarefas.getSelectedValue();

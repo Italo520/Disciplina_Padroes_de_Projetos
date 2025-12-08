@@ -15,10 +15,10 @@ public class Evento extends Itens {
     /**
      * Construtor da classe Evento.
      *
-     * @param titulo       O título do evento.
-     * @param descricao    A descrição do evento.
-     * @param criado_por   O e-mail do usuário que criou o evento.
-     * @param deadline     A data do evento.
+     * @param titulo     O título do evento.
+     * @param descricao  A descrição do evento.
+     * @param criado_por O e-mail do usuário que criou o evento.
+     * @param deadline   A data do evento.
      */
     public Evento(String titulo, String descricao, String criado_por, LocalDate deadline) {
         super(titulo, descricao, "Evento", criado_por, deadline);
@@ -35,6 +35,7 @@ public class Evento extends Itens {
      *
      * @return O título do evento.
      */
+    @Override
     public String toString() {
         return getTitulo();
     }
@@ -44,6 +45,7 @@ public class Evento extends Itens {
      *
      * @return O título do evento.
      */
+    @Override
     public String getTitulo() {
         return super.getTitulo();
     }
@@ -53,6 +55,7 @@ public class Evento extends Itens {
      *
      * @param titulo O novo título.
      */
+    @Override
     public void setTitulo(String titulo) {
         super.setTitulo(titulo);
     }
@@ -62,6 +65,7 @@ public class Evento extends Itens {
      *
      * @return A descrição do evento.
      */
+    @Override
     public String getDescricao() {
         return super.getDescricao();
     }
@@ -71,6 +75,7 @@ public class Evento extends Itens {
      *
      * @param descricao A nova descrição.
      */
+    @Override
     public void setDescricao(String descricao) {
         super.setDescricao(descricao);
     }
@@ -80,6 +85,7 @@ public class Evento extends Itens {
      *
      * @return A data de cadastro.
      */
+    @Override
     public LocalDate getDataCadastro() {
         return super.getDataCadastro();
     }
@@ -89,6 +95,7 @@ public class Evento extends Itens {
      *
      * @param dataCadastro A nova data de cadastro.
      */
+    @Override
     public void setDataCadastro(LocalDate dataCadastro) {
         super.setDataCadastro(dataCadastro);
     }
@@ -98,6 +105,7 @@ public class Evento extends Itens {
      *
      * @return A data do evento.
      */
+    @Override
     public LocalDate getDeadline() {
         return super.getDeadline();
     }
@@ -107,6 +115,7 @@ public class Evento extends Itens {
      *
      * @param deadline A nova data do evento.
      */
+    @Override
     public void setDeadLine(LocalDate deadline) {
         super.setDeadLine(deadline);
     }

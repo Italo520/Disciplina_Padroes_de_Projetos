@@ -5,7 +5,8 @@ import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDate;
 
 /**
- * Classe abstrata que serve como base para itens do sistema, como Tarefas e Eventos.
+ * Classe abstrata que serve como base para itens do sistema, como Tarefas e
+ * Eventos.
  * Contém atributos comuns como título, descrição, tipo, criador e datas.
  */
 @MappedSuperclass
@@ -21,13 +22,13 @@ public abstract class Itens {
     /**
      * Construtor completo da classe Itens.
      *
-     * @param titulo       O título do item.
-     * @param descricao    A descrição do item.
-     * @param tipo         O tipo do item (ex: "Tarefa", "Evento").
-     * @param criado_por   O e-mail do usuário que criou o item.
-     * @param deadline     A data limite ou data do evento.
+     * @param titulo     O título do item.
+     * @param descricao  A descrição do item.
+     * @param tipo       O tipo do item (ex: "Tarefa", "Evento").
+     * @param criado_por O e-mail do usuário que criou o item.
+     * @param deadline   A data limite ou data do evento.
      */
-    public Itens(String titulo, String descricao, String tipo, String criado_por, LocalDate deadline) {
+    protected Itens(String titulo, String descricao, String tipo, String criado_por, LocalDate deadline) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.tipo = tipo;
@@ -39,7 +40,7 @@ public abstract class Itens {
     /**
      * Construtor padrão necessário para frameworks de serialização.
      */
-    public Itens() {
+    protected Itens() {
     }
 
     /**
