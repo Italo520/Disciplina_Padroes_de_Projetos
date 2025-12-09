@@ -25,7 +25,7 @@ public class Subtarefa {
     private boolean status;
 
     @ManyToOne
-    @JoinColumn(name = "tarefa_titulo")
+    @JoinColumn(name = "tarefa_id")
     @JsonIgnore
     private Tarefa tarefa;
 
