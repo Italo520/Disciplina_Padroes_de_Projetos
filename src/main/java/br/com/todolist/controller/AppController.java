@@ -107,9 +107,18 @@ public class AppController {
         this.eventService = new EventServiceImpl(eventoRepository, usuario.getEmail());
 
         // Configuração de Auditoria (Log)
+        // Configuração de Auditoria (Log)
         ILogRepository logRepository = LogService.getInstance().getRepository();
-        this.taskService.addObserver(new TaskAuditObserver(logRepository));
+        TaskAuditObserver taskAuditObserver = new TaskAuditObserver(logRepository);
+        this.taskService.addObserver(taskAuditObserver);
         this.eventService.addObserver(new EventAuditObserver(logRepository));
+
+        // Log de Login
+        br.com.todolist.log.LogEntry loginEntry = new br.com.todolist.log.LogEntry(
+                br.com.todolist.log.AuditAction.LOGIN,
+                "Usuario realizou login",
+                usuario.getEmail());
+        logRepository.salvarLog(loginEntry);
 
         // Instancia os geradores de relatório seguindo o padrão Strategy
         this.reportService = new ReportServiceImpl(

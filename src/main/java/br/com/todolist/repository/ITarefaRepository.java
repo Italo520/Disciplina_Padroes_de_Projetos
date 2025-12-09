@@ -45,5 +45,19 @@ public interface ITarefaRepository {
      * @return uma lista com todas as tarefas.
      */
     List<Tarefa> buscarTodos();
-    // Métodos específicos para o repositório de tarefas podem ser definidos aqui.
+
+    /**
+     * Busca tarefas por data de deadline.
+     *
+     * @param dia a data limite.
+     * @return uma lista de tarefas para o dia.
+     */
+    List<Tarefa> buscarPorDia(java.time.LocalDate dia);
+
+    /**
+     * Busca tarefas consideradas críticas (prazo próximo e alta prioridade).
+     *
+     * @return uma lista de tarefas críticas.
+     */
+    List<Tarefa> buscarTarefasCriticas();
 }

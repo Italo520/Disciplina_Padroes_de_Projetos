@@ -11,7 +11,7 @@ import br.com.todolist.service.event.TaskEvent;
 import br.com.todolist.service.util.ITaskObserver;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -157,8 +157,8 @@ public class TaskServiceImpl implements ITaskService {
      */
     @Override
     public List<Tarefa> listarTarefasPorDia(LocalDate dia) {
-        return listarTodasTarefas().stream()
-                .filter(tarefa -> tarefa.getDeadline().isEqual(dia))
+        return tarefaRepository.buscarPorDia(dia).stream()
+                .filter(tarefa -> tarefa.getCriadoPor().equals(emailUsuario))
                 .toList();
     }
 
@@ -170,9 +170,8 @@ public class TaskServiceImpl implements ITaskService {
      */
     @Override
     public List<Tarefa> listarTarefasCriticas() {
-        LocalDate hoje = LocalDate.now();
-        return listarTodasTarefas().stream()
-                .filter(tarefa -> ChronoUnit.DAYS.between(hoje, tarefa.getDeadline()) - tarefa.getPrioridade() < 0)
+        return tarefaRepository.buscarTarefasCriticas().stream()
+                .filter(tarefa -> tarefa.getCriadoPor().equals(emailUsuario))
                 .toList();
     }
 

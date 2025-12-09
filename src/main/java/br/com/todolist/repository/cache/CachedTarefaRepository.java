@@ -26,6 +26,7 @@ public class CachedTarefaRepository implements ITarefaRepository {
         this.cacheManager = RedisCacheManager.getInstance();
         this.objectMapper = new ObjectMapper();
         this.objectMapper.registerModule(new JavaTimeModule());
+        this.objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     @Override
@@ -55,11 +56,78 @@ public class CachedTarefaRepository implements ITarefaRepository {
     }
 
     @Override
+    public List<Tarefa> buscarTodos() {
+        return decoratedRepository.buscarTodos();
+    }
+
+    @Override
+    public List<Tarefa> buscarPorDia(java.time.LocalDate dia) {
+        String key = "tarefa:dia:" + dia.toString();
+        String json = cacheManager.buscar(key);
+
+        if (json != null) {
+            try {
+                return objectMapper.readValue(json, new com.fasterxml.jackson.core.type.TypeReference<List<Tarefa>>() {
+                });
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e, () -> "Erro ao deserializar lista de tarefas do cache: " + e.getMessage());
+            }
+        }
+
+        List<Tarefa> tarefas = decoratedRepository.buscarPorDia(dia);
+        if (tarefas != null) {
+            try {
+                String jsonValue = objectMapper.writeValueAsString(tarefas);
+                cacheManager.salvar(key, jsonValue, TTL);
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e,
+                        () -> "Erro ao serializar lista de tarefas para o cache: " + e.getMessage());
+            }
+        return tarefas;
+    }
+
+    @Override
+    public List<Tarefa> buscarTarefasCriticas() {
+        String key = "tarefa:criticas";
+        String json = cacheManager.buscar(key);
+
+        if (json != null) {
+            try {
+                return objectMapper.readValue(json, new com.fasterxml.jackson.core.type.TypeReference<List<Tarefa>>() {
+                });
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e,
+                        () -> "Erro ao deserializar lista de tarefas criticas do cache: " + e.getMessage());
+            }
+        }
+
+        List<Tarefa> tarefas = decoratedRepository.buscarTarefasCriticas();
+        if (tarefas != null) {
+            try {
+                String jsonValue = objectMapper.writeValueAsString(tarefas);
+                cacheManager.salvar(key, jsonValue, TTL);
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e,
+                        () -> "Erro ao serializar lista de tarefas criticas para o cache: " + e.getMessage());
+            }
+        }
+        return tarefas;
+    }
+
+    private void invalidarCacheDia(Tarefa entity) {
+        if (entity.getDeadline() != null) {
+            cacheManager.remover("tarefa:dia:" + entity.getDeadline().toString());
+        }
+        cacheManager.remover("tarefa:criticas");
+    }
+
+    @Override
     public void salvar(Tarefa entity) {
         decoratedRepository.salvar(entity);
         if (entity.getId() != null) {
             cacheManager.remover(CACHE_KEY_PREFIX + entity.getId());
         }
+        invalidarCacheDia(entity);
     }
 
     @Override
@@ -68,6 +136,7 @@ public class CachedTarefaRepository implements ITarefaRepository {
         if (entity.getId() != null) {
             cacheManager.remover(CACHE_KEY_PREFIX + entity.getId());
         }
+        invalidarCacheDia(entity);
         return updated;
     }
 
@@ -77,10 +146,6 @@ public class CachedTarefaRepository implements ITarefaRepository {
         if (entity.getId() != null) {
             cacheManager.remover(CACHE_KEY_PREFIX + entity.getId());
         }
-    }
-
-    @Override
-    public List<Tarefa> buscarTodos() {
-        return decoratedRepository.buscarTodos();
+        invalidarCacheDia(entity);
     }
 }

@@ -92,4 +92,32 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
             em.close();
         }
     }
+
+    @Override
+    public List<Tarefa> buscarPorDia(java.time.LocalDate dia) {
+        EntityManager em = DatabaseConnection.getInstance().getEntityManager();
+        try {
+            TypedQuery<Tarefa> query = em.createQuery("SELECT t FROM Tarefa t WHERE t.deadline = :dia", Tarefa.class);
+            query.setParameter("dia", dia);
+            return query.getResultList();
+        } catch (Exception e) {
+            throw new DatabaseException("Erro ao buscar tarefas por dia: " + e.getMessage(), e);
+        } finally {
+            em.close();
+        }
+    }
+
+    @Override
+    public List<Tarefa> buscarTarefasCriticas() {
+        // Implementação em memória para manter consistência com a regra de negócio
+        // original
+        // Idealmente seria uma query DB, mas a lógica de data/prioridade é complexa
+        // para JPQL portátil
+        List<Tarefa> all = buscarTodos();
+        java.time.LocalDate hoje = java.time.LocalDate.now();
+        return all.stream()
+                .filter(t -> t.getDeadline() != null &&
+                        java.time.temporal.ChronoUnit.DAYS.between(hoje, t.getDeadline()) - t.getPrioridade() < 0)
+                .collect(java.util.stream.Collectors.toList());
+    }
 }

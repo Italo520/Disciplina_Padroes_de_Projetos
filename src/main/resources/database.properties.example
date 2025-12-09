@@ -14,6 +14,7 @@ hibernate.hbm2ddl.auto=update
 # Configurações do Redis
 redis.host=localhost
 redis.port=6379
+redis.password=redis_pass
 
 # Configurações do MongoDB
 mongo.uri=mongodb://localhost:27017

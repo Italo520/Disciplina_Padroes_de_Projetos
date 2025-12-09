@@ -27,6 +27,7 @@ public class Tarefa extends Itens {
     @OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Subtarefa> subtarefas;
     @Transient
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private IProgressCalculationStrategy progressCalculationStrategy;
 
     /**

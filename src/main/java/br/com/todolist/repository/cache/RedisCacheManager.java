@@ -57,6 +57,7 @@ public class RedisCacheManager {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.setex(key, ttlSeconds, jsonValue);
         } catch (Exception e) {
+            e.printStackTrace();
             LogService.getInstance().logError(e);
         }
     }
@@ -85,6 +86,7 @@ public class RedisCacheManager {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.del(key);
         } catch (Exception e) {
+            e.printStackTrace();
             LogService.getInstance().logError(e);
         }
     }

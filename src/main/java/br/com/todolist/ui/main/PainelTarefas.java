@@ -37,6 +37,9 @@ public class PainelTarefas extends PainelBase {
     /** Componente visual da lista de subtarefas. */
     private JList<Subtarefa> listaDeSubtarefas;
 
+    /** Label para exibir o ID da tarefa. */
+    private JLabel valorId;
+
     /** Label para exibir a descrição da tarefa. */
     private JLabel valorDescricao;
 
@@ -48,6 +51,60 @@ public class PainelTarefas extends PainelBase {
 
     /** Label para exibir a conclusão da tarefa em percentual. */
     private JLabel valorConclusao;
+
+    // ... (código intermediário omitido, vou focar nos métodos)
+
+    /**
+     * Cria o painel de detalhes da tarefa selecionada.
+     *
+     * @return O painel de detalhes.
+     */
+    private JPanel criarPainelDetalhes() {
+        JPanel painelDetalhes = new JPanel(new GridLayout(0, 2, 5, 5));
+        painelDetalhes.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        valorId = new JLabel("N/D");
+        valorDescricao = new JLabel("N/D");
+        valorPrioridade = new JLabel("N/D");
+        valorPrazo = new JLabel("N/D");
+        valorConclusao = new JLabel("N/D");
+
+        painelDetalhes.add(new JLabel("ID:"));
+        painelDetalhes.add(valorId);
+        painelDetalhes.add(new JLabel("Descrição:"));
+        painelDetalhes.add(valorDescricao);
+        painelDetalhes.add(new JLabel("Prioridade:"));
+        painelDetalhes.add(valorPrioridade);
+        painelDetalhes.add(new JLabel("Prazo:"));
+        painelDetalhes.add(valorPrazo);
+        painelDetalhes.add(new JLabel("Conclusão:"));
+        painelDetalhes.add(valorConclusao);
+
+        return painelDetalhes;
+    }
+
+    // ...
+
+    /**
+     * Atualiza os campos de detalhes com as informações da tarefa selecionada.
+     *
+     * @param tarefa A tarefa selecionada, ou null para limpar os campos.
+     */
+    private void atualizarDetalhesTarefa(Tarefa tarefa) {
+        if (tarefa != null) {
+            valorId.setText(String.valueOf(tarefa.getId()));
+            valorDescricao.setText(tarefa.getDescricao());
+            valorPrioridade.setText(String.valueOf(tarefa.getPrioridade()));
+            valorPrazo.setText(tarefa.getDeadline().format(formatadorDeData));
+            valorConclusao.setText((int) tarefa.obterPercentual() + "%");
+        } else {
+            valorId.setText("-");
+            valorDescricao.setText("Selecione uma tarefa");
+            valorPrioridade.setText("-");
+            valorPrazo.setText("-");
+            valorConclusao.setText("-");
+        }
+    }
 
     /** Formatador de data padrão para exibição (dd/MM/yyyy). */
     private static final String DATE_PATTERN = "dd/MM/yyyy";
@@ -136,32 +193,6 @@ public class PainelTarefas extends PainelBase {
     }
 
     /**
-     * Cria o painel de detalhes da tarefa selecionada.
-     *
-     * @return O painel de detalhes.
-     */
-    private JPanel criarPainelDetalhes() {
-        JPanel painelDetalhes = new JPanel(new GridLayout(0, 2, 5, 5));
-        painelDetalhes.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-        valorDescricao = new JLabel("N/D");
-        valorPrioridade = new JLabel("N/D");
-        valorPrazo = new JLabel("N/D");
-        valorConclusao = new JLabel("N/D");
-
-        painelDetalhes.add(new JLabel("Descrição:"));
-        painelDetalhes.add(valorDescricao);
-        painelDetalhes.add(new JLabel("Prioridade:"));
-        painelDetalhes.add(valorPrioridade);
-        painelDetalhes.add(new JLabel("Prazo:"));
-        painelDetalhes.add(valorPrazo);
-        painelDetalhes.add(new JLabel("Conclusão:"));
-        painelDetalhes.add(valorConclusao);
-
-        return painelDetalhes;
-    }
-
-    /**
      * Cria o painel de subtarefas.
      *
      * @return O painel de subtarefas.
@@ -189,25 +220,6 @@ public class PainelTarefas extends PainelBase {
         painelSubtarefas.add(painelBotoesSubtarefa, BorderLayout.SOUTH);
 
         return painelSubtarefas;
-    }
-
-    /**
-     * Atualiza os campos de detalhes com as informações da tarefa selecionada.
-     *
-     * @param tarefa A tarefa selecionada, ou null para limpar os campos.
-     */
-    private void atualizarDetalhesTarefa(Tarefa tarefa) {
-        if (tarefa != null) {
-            valorDescricao.setText(tarefa.getDescricao());
-            valorPrioridade.setText(String.valueOf(tarefa.getPrioridade()));
-            valorPrazo.setText(tarefa.getDeadline().format(formatadorDeData));
-            valorConclusao.setText((int) tarefa.obterPercentual() + "%");
-        } else {
-            valorDescricao.setText("Selecione uma tarefa");
-            valorPrioridade.setText("-");
-            valorPrazo.setText("-");
-            valorConclusao.setText("-");
-        }
     }
 
     /**
