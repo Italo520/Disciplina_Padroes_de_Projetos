@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Padrões de Projeto - Refatoração To-Do List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+
+        .slide {
+            width: 960px;
+            height: 540px;
+            margin: 0 auto 20px;
+            display: flex;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .row { flex-direction: row; }
+        .col { flex-direction: column; }
+        .center {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .space-between { justify-content: space-between; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .items-end { align-items: flex-end; }
+        .fill-width { flex: 1; }
+        .fill-height { flex: 1; display: flex; flex-direction: column; }
+
+        .gap-sm { gap: 0.5rem; }
+        .gap-md { gap: 1rem; }
+        .gap-lg { gap: 1.5rem; }
+        .gap-xl { gap: 2rem; }
+        .gap-2xl { gap: 3rem; }
+
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .p-12 { padding: 3rem; }
+        .p-16 { padding: 4rem; }
+
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-12 { margin-bottom: 3rem; }
+
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mt-8 { margin-top: 2rem; }
+        .mt-12 { margin-top: 3rem; }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: Arial, sans-serif;
+            font-weight: 600;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.25rem; }
+        h3 { font-size: 1.75rem; }
+        h4 { font-size: 1.5rem; }
+        h5 { font-size: 1.25rem; }
+        h6 { font-size: 1rem; }
+
+        .text-6xl { font-size: 3.75rem; }
+        .text-5xl { font-size: 3rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-base { font-size: 1rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+        .font-normal { font-weight: 400; }
+
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+
+        ul, ol {
+            margin-left: 2rem;
+            line-height: 1.8;
+        }
+
+        li { margin-bottom: 0.75rem; }
+
+        .code-block {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            line-height: 1.3;
+            overflow: hidden;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        body.theme-dark {
+            --color-bg-base: #0f172a;
+            --color-bg-elevated: #020617;
+            --color-bg-surface: #1e293b;
+            --color-text-primary: #f1f5f9;
+            --color-text-secondary: #cbd5e1;
+            --color-text-accent: #38bdf8;
+        }
+
+        .before-after {
+            display: flex;
+            gap: 1rem;
+            height: 100%;
+        }
+
+        .before-section, .after-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0.75rem;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .code-before {
+            background-color: #1e293b;
+            color: #f87171;
+            flex: 1;
+            overflow: hidden;
+            border-left: 3px solid #f87171;
+        }
+
+        .code-after {
+            background-color: #1e293b;
+            color: #86efac;
+            flex: 1;
+            overflow: hidden;
+            border-left: 3px solid #86efac;
+        }
+    </style>
+</head>
+<body class="theme-dark">
+
+    <!-- Slide 1: Título -->
+    <section class="slide p-16 col center" style="background-color: #020617; color: #f1f5f9;">
+        <h1 class="text-6xl mb-4" style="color: #38bdf8;">Padrões de Projeto</h1>
+        <p class="text-2xl mb-8" style="color: #cbd5e1;">Refatoração do Projeto To-Do List</p>
+        <p class="text-sm" style="color: #94a3b8;">Análise completa de Design Patterns implementados</p>
+    </section>
+
+    <!-- Slide 2: Agenda -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-8" style="color: #38bdf8;">Agenda</h2>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Introdução e Contexto</li>
+            <li>Padrão Singleton - SessionManager</li>
+            <li>Padrão Strategy - Serviços Polimórficos</li>
+            <li>Padrão Proxy/Decorator - Cache Redis</li>
+            <li>Padrão Observer - Auditoria MongoDB</li>
+            <li>Comparativo e Conclusões</li>
+        </ul>
+    </section>
+
+    <!-- Slide 3: Contexto do Projeto -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">Contexto: Refatoração</h2>
+        <div class="fill-height">
+            <p class="text-lg mb-4" style="color: #cbd5e1;">
+                Transformação de código monolítico em arquitetura moderna com padrões de projeto
+            </p>
+            <ul class="text-lg" style="color: #cbd5e1;">
+                <li><strong>Antes:</strong> Muitos condicionais, alto acoplamento</li>
+                <li><strong>Depois:</strong> Interfaces polimórficas, baixo acoplamento</li>
+                <li><strong>Tecnologias:</strong> PostgreSQL, MongoDB, Redis, Spring Boot</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Slide 4: Singleton - Conceito -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">🔐 Padrão Singleton</h2>
+        <p class="text-lg mb-4" style="color: #cbd5e1;">Garante UMA única instância em toda a aplicação</p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Construtor privado</li>
+            <li>Método getInstance() sincronizado</li>
+            <li>Ponto de acesso global</li>
+        </ul>
+    </section>
+
+    <!-- Slide 5: Singleton - ANTES vs DEPOIS -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-2" style="color: #38bdf8; font-size: 1.5rem;">SessionManager: Antes vs Depois</h2>
+        <div class="before-after" style="height: calc(100% - 40px);">
+            <div class="before-section">
+                <div class="section-title" style="color: #f87171;">❌ ANTES - Múltiplas Instâncias</div>
+                <div class="code-block code-before">
+// Múltiplas instâncias
+GerenteDaTarefa g1 = new GerenteDaTarefa();
+GerenteDaTarefa g2 = new GerenteDaTarefa();
+// g1 != g2 ❌
+// Inconsistências!
+Usuario user = null;
+try {
+  user = g1.getUsuario();
+} catch(Exception e) {
+  // Erro: estado perdido
+}
+                </div>
+            </div>
+            <div class="after-section">
+                <div class="section-title" style="color: #86efac;">✅ DEPOIS - Singleton</div>
+                <div class="code-block code-after">
+// UMA única instância
+SessionManager s1 = SessionManager.getInstance();
+SessionManager s2 = SessionManager.getInstance();
+// s1 == s2 ✓ (mesma instância)
+
+Usuario user = s1.getUsuarioLogado();
+// Sempre consistente!
+// Thread-safe com synchronized
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 6: Strategy - Conceito -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">📋 Padrão Strategy</h2>
+        <p class="text-lg mb-4" style="color: #cbd5e1;">Define família de algoritmos intercambiáveis</p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Interfaces bem definidas</li>
+            <li>Múltiplas implementações</li>
+            <li>Sem muitos if-else</li>
+            <li>Fácil estender</li>
+        </ul>
+    </section>
+
+    <!-- Slide 7: Strategy - ANTES vs DEPOIS -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-2" style="color: #38bdf8; font-size: 1.5rem;">Strategy: Antes vs Depois</h2>
+        <div class="before-after" style="height: calc(100% - 40px);">
+            <div class="before-section">
+                <div class="section-title" style="color: #f87171;">❌ ANTES - If-Else</div>
+                <div class="code-block code-before">
+// Muitos condicionais
+if (tipo.equals("CRIAR")) {
+  gerenteTarefa.criar(...);
+} else if (tipo.equals("ATUALIZAR")) {
+  gerenteTarefa.atualizar(...);
+} else if (tipo.equals("DELETAR")) {
+  gerenteTarefa.deletar(...);
+}
+// Difícil de estender
+// Violar Open/Closed
+                </div>
+            </div>
+            <div class="after-section">
+                <div class="section-title" style="color: #86efac;">✅ DEPOIS - Strategy</div>
+                <div class="code-block code-after">
+// Interface polimórfica
+ITaskService service = 
+  serviceFactory.getService(tipo);
+
+service.criarTarefa(...);
+service.atualizarTarefa(...);
+service.deletarTarefa(...);
+
+// Fácil estender
+// Open/Closed respeitado
+// Novo tipo = nova implementação
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 8: Strategy - Interfaces -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">Interfaces Strategy</h2>
+        <div class="row gap-md">
+            <div class="fill-width" style="background-color: #1e293b; padding: 1.5rem;">
+                <h4 style="color: #38bdf8;">ITaskService</h4>
+                <p style="font-size: 0.875rem; color: #cbd5e1;">Operações com tarefas</p>
+            </div>
+            <div class="fill-width" style="background-color: #1e293b; padding: 1.5rem;">
+                <h4 style="color: #38bdf8;">IUserService</h4>
+                <p style="font-size: 0.875rem; color: #cbd5e1;">Gerenciamento de usuários</p>
+            </div>
+        </div>
+        <div class="row gap-md mt-4">
+            <div class="fill-width" style="background-color: #1e293b; padding: 1.5rem;">
+                <h4 style="color: #38bdf8;">IEventService</h4>
+                <p style="font-size: 0.875rem; color: #cbd5e1;">Manipulação de eventos</p>
+            </div>
+            <div class="fill-width" style="background-color: #1e293b; padding: 1.5rem;">
+                <h4 style="color: #38bdf8;">IReportService</h4>
+                <p style="font-size: 0.875rem; color: #cbd5e1;">Geração de relatórios</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 9: Proxy/Decorator - Conceito -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">⚡ Padrão Proxy/Decorator</h2>
+        <p class="text-lg mb-4" style="color: #cbd5e1;">Cache em camadas com Redis</p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li><strong>Proxy:</strong> Controla acesso ao banco de dados</li>
+            <li><strong>Decorator:</strong> Adiciona funcionalidade de cache</li>
+            <li><strong>Redis:</strong> Armazenamento em memória</li>
+        </ul>
+    </section>
+
+    <!-- Slide 10: Proxy/Decorator - ANTES vs DEPOIS -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-2" style="color: #38bdf8; font-size: 1.5rem;">Proxy/Cache: Antes vs Depois</h2>
+        <div class="before-after" style="height: calc(100% - 40px);">
+            <div class="before-section">
+                <div class="section-title" style="color: #f87171;">❌ ANTES - Sem Cache</div>
+                <div class="code-block code-before">
+// Sempre consulta BD
+public Tarefa findById(Long id) {
+  return repository
+    .findById(id)
+    .orElseThrow();
+  // ❌ Latência alta
+  // ❌ BD sobrecarregado
+  // ❌ Múltiplas queries
+}
+                </div>
+            </div>
+            <div class="after-section">
+                <div class="section-title" style="color: #86efac;">✅ DEPOIS - Com Cache</div>
+                <div class="code-block code-after">
+// Tenta cache primeiro
+public Tarefa findById(Long id) {
+  Tarefa cached = 
+    redis.get("tarefa:" + id);
+  if (cached != null)
+    return cached; // ⚡ Rápido
+  
+  Tarefa real = repository.findById(id);
+  redis.save(real, 3600); // TTL
+  return real;
+  // ✓ Latência reduzida
+}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 11: Cache-Aside Pattern -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-4" style="color: #38bdf8;">Fluxo Cache-Aside</h2>
+        <p class="text-sm mb-4" style="color: #cbd5e1; line-height: 1.8;">
+            <strong style="color: #38bdf8;">Requisição</strong><br/>
+            ↓<br/>
+            <strong style="color: #38bdf8;">Verifica Redis?</strong><br/>
+            ├─ ✅ SIM → Retorna (CACHE HIT) ⚡<br/>
+            └─ ❌ NÃO → Consulta BD → Armazena Redis<br/>
+            ↓<br/>
+            <strong style="color: #38bdf8;">TTL (3600s)</strong>
+        </p>
+        <div style="background-color: #1e293b; color: #38bdf8; padding: 0.75rem; margin-top: 1rem; font-size: 0.875rem;">
+            Performance: 📦 Cache vs 🔍 BD = ~100x mais rápido
+        </div>
+    </section>
+
+    <!-- Slide 12: Observer - Conceito -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">👁️ Padrão Observer</h2>
+        <p class="text-lg mb-4" style="color: #cbd5e1;">Notificação automática de mudanças de estado</p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>MongoDB registra todas as operações</li>
+            <li>Auditoria completa (CRUD)</li>
+            <li>Conformidade com LGPD</li>
+            <li>Rastreabilidade total</li>
+        </ul>
+    </section>
+
+    <!-- Slide 13: Observer - ANTES vs DEPOIS -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-2" style="color: #38bdf8; font-size: 1.5rem;">Observer/Auditoria: Antes vs Depois</h2>
+        <div class="before-after" style="height: calc(100% - 40px);">
+            <div class="before-section">
+                <div class="section-title" style="color: #f87171;">❌ ANTES - Sem Auditoria</div>
+                <div class="code-block code-before">
+// Sem registro de operações
+public void criar(Tarefa t) {
+  repository.save(t);
+  // Sem histórico
+  // Sem rastreamento
+  // Sem LGPD
+  // Impossível auditar
+}
+                </div>
+            </div>
+            <div class="after-section">
+                <div class="section-title" style="color: #86efac;">✅ DEPOIS - Com Observer</div>
+                <div class="code-block code-after">
+// Registra automaticamente
+public void criar(Tarefa t) {
+  repository.save(t);
+  
+  // Observer notificado
+  auditService
+    .registrarCriacao(t);
+  
+  // ✓ Histórico completo
+  // ✓ Rastreabilidade
+  // ✓ LGPD compliant
+}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 14: AuditService - MongoDB -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-4" style="color: #38bdf8;">AuditService - Operações</h2>
+        <ul class="text-sm" style="color: #cbd5e1; line-height: 1.8;">
+            <li><strong>📝 registrarCriacao():</strong> Log de novos registros</li>
+            <li><strong>✏️ registrarAtualizacao():</strong> Histórico de mudanças</li>
+            <li><strong>🗑️ registrarDelecao():</strong> Rastreamento de exclusões</li>
+            <li><strong>🔑 registrarLogin():</strong> Controle de acesso</li>
+            <li><strong>❌ registrarErro():</strong> Registro de exceções</li>
+        </ul>
+    </section>
+
+    <!-- Slide 15: Repository Pattern -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">📊 Padrão Repository</h2>
+        <p class="text-lg mb-4" style="color: #cbd5e1;">Abstração de dados com JPA</p>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Independente de ORM</li>
+            <li>Fácil criar mocks para testes</li>
+            <li>Mudanças no BD isoladas</li>
+            <li>Reutilização de queries</li>
+        </ul>
+    </section>
+
+    <!-- Slide 16: Tecnologias Stack -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">🛠️ Stack Implementado</h2>
+        <div class="row gap-lg">
+            <div class="fill-width" style="background-color: #1e293b; padding: 1.5rem;">
+                <h4 style="color: #38bdf8;">PostgreSQL</h4>
+                <p style="font-size: 0.875rem; color: #cbd5e1;">BD relacional principal</p>
+            </div>
+            <div class="fill-width" style="background-color: #1e293b; padding: 1.5rem;">
+                <h4 style="color: #38bdf8;">MongoDB</h4>
+                <p style="font-size: 0.875rem; color: #cbd5e1;">Auditoria e logs</p>
+            </div>
+            <div class="fill-width" style="background-color: #1e293b; padding: 1.5rem;">
+                <h4 style="color: #38bdf8;">Redis</h4>
+                <p style="font-size: 0.875rem; color: #cbd5e1;">Cache em memória</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 17: Estrutura de Pastas -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-4" style="color: #38bdf8;">📁 Estrutura de Pastas</h2>
+        <div class="before-after" style="height: calc(100% - 40px);">
+            <div class="before-section">
+                <div class="section-title" style="color: #f87171;">❌ ANTES</div>
+                <div class="code-block code-before">
+src/
+├── models/
+├── service/
+├── persistence/
+├── ui/
+└── util/
+
+// Desorganizado
+// Difícil de navegar
+// Responsabilidades mistas
+                </div>
+            </div>
+            <div class="after-section">
+                <div class="section-title" style="color: #86efac;">✅ DEPOIS</div>
+                <div class="code-block code-after">
+src/
+├── controller/
+├── entity/
+├── repository/
+├── service/
+│   ├── impl/
+│   ├── event/
+│   └── util/
+├── log/
+├── exception/
+└── ui/
+
+// Bem organizado
+// Fácil de navegar
+// Responsabilidades claras
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 18: Comparativo Métricas -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-4" style="color: #38bdf8;">📊 Métricas de Qualidade</h2>
+        <div class="text-sm" style="color: #cbd5e1;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span><strong>Acoplamento:</strong></span>
+                <span style="color: #f87171;">ANTES: Alto</span>
+                <span style="color: #86efac;">→ DEPOIS: Baixo ↑↑↑</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span><strong>Testabilidade:</strong></span>
+                <span style="color: #f87171;">ANTES: Difícil</span>
+                <span style="color: #86efac;">→ DEPOIS: Fácil ↑↑↑</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span><strong>Manutenibilidade:</strong></span>
+                <span style="color: #f87171;">ANTES: Média</span>
+                <span style="color: #86efac;">→ DEPOIS: Excelente ↑↑↑</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span><strong>Extensibilidade:</strong></span>
+                <span style="color: #f87171;">ANTES: Complexa</span>
+                <span style="color: #86efac;">→ DEPOIS: Simples ↑↑↑</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 19: SOLID Principles -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-4" style="color: #38bdf8;">✅ SOLID Principles</h2>
+        <ul class="text-sm" style="color: #cbd5e1;">
+            <li><strong>S</strong> - Single Responsibility: Cada classe, uma responsabilidade</li>
+            <li><strong>O</strong> - Open/Closed: Aberto para extensão, fechado para modificação</li>
+            <li><strong>L</strong> - Liskov: Implementações respeitam contratos</li>
+            <li><strong>I</strong> - Interface Segregation: Interfaces específicas</li>
+            <li><strong>D</strong> - Dependency Inversion: Inversão via Spring</li>
+        </ul>
+    </section>
+
+    <!-- Slide 20: Fluxo Completo - Criação -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-4" style="color: #38bdf8;">🔄 Fluxo: Criar Tarefa</h2>
+        <p class="text-xs" style="color: #cbd5e1; line-height: 1.5;">
+            <strong style="color: #38bdf8;">1. Interface Gráfica</strong> → POST /tarefas<br/>
+            <strong style="color: #38bdf8;">2. SessionManager.getInstance()</strong> [Singleton]<br/>
+            <strong style="color: #38bdf8;">3. ITaskService.criarTarefa()</strong> [Strategy]<br/>
+            <strong style="color: #38bdf8;">4. AuditService.registrarCriacao()</strong> [Observer]<br/>
+            <strong style="color: #38bdf8;">5. TarefaRepository.save()</strong> [Repository]<br/>
+            <strong style="color: #38bdf8;">6. CachedTarefaRepository.invalidarCache()</strong> [Proxy]<br/>
+            <strong style="color: #10b981;">✅ Resposta ao cliente com sucesso</strong>
+        </p>
+    </section>
+
+    <!-- Slide 21: Fluxo Completo - Listar -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-4" style="color: #38bdf8;">🔄 Fluxo: Listar Tarefas</h2>
+        <p class="text-xs" style="color: #cbd5e1; line-height: 1.5;">
+            <strong style="color: #38bdf8;">1. Interface Gráfica</strong> → GET /tarefas/{usuarioId}<br/>
+            <strong style="color: #38bdf8;">2. ITaskService.listar()</strong> [Strategy]<br/>
+            <strong style="color: #38bdf8;">3. CachedTarefaRepository.findByUsuario()</strong> [Proxy]<br/>
+            <strong style="color: #10b981;">├─ 📦 CACHE HIT:</strong> Retorna Redis ⚡ (RÁPIDO)<br/>
+            <strong style="color: #f59e0b;">├─ 🔍 CACHE MISS:</strong> Consulta PostgreSQL → Armazena<br/>
+            <strong style="color: #38bdf8;">4. Serializa resposta</strong><br/>
+            <strong style="color: #10b981;">✅ Lista de tarefas retornada</strong>
+        </p>
+    </section>
+
+    <!-- Slide 22: Vantagens Alcançadas -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-4" style="color: #38bdf8;">🎯 Vantagens Alcançadas</h2>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>✅ <strong>Flexibilidade:</strong> Novos recursos sem modificar código existente</li>
+            <li>✅ <strong>Confiabilidade:</strong> Auditoria completa via MongoDB</li>
+            <li>✅ <strong>Performance:</strong> Cache reduz latência em 100x</li>
+            <li>✅ <strong>Manutenibilidade:</strong> Código limpo e organizado</li>
+            <li>✅ <strong>Testabilidade:</strong> Interfaces facilitam mocks</li>
+        </ul>
+    </section>
+
+    <!-- Slide 23: Próximos Passos -->
+    <section class="slide p-16 col" style="background-color: #0f172a; color: #f1f5f9;">
+        <h2 class="mb-6" style="color: #38bdf8;">🚀 Próximos Passos</h2>
+        <ul class="text-lg" style="color: #cbd5e1;">
+            <li>Padrão <strong>Factory</strong> - Criação de entidades complexas</li>
+            <li>Padrão <strong>Command</strong> - Undo/Redo de operações</li>
+            <li>Padrão <strong>State</strong> - Máquina de estados para tarefas</li>
+            <li>Padrão <strong>Mediator</strong> - Comunicação complexa entre objetos</li>
+        </ul>
+    </section>
+
+    <!-- Slide 24: Conclusão -->
+    <section class="slide p-16 col center" style="background-color: #020617; color: #f1f5f9;">
+        <h2 class="text-4xl mb-6" style="color: #38bdf8;">Conclusão</h2>
+        <p class="text-xl mb-4" style="color: #cbd5e1;">
+            Padrões de Projeto transformam código em arquitetura profissional
+        </p>
+        <p class="text-sm" style="color: #94a3b8;">
+            Flexibilidade • Manutenibilidade • Performance • Escalabilidade
+        </p>
+    </section>
+
+</body>
+</html>
