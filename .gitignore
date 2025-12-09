@@ -58,7 +58,12 @@ sonarqube-data/
 sonarqube-extensions/
 sonarqube-logs/
 
-# Relatórios SonarQube
+# SonarQube
 sonar_issues*.json
+sonar_smells*.json
+sonar_minor*.json
+.sonar/
+.scannerwork/
+target/sonar/
 
 !.vscode/mcp.json
