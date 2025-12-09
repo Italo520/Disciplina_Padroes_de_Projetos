@@ -31,6 +31,12 @@ Para ver logs da aplicação e dos bancos de dados em tempo real:
 .\scripts\monitor-all.ps1
 ```
 
+Para ver o **estado dos dados** (Tabelas, Chaves Redis, Docs Mongo) em tempo real:
+
+```powershell
+.\scripts\monitor-data.ps1
+```
+
 ### Linux / Mac
 
 ```bash

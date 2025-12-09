@@ -204,7 +204,13 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public void notifyObservers(TaskEvent event) {
         for (ITaskObserver observer : observers) {
-            observer.update(event);
+            try {
+                observer.update(event);
+            } catch (Exception e) {
+                // Loga o erro de auditoria mas não impede a operação principal
+                System.err.println("ALERTA: Falha ao notificar observador (Auditoria): " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -125,6 +125,13 @@ public class BarraFerramentas {
         menuTarefas.add(pdfDoDia);
         menuTarefas.add(enviarEmailTarefas);
         menuTarefas.add(relatorioTarefasPorMes);
+        JMenuItem itemLogout = new JMenuItem("Logout");
+        itemLogout.addActionListener(e -> {
+            frame.dispose();
+            new br.com.todolist.ui.auth.TelaLogin().setVisible(true);
+        });
+
+        menuArquivo.add(itemLogout);
         menuArquivo.add(itemSair);
         menuBar.add(menuArquivo);
         menuBar.add(menuTarefas);

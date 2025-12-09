@@ -35,7 +35,7 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             em.getTransaction().begin();
-            Tarefa tarefaParaRemover = em.find(Tarefa.class, entity.getTitulo());
+            Tarefa tarefaParaRemover = em.find(Tarefa.class, entity.getId());
             if (tarefaParaRemover != null) {
                 em.remove(tarefaParaRemover);
             }

@@ -97,6 +97,32 @@ if (-not $mvnCmd) {
     }
 }
 
+# Configura database.properties com as credenciais corretas para o ambiente local
+Write-Info "Configurando database.properties..."
+$dbProps = @"
+# Gerado automaticamente pelo script run-app.ps1
+db.driver=org.postgresql.Driver
+db.url=jdbc:postgresql://localhost:5432/todolist
+db.user=todolist_user
+db.password=todolist_pass
+
+hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+hibernate.show_sql=true
+hibernate.format_sql=true
+hibernate.hbm2ddl.auto=update
+
+redis.host=localhost
+redis.port=6379
+redis.password=redis_pass
+
+mongo.uri=mongodb://mongo_admin:mongo_pass@localhost:27017/?authSource=admin
+mongo.database=todolist_logs
+"@
+
+# Garante que o diretório resources existe
+if (!(Test-Path "src/main/resources")) { New-Item -ItemType Directory -Path "src/main/resources" | Out-Null }
+Set-Content -Path "src/main/resources/database.properties" -Value $dbProps
+
 # Compila a aplicação
 Write-Info "Compilando a aplicação Java..."
 & $mvnCmd clean package -DskipTests
