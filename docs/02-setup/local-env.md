@@ -24,15 +24,27 @@ Se você preferir rodar a aplicação diretamente na sua máquina (sem Docker), 
     *   Edite o arquivo com as credenciais do seu banco local.
 
 ## Executando a Aplicação
-
+ 
 Na raiz do projeto, execute:
-
+ 
+### Opção 1: Maven Instalado (Padrão)
 ```bash
-# Compilar e instalar dependências
 mvn clean install
-
-# Rodar a classe principal
 mvn exec:java -Dexec.mainClass="br.com.todolist.Main"
+```
+
+### Opção 2: Maven Wrapper (Se disponível)
+```bash
+./mvnw clean install
+./mvnw exec:java -Dexec.mainClass="br.com.todolist.Main"
+```
+
+### Opção 3: Compilação via Docker (Sem Java/Maven local)
+Se você não tiver Java/Maven instalados, pode usar o script auxiliar:
+
+**Windows:**
+```powershell
+.\scripts\run-app-docker-build.ps1
 ```
 
 ## Solução de Problemas Comuns

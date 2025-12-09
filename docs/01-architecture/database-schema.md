@@ -63,3 +63,36 @@ DatabaseConfig.getDbUser();      // Usuário do PostgreSQL
 DatabaseConfig.getRedisHost();   // Host do Redis
 DatabaseConfig.getMongoUri();    // URI do MongoDB
 ```
+
+## Diagrama ER (Entidade-Relacionamento)
+
+```mermaid
+erDiagram
+    TAREFAS ||--o{ SUBTAREFAS : contem
+    TAREFAS {
+        bigint id PK
+        varchar titulo
+        varchar descricao
+        varchar tipo
+        varchar criado_por
+        date data_cadastro
+        date deadline
+        date data_conclusao
+        int prioridade
+    }
+    SUBTAREFAS {
+        bigint id PK
+        varchar titulo
+        boolean status
+        bigint tarefa_id FK
+    }
+    EVENTOS {
+        bigint id PK
+        varchar titulo
+        varchar descricao
+        varchar tipo
+        varchar criado_por
+        date data_cadastro
+        date deadline
+    }
+```

@@ -1,8 +1,8 @@
 # Relatório de Correções SonarQube
 
-**Data:** 27/11/2025  
+**Data:** 09/12/2025  
 **Projeto:** Disciplina_Padroes_de_Projetos  
-**Versão do SonarQube:** Latest (via Docker)
+**Status:** ⚠️ SonarQube removido do fluxo ativo (Documento Histórico)
 
 ---
 

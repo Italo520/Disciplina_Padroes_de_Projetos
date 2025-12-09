@@ -13,10 +13,20 @@ Este projeto serve como um catálogo vivo de padrões de projeto:
 
 ## 🚀 Quick Start
 
+### Windows (PowerShell)
+
 Para rodar o ambiente completo (App + Bancos) usando Docker:
 
+```powershell
+.\scripts\run-app.ps1
+```
+
+> Se você não tiver o Maven instalado, o script tentará usar o Maven Wrapper ou você pode usar `.\scripts\run-app-docker-build.ps1` para compilar via Docker.
+
+### Linux / Mac
+
 ```bash
-./scripts/docker-dev.sh up
+./scripts/run-app.sh
 ```
 
 > O script irá subir o PostgreSQL, Redis, MongoDB e a Aplicação Java automaticamente.

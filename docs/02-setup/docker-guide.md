@@ -12,13 +12,20 @@ Este guia consolida todas as informações necessárias para rodar o projeto usa
 
 ### 2. Iniciar Aplicação
 Use o script auxiliar para subir todo o ambiente:
+
+**Windows:**
+```powershell
+.\scripts\run-app.ps1
+```
+
+**Linux/Mac:**
 ```bash
-./scripts/docker-dev.sh up
+./scripts/run-app.sh
 ```
 
 ### 3. Verificar Status
 ```bash
-./scripts/docker-dev.sh status
+docker compose ps
 ```
 
 **Pronto!** A aplicação está rodando com PostgreSQL, Redis e MongoDB.
@@ -27,28 +34,27 @@ Use o script auxiliar para subir todo o ambiente:
 
 ## 🏗️ Estrutura do Docker Compose
 
-O arquivo `docker-compose.yml` orquestra 4 serviços principais:
+O arquivo `docker-compose.yml` orquestra os serviços de banco de dados:
 
 | Serviço | Imagem | Porta | Descrição |
 |---------|--------|-------|-----------|
-| **app** | Custom (Java 21) | - | Aplicação ToDoList (Backend/GUI) |
 | **postgres** | postgres:16-alpine | 5432 | Banco de dados relacional |
 | **redis** | redis:7-alpine | 6379 | Cache de dados |
 | **mongodb** | mongo:7-jammy | 27017 | Logs de auditoria |
+
+> A aplicação Java roda localmente (host) e se conecta a esses serviços.
 
 ### Diagrama de Rede
 ```mermaid
 graph TD
     subgraph Docker Network
-        App[App Java]
         PG[PostgreSQL]
         Redis[Redis]
         Mongo[MongoDB]
-        
-        App --> PG
-        App --> Redis
-        App --> Mongo
     end
+    App[App Java (Host)] --> PG
+    App --> Redis
+    App --> Mongo
 ```
 
 ---
@@ -66,17 +72,14 @@ Os dados são persistidos em volumes Docker para não serem perdidos ao reinicia
 
 ---
 
-## 🛠️ Comandos Úteis (`docker-dev.sh`)
+## 🛠️ Comandos Úteis
 
-O script `scripts/docker-dev.sh` facilita o gerenciamento:
+Você pode gerenciar os containers diretamente com Docker Compose:
 
 ```bash
-./scripts/docker-dev.sh up          # Inicia containers
-./scripts/docker-dev.sh down        # Para containers
-./scripts/docker-dev.sh restart     # Reinicia containers
-./scripts/docker-dev.sh logs        # Mostra logs de todos
-./scripts/docker-dev.sh db-shell    # Acessa PostgreSQL CLI
-./scripts/docker-dev.sh mongo-shell # Acessa MongoDB CLI
+docker compose up -d        # Inicia bancos de dados
+docker compose down         # Para e remove containers
+docker compose logs -f      # Acompanha logs
 ```
 
 ## 🐛 Troubleshooting
