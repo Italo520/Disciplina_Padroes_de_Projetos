@@ -83,6 +83,7 @@ public class CachedTarefaRepository implements ITarefaRepository {
                 LOGGER.log(Level.SEVERE, e,
                         () -> "Erro ao serializar lista de tarefas para o cache: " + e.getMessage());
             }
+        }
         return tarefas;
     }
 
