@@ -36,7 +36,7 @@ public interface IEventoRepository {
      * @param id o identificador do evento.
      * @return o evento encontrado, ou null se não for encontrado.
      */
-    Evento buscarPorId(String id);
+    Evento buscarPorId(Long id);
 
     /**
      * Busca todos os eventos do repositório.

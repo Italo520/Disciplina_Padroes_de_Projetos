@@ -1,4 +1,5 @@
 package br.com.todolist.repository.postgres;
+
 import br.com.todolist.repository.IEventoRepository;
 
 import br.com.todolist.entity.Evento;
@@ -67,7 +68,7 @@ public class EventoRepositoryPostgres implements IEventoRepository {
     }
 
     @Override
-    public Evento buscarPorId(String id) {
+    public Evento buscarPorId(Long id) {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             return em.find(Evento.class, id);

@@ -74,6 +74,9 @@ public class BarraFerramentas {
             System.exit(0);
         });
 
+        JMenuItem listarTodasTarefas = new JMenuItem("Listar Todas as Tarefas");
+        listarTodasTarefas.addActionListener(new OuvinteListarTodasTarefas(frame, taskController));
+
         JMenuItem listarTarefasPorDia = new JMenuItem("Listar Tarefas por Dia");
         listarTarefasPorDia.addActionListener(new OuvinteListarTarefasPorDia(frame, taskController));
 
@@ -115,6 +118,7 @@ public class BarraFerramentas {
         menuAjuda.add(itemSobre);
         menuEventos.add(listarEventosPorDia);
         menuEventos.add(listarEventosMesEspecifico);
+        menuTarefas.add(listarTodasTarefas);
         menuTarefas.add(listarTarefasPorDia);
         menuTarefas.add(listarTarefasCriticas);
         menuTarefas.addSeparator();
@@ -196,6 +200,29 @@ public class BarraFerramentas {
             JOptionPane.showMessageDialog(frame, "Formato de data inválido! Use MM/yyyy.", "Erro",
                     JOptionPane.ERROR_MESSAGE);
             return Optional.empty();
+        }
+    }
+
+    /**
+     * Listener para listar todas as tarefas.
+     */
+    private static class OuvinteListarTodasTarefas implements ActionListener {
+        private final TelaPrincipal frame;
+        private final TaskController taskController;
+
+        public OuvinteListarTodasTarefas(TelaPrincipal frame, TaskController taskController) {
+            this.frame = frame;
+            this.taskController = taskController;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            List<Tarefa> tarefas = taskController.listarTodasTarefas();
+            if (tarefas.isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Nenhuma tarefa encontrada.",
+                        INFO_TITLE, JOptionPane.INFORMATION_MESSAGE);
+            }
+            frame.atualizarPainelDeTarefas(tarefas);
         }
     }
 
@@ -316,9 +343,28 @@ public class BarraFerramentas {
         public void actionPerformed(ActionEvent e) {
             obterDataDoUsuario(frame, "Digite a data para gerar o PDF (dd/MM/yyyy):")
                     .ifPresent(dia -> {
-                        appController.enviarRelatorioTarefasDoDiaPorEmail(dia);
-                        JOptionPane.showMessageDialog(frame, "PDF gerado com sucesso!", SUCCESS_TITLE,
-                                JOptionPane.INFORMATION_MESSAGE);
+                        JFileChooser fileChooser = new JFileChooser();
+                        fileChooser.setDialogTitle("Salvar Relatório PDF");
+                        fileChooser.setSelectedFile(new java.io.File("Relatorio_Tarefas_" + dia.toString() + ".pdf"));
+
+                        int userSelection = fileChooser.showSaveDialog(frame);
+                        if (userSelection == JFileChooser.APPROVE_OPTION) {
+                            java.io.File fileToSave = fileChooser.getSelectedFile();
+                            String filePath = fileToSave.getAbsolutePath();
+                            if (!filePath.toLowerCase().endsWith(".pdf")) {
+                                filePath += ".pdf";
+                            }
+
+                            try {
+                                appController.gerarRelatorioPDFTarefasDoDia(dia, filePath);
+                                JOptionPane.showMessageDialog(frame, "PDF salvo com sucesso em:\n" + filePath,
+                                        SUCCESS_TITLE,
+                                        JOptionPane.INFORMATION_MESSAGE);
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(frame, "Erro ao gerar PDF: " + ex.getMessage(), "Erro",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
                     });
         }
     }
@@ -400,12 +446,29 @@ public class BarraFerramentas {
         public void actionPerformed(ActionEvent e) {
             obterMesAnoDoUsuario(frame, "Digite o mês e ano para o relatório (MM/yyyy):")
                     .ifPresent(mes -> {
-                        String nomeArquivo = "Relatorio_Tarefas_" + mes.format(DateTimeFormatter.ofPattern("MM_yyyy"))
-                                + ".xlsx";
-                        appController.gerarRelatorioTarefasPorMes(mes, nomeArquivo);
-                        JOptionPane.showMessageDialog(frame,
-                                "Relatório Excel '" + nomeArquivo + "' gerado com sucesso!", SUCCESS_TITLE,
-                                JOptionPane.INFORMATION_MESSAGE);
+                        JFileChooser fileChooser = new JFileChooser();
+                        fileChooser.setDialogTitle("Salvar Relatório Excel");
+                        fileChooser.setSelectedFile(new java.io.File(
+                                "Relatorio_Tarefas_" + mes.format(DateTimeFormatter.ofPattern("MM_yyyy")) + ".xlsx"));
+
+                        int userSelection = fileChooser.showSaveDialog(frame);
+                        if (userSelection == JFileChooser.APPROVE_OPTION) {
+                            java.io.File fileToSave = fileChooser.getSelectedFile();
+                            String filePath = fileToSave.getAbsolutePath();
+                            if (!filePath.toLowerCase().endsWith(".xlsx")) {
+                                filePath += ".xlsx";
+                            }
+
+                            try {
+                                appController.gerarRelatorioTarefasPorMes(mes, filePath);
+                                JOptionPane.showMessageDialog(frame,
+                                        "Relatório Excel salvo com sucesso em:\n" + filePath, SUCCESS_TITLE,
+                                        JOptionPane.INFORMATION_MESSAGE);
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(frame, "Erro ao gerar Excel: " + ex.getMessage(), "Erro",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
                     });
         }
     }

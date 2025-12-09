@@ -118,16 +118,17 @@ public class TaskServiceImpl implements ITaskService {
      * @throws BusinessException se houver erro ao atualizar.
      */
     @Override
-    public void atualizarTarefa(Tarefa tarefa) throws BusinessException {
-        if (tarefa.getCriadoPor().equals(emailUsuario)) {
+    public Tarefa atualizarTarefa(Tarefa tarefa) throws BusinessException {
+        if (tarefa.getCriado_por().equals(emailUsuario)) {
             try {
                 // O título é o ID da entidade Tarefa neste sistema (PK).
-                Tarefa oldTarefa = tarefaRepository.buscarPorId(tarefa.getTitulo());
+                Tarefa oldTarefa = tarefaRepository.buscarPorId(tarefa.getId());
                 if (oldTarefa != null) {
                     oldTarefa = oldTarefa.copiar();
                 }
-                tarefaRepository.atualizar(tarefa);
-                notifyObservers(new TaskEvent(AuditAction.UPDATE, tarefa, oldTarefa));
+                Tarefa updatedTask = tarefaRepository.atualizar(tarefa);
+                notifyObservers(new TaskEvent(AuditAction.UPDATE, updatedTask, oldTarefa));
+                return updatedTask;
             } catch (DatabaseException e) {
                 throw new BusinessException("Erro ao atualizar tarefa.", e);
             }

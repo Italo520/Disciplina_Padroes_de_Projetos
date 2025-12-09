@@ -1,4 +1,4 @@
-package br.com.todolist.ui.dialogs;
+package br.com.todolist.ui.main;
 
 import br.com.todolist.controller.EventController;
 import br.com.todolist.entity.Evento;
@@ -12,10 +12,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 /**
- * Diálogo modal para cadastro e edição de Eventos.
+ * Painel para cadastro e edição de Eventos.
  * Oferece um formulário para preencher título, descrição e data do evento.
  */
-public class DialogoEvento extends JDialog {
+public class PainelFormularioEvento extends JPanel {
+
+    /** Referência para a tela principal para navegação. */
+    private final TelaPrincipal telaPrincipal;
 
     /** Controlador de eventos para persistência dos dados. */
     private final transient EventController eventController;
@@ -35,39 +38,23 @@ public class DialogoEvento extends JDialog {
     /** Botão para salvar as alterações. */
     private JButton botaoSalvar;
 
-    /** Botão para cancelar e fechar o diálogo. */
+    /** Botão para cancelar e voltar. */
     private JButton botaoCancelar;
-
-    /** Indica se a operação de salvar foi realizada com sucesso. */
-    private boolean salvo = false;
 
     /** Formatador de data utilizado nos campos de texto (dd/MM/yyyy). */
     private static final String DATE_PATTERN = "dd/MM/yyyy";
     private final transient DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
     /**
-     * Construtor para criação de um novo evento.
+     * Construtor do painel de formulário de evento.
      *
-     * @param frame           O frame pai da janela.
-     * @param eventController O controlador de eventos.
-     */
-    public DialogoEvento(Frame frame, EventController eventController) {
-        super(frame, "Novo Evento", true);
-        this.eventController = eventController;
-        this.evento = null;
-        configurarEAdicionarComponentes();
-        configurarAcoes();
-    }
-
-    /**
-     * Construtor para edição de um evento existente.
-     *
-     * @param frame            O frame pai da janela.
+     * @param telaPrincipal    A tela principal para navegação.
      * @param eventController  O controlador de eventos.
-     * @param eventoParaEditar O evento a ser editado.
+     * @param eventoParaEditar O evento a ser editado (null para novo evento).
      */
-    public DialogoEvento(Frame frame, EventController eventController, Evento eventoParaEditar) {
-        super(frame, "Editar Evento", true);
+    public PainelFormularioEvento(TelaPrincipal telaPrincipal, EventController eventController,
+            Evento eventoParaEditar) {
+        this.telaPrincipal = telaPrincipal;
         this.eventController = eventController;
         this.evento = eventoParaEditar;
         configurarEAdicionarComponentes();
@@ -79,11 +66,13 @@ public class DialogoEvento extends JDialog {
      * Inicializa e posiciona os componentes da interface gráfica.
      */
     private void configurarEAdicionarComponentes() {
-        setTitle(evento == null ? "Novo Evento" : "Editar Evento");
-        setSize(1280, 720);
-        setResizable(false);
         setLayout(null);
-        setLocationRelativeTo(null);
+        setSize(1280, 720);
+
+        JLabel labelTituloPagina = new JLabel(evento == null ? "Novo Evento" : "Editar Evento");
+        labelTituloPagina.setFont(new Font("Arial", Font.BOLD, 24));
+        labelTituloPagina.setBounds(50, 30, 300, 40);
+        add(labelTituloPagina);
 
         JLabel labelTitulo = new JLabel("Título:");
         labelTitulo.setBounds(400, 230, 100, 30);
@@ -133,7 +122,7 @@ public class DialogoEvento extends JDialog {
      * Configura os listeners para os botões de ação.
      */
     private void configurarAcoes() {
-        botaoCancelar.addActionListener(e -> dispose());
+        botaoCancelar.addActionListener(e -> telaPrincipal.voltarParaListaEventos());
         botaoSalvar.addActionListener(e -> salvar());
     }
 
@@ -159,8 +148,9 @@ public class DialogoEvento extends JDialog {
                 eventController.editarEvento(this.evento, titulo, descricao, deadline);
             }
 
-            this.salvo = true;
-            dispose();
+            JOptionPane.showMessageDialog(this, "Evento salvo com sucesso!", "Sucesso",
+                    JOptionPane.INFORMATION_MESSAGE);
+            telaPrincipal.voltarParaListaEventos();
 
         } catch (BusinessException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Erro ao Salvar", JOptionPane.WARNING_MESSAGE);
@@ -191,14 +181,5 @@ public class DialogoEvento extends JDialog {
             return false;
         }
         return true;
-    }
-
-    /**
-     * Indica se a operação de salvar foi concluída com sucesso.
-     *
-     * @return true se o evento foi salvo, false caso contrário.
-     */
-    public boolean foiSalvo() {
-        return this.salvo;
     }
 }

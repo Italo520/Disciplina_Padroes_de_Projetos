@@ -33,6 +33,7 @@ public class Tarefa extends Itens {
      * Construtor padrão da classe Tarefa.
      */
     public Tarefa() {
+        this.progressCalculationStrategy = new DefaultProgressCalculationStrategy();
     }
 
     /**
@@ -40,7 +41,7 @@ public class Tarefa extends Itens {
      *
      * @param titulo     O título da tarefa.
      * @param descricao  A descrição da tarefa.
-     * @param criadoPor  O e-mail do usuário que criou a tarefa.
+     * @param criado_por O e-mail do usuário que criou a tarefa.
      * @param deadline   A data limite da tarefa.
      * @param prioridade A prioridade da tarefa.
      */
@@ -59,6 +60,9 @@ public class Tarefa extends Itens {
      * @return O percentual de conclusão (0.0 a 100.0).
      */
     public double obterPercentual() {
+        if (progressCalculationStrategy == null) {
+            progressCalculationStrategy = new DefaultProgressCalculationStrategy();
+        }
         return progressCalculationStrategy.calcularProgresso(this);
     }
 

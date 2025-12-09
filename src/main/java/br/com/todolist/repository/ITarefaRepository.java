@@ -27,8 +27,9 @@ public interface ITarefaRepository {
      * Atualiza uma tarefa no repositório.
      *
      * @param entity a tarefa a ser atualizada.
+     * @return a tarefa atualizada.
      */
-    void atualizar(Tarefa entity);
+    Tarefa atualizar(Tarefa entity);
 
     /**
      * Busca uma tarefa pelo seu identificador.
@@ -36,7 +37,7 @@ public interface ITarefaRepository {
      * @param id o identificador da tarefa.
      * @return a tarefa encontrada, ou null se não for encontrada.
      */
-    Tarefa buscarPorId(String id);
+    Tarefa buscarPorId(Long id);
 
     /**
      * Busca todas as tarefas do repositório.

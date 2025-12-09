@@ -29,7 +29,7 @@ public class CachedEventoRepository implements IEventoRepository {
     }
 
     @Override
-    public Evento buscarPorId(String id) {
+    public Evento buscarPorId(Long id) {
         String key = CACHE_KEY_PREFIX + id;
         String json = cacheManager.buscar(key);
 
@@ -56,19 +56,25 @@ public class CachedEventoRepository implements IEventoRepository {
     @Override
     public void salvar(Evento entity) {
         decoratedRepository.salvar(entity);
-        cacheManager.remover(CACHE_KEY_PREFIX + entity.getTitulo());
+        if (entity.getId() != null) {
+            cacheManager.remover(CACHE_KEY_PREFIX + entity.getId());
+        }
     }
 
     @Override
     public void atualizar(Evento entity) {
         decoratedRepository.atualizar(entity);
-        cacheManager.remover(CACHE_KEY_PREFIX + entity.getTitulo());
+        if (entity.getId() != null) {
+            cacheManager.remover(CACHE_KEY_PREFIX + entity.getId());
+        }
     }
 
     @Override
     public void excluir(Evento entity) {
         decoratedRepository.excluir(entity);
-        cacheManager.remover(CACHE_KEY_PREFIX + entity.getTitulo());
+        if (entity.getId() != null) {
+            cacheManager.remover(CACHE_KEY_PREFIX + entity.getId());
+        }
     }
 
     @Override

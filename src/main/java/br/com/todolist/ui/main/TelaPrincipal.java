@@ -85,6 +85,56 @@ public class TelaPrincipal extends JFrame {
     }
 
     /**
+     * Exibe o formulário de tarefa (criação ou edição).
+     *
+     * @param tarefa A tarefa a ser editada, ou null para nova tarefa.
+     */
+    public void exibirFormularioTarefa(Tarefa tarefa) {
+        PainelFormularioTarefa formulario = new PainelFormularioTarefa(this, taskController, tarefa);
+        getContentPane().removeAll();
+        getContentPane().add(formulario, java.awt.BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Volta para a visualização principal (abas de tarefas/eventos).
+     * Atualiza a lista de tarefas.
+     */
+    public void voltarParaListaTarefas() {
+        getContentPane().removeAll();
+        getContentPane().add(painelComAbas, java.awt.BorderLayout.CENTER);
+        painelTarefas.popularListaTarefas(); // Atualiza a lista
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Exibe o formulário de evento (criação ou edição).
+     *
+     * @param evento O evento a ser editado, ou null para novo evento.
+     */
+    public void exibirFormularioEvento(Evento evento) {
+        PainelFormularioEvento formulario = new PainelFormularioEvento(this, eventController, evento);
+        getContentPane().removeAll();
+        getContentPane().add(formulario, java.awt.BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+
+    /**
+     * Volta para a visualização principal (abas de tarefas/eventos).
+     * Atualiza a lista de eventos.
+     */
+    public void voltarParaListaEventos() {
+        getContentPane().removeAll();
+        getContentPane().add(painelComAbas, java.awt.BorderLayout.CENTER);
+        painelEventos.popularListaEventos();
+        revalidate();
+        repaint();
+    }
+
+    /**
      * Atualiza o painel de tarefas com uma lista específica de tarefas e seleciona
      * a aba de tarefas.
      * Útil para exibir resultados de filtros.

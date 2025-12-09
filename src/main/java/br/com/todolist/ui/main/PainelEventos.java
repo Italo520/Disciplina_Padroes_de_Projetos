@@ -3,7 +3,6 @@ package br.com.todolist.ui.main;
 import br.com.todolist.controller.EventController;
 import br.com.todolist.entity.Evento;
 import br.com.todolist.exception.BusinessException;
-import br.com.todolist.ui.dialogs.DialogoEvento;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -144,7 +143,7 @@ public class PainelEventos extends PainelBase {
     /**
      * Recarrega a lista de eventos a partir do controlador.
      */
-    private void popularListaEventos() {
+    public void popularListaEventos() {
         modeloListaEventos.clear();
         try {
             for (Evento evento : this.eventController.listarTodosEventos()) {
@@ -177,12 +176,9 @@ public class PainelEventos extends PainelBase {
      */
     private class OuvinteBotaoNovoEvento implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            Frame framePrincipal = (Frame) SwingUtilities.getWindowAncestor(PainelEventos.this);
-            DialogoEvento dialogo = new DialogoEvento(framePrincipal, eventController);
-            dialogo.setVisible(true);
-
-            if (dialogo.foiSalvo()) {
-                popularListaEventos();
+            TelaPrincipal telaPrincipal = (TelaPrincipal) SwingUtilities.getWindowAncestor(PainelEventos.this);
+            if (telaPrincipal != null) {
+                telaPrincipal.exibirFormularioEvento(null);
             }
         }
     }
@@ -199,12 +195,9 @@ public class PainelEventos extends PainelBase {
                 return;
             }
 
-            Frame framePrincipal = (Frame) SwingUtilities.getWindowAncestor(PainelEventos.this);
-            DialogoEvento dialogo = new DialogoEvento(framePrincipal, eventController, eventoSelecionado);
-            dialogo.setVisible(true);
-
-            if (dialogo.foiSalvo()) {
-                popularListaEventos();
+            TelaPrincipal telaPrincipal = (TelaPrincipal) SwingUtilities.getWindowAncestor(PainelEventos.this);
+            if (telaPrincipal != null) {
+                telaPrincipal.exibirFormularioEvento(eventoSelecionado);
             }
         }
     }

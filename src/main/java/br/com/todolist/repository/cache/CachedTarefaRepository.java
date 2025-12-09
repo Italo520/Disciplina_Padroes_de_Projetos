@@ -29,7 +29,7 @@ public class CachedTarefaRepository implements ITarefaRepository {
     }
 
     @Override
-    public Tarefa buscarPorId(String id) {
+    public Tarefa buscarPorId(Long id) {
         String key = CACHE_KEY_PREFIX + id;
         String json = cacheManager.buscar(key);
 
@@ -57,19 +57,26 @@ public class CachedTarefaRepository implements ITarefaRepository {
     @Override
     public void salvar(Tarefa entity) {
         decoratedRepository.salvar(entity);
-        cacheManager.remover(CACHE_KEY_PREFIX + entity.getTitulo());
+        if (entity.getId() != null) {
+            cacheManager.remover(CACHE_KEY_PREFIX + entity.getId());
+        }
     }
 
     @Override
-    public void atualizar(Tarefa entity) {
-        decoratedRepository.atualizar(entity);
-        cacheManager.remover(CACHE_KEY_PREFIX + entity.getTitulo());
+    public Tarefa atualizar(Tarefa entity) {
+        Tarefa updated = decoratedRepository.atualizar(entity);
+        if (entity.getId() != null) {
+            cacheManager.remover(CACHE_KEY_PREFIX + entity.getId());
+        }
+        return updated;
     }
 
     @Override
     public void excluir(Tarefa entity) {
         decoratedRepository.excluir(entity);
-        cacheManager.remover(CACHE_KEY_PREFIX + entity.getTitulo());
+        if (entity.getId() != null) {
+            cacheManager.remover(CACHE_KEY_PREFIX + entity.getId());
+        }
     }
 
     @Override

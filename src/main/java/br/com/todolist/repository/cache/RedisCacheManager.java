@@ -4,6 +4,7 @@ import br.com.todolist.log.LogService;
 import br.com.todolist.util.DatabaseConfig;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 /**
  * Gerenciador de Cache Redis (Singleton).
@@ -23,7 +24,14 @@ public class RedisCacheManager {
         // Carrega configurações do arquivo de propriedades
         String redisHost = DatabaseConfig.getRedisHost();
         int redisPort = DatabaseConfig.getRedisPort();
-        this.jedisPool = new JedisPool(redisHost, redisPort);
+        String redisPassword = DatabaseConfig.getRedisPassword();
+
+        if (redisPassword != null && !redisPassword.isEmpty()) {
+            // Timeout padrão de 2000ms
+            this.jedisPool = new JedisPool(new JedisPoolConfig(), redisHost, redisPort, 2000, redisPassword);
+        } else {
+            this.jedisPool = new JedisPool(redisHost, redisPort);
+        }
     }
 
     /**

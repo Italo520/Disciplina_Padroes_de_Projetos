@@ -1,5 +1,7 @@
 package br.com.todolist.entity;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDate;
@@ -12,6 +14,9 @@ import java.time.LocalDate;
 @MappedSuperclass
 public abstract class Itens {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String titulo;
     private String descricao;
     private String tipo;
@@ -22,11 +27,11 @@ public abstract class Itens {
     /**
      * Construtor completo da classe Itens.
      *
-     * @param titulo    O título do item.
-     * @param descricao A descrição do item.
-     * @param tipo      O tipo do item (ex: "Tarefa", "Evento").
-     * @param criadoPor O e-mail do usuário que criou o item.
-     * @param deadline  A data limite ou data do evento.
+     * @param titulo     O título do item.
+     * @param descricao  A descrição da item.
+     * @param tipo       O tipo do item (ex: "Tarefa", "Evento").
+     * @param criado_por O e-mail do usuário que criou o item.
+     * @param deadline   A data limite ou data do evento.
      */
     protected Itens(String titulo, String descricao, String tipo, String criadoPor, LocalDate deadline) {
         this.titulo = titulo;
@@ -41,6 +46,14 @@ public abstract class Itens {
      * Construtor padrão necessário para frameworks de serialização.
      */
     protected Itens() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     /**

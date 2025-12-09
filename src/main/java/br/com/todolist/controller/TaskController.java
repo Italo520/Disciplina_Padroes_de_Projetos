@@ -62,7 +62,8 @@ public class TaskController {
      * @param novaPrioridade A nova prioridade da tarefa.
      * @throws BusinessException se houver erro ao editar.
      */
-    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) throws BusinessException {
+    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline,
+            int novaPrioridade) throws BusinessException {
         taskService.editarTarefa(tarefaOriginal, novoTitulo, novaDescricao, novoDeadline, novaPrioridade);
     }
 
@@ -71,10 +72,11 @@ public class TaskController {
      * Geralmente utilizado para persistir mudanças no status ou subtarefas.
      *
      * @param tarefa A tarefa com os dados atualizados.
+     * @return A tarefa atualizada.
      * @throws BusinessException se houver erro ao atualizar.
      */
-    public void atualizarTarefa(Tarefa tarefa) throws BusinessException {
-        taskService.atualizarTarefa(tarefa);
+    public Tarefa atualizarTarefa(Tarefa tarefa) throws BusinessException {
+        return taskService.atualizarTarefa(tarefa);
     }
 
     /**
@@ -88,7 +90,8 @@ public class TaskController {
     }
 
     /**
-     * Lista as tarefas consideradas críticas (ex: alta prioridade ou prazo próximo).
+     * Lista as tarefas consideradas críticas (ex: alta prioridade ou prazo
+     * próximo).
      *
      * @return Uma lista de tarefas críticas.
      */

@@ -39,20 +39,21 @@ show_help() {
     echo ""
     echo "Uso: ./docker-dev.sh [comando]"
     echo ""
+    echo "Este script gerencia APENAS os bancos de dados (PostgreSQL, Redis, MongoDB)."
+    echo "A aplicação Java deve ser executada localmente com 'run-app'."
+    echo ""
     echo "Comandos disponíveis:"
-    echo "  up          - Inicia todos os containers"
+    echo "  up          - Inicia todos os bancos de dados"
     echo "  down        - Para todos os containers"
     echo "  restart     - Reinicia todos os containers"
     echo "  logs        - Mostra logs de todos os containers"
-    echo "  logs-app    - Mostra logs apenas da aplicação"
     echo "  logs-db     - Mostra logs apenas do PostgreSQL"
-    echo "  build       - Reconstrói a imagem da aplicação"
-    echo "  rebuild     - Reconstrói e inicia os containers"
-    echo "  clean       - Remove containers, imagens e volumes (CUIDADO!)"
     echo "  status      - Mostra status dos containers"
     echo "  db-shell    - Abre shell do PostgreSQL"
     echo "  mongo-shell - Abre shell do MongoDB"
     echo "  redis-cli   - Abre CLI do Redis"
+    echo "  clean       - Remove containers, imagens e volumes (CUIDADO!)"
+    echo "  run-app     - Executa a aplicação Java localmente"
     echo "  help        - Mostra esta ajuda"
     echo ""
 }
@@ -65,7 +66,7 @@ check_docker() {
         exit 1
     fi
     
-    if ! command -v docker-compose &> /dev/null; then
+    if ! docker compose version &> /dev/null; then
         error "Docker Compose não está instalado!"
         echo "Instale o Docker Compose: https://docs.docker.com/compose/install/"
         exit 1
@@ -75,58 +76,57 @@ check_docker() {
 # Inicia os containers
 start_containers() {
     info "Iniciando containers..."
-    docker-compose up -d
+    docker compose up -d
     success "Containers iniciados!"
     echo ""
-    docker-compose ps
+    docker compose ps
 }
 
 # Para os containers
 stop_containers() {
     info "Parando containers..."
-    docker-compose down
+    docker compose down
     success "Containers parados!"
 }
 
 # Reinicia os containers
 restart_containers() {
     info "Reiniciando containers..."
-    docker-compose restart
+    docker compose restart
     success "Containers reiniciados!"
 }
 
 # Mostra logs
 show_logs() {
     info "Mostrando logs..."
-    docker-compose logs -f --tail=100
-}
-
-# Mostra logs da aplicação
-show_app_logs() {
-    info "Mostrando logs da aplicação..."
-    docker-compose logs -f --tail=100 app
+    docker compose logs -f --tail=100
 }
 
 # Mostra logs do banco
 show_db_logs() {
     info "Mostrando logs do PostgreSQL..."
-    docker-compose logs -f --tail=100 postgres
+    docker compose logs -f --tail=100 postgres
 }
 
-# Reconstrói a imagem
-build_image() {
-    info "Reconstruindo imagem da aplicação..."
-    docker-compose build --no-cache app
-    success "Imagem reconstruída!"
-}
-
-# Reconstrói e inicia
-rebuild_and_start() {
-    info "Reconstruindo e iniciando..."
-    docker-compose up -d --build
-    success "Containers reconstruídos e iniciados!"
-    echo ""
-    docker-compose ps
+# Executa a aplicação Java localmente
+run_app() {
+    info "Verificando se os bancos de dados estão rodando..."
+    
+    if ! docker compose ps | grep -q "healthy"; then
+        warning "Os bancos de dados não estão rodando!"
+        read -p "Deseja iniciar os bancos agora? (s/n): " start_dbs
+        if [ "$start_dbs" = "s" ] || [ "$start_dbs" = "S" ]; then
+            start_containers
+            sleep 3
+        else
+            error "Os bancos precisam estar rodando para executar a aplicação."
+            exit 1
+        fi
+    fi
+    
+    info "Executando a aplicação Java..."
+    success "Aplicação iniciada! Feche a janela ou pressione Ctrl+C para encerrar."
+    java -jar target/projeto_to_do_list_java-2.0-jar-with-dependencies.jar
 }
 
 # Limpeza completa
@@ -136,7 +136,7 @@ clean_all() {
     
     if [ "$confirm" = "yes" ]; then
         info "Removendo containers..."
-        docker-compose down -v --rmi all
+        docker compose down -v --rmi all
         success "Limpeza completa realizada!"
     else
         info "Operação cancelada."
@@ -147,28 +147,28 @@ clean_all() {
 show_status() {
     info "Status dos containers:"
     echo ""
-    docker-compose ps
+    docker compose ps
     echo ""
     info "Uso de recursos:"
-    docker stats --no-stream $(docker-compose ps -q)
+    docker stats --no-stream $(docker compose ps -q)
 }
 
 # Abre shell do PostgreSQL
 open_db_shell() {
     info "Abrindo shell do PostgreSQL..."
-    docker-compose exec postgres psql -U todolist_user -d todolist
+    docker compose exec postgres psql -U todolist_user -d todolist
 }
 
 # Abre shell do MongoDB
 open_mongo_shell() {
     info "Abrindo shell do MongoDB..."
-    docker-compose exec mongodb mongosh -u mongo_admin -p mongo_pass
+    docker compose exec mongodb mongosh -u mongo_admin -p mongo_pass
 }
 
 # Abre CLI do Redis
 open_redis_cli() {
     info "Abrindo CLI do Redis..."
-    docker-compose exec redis redis-cli -a redis_pass
+    docker compose exec redis redis-cli -a redis_pass
 }
 
 # Processa comando
@@ -187,17 +187,11 @@ case "${1:-help}" in
     logs)
         show_logs
         ;;
-    logs-app)
-        show_app_logs
-        ;;
     logs-db)
         show_db_logs
         ;;
-    build)
-        build_image
-        ;;
-    rebuild)
-        rebuild_and_start
+    run-app)
+        run_app
         ;;
     clean)
         clean_all

@@ -4,7 +4,6 @@ import br.com.todolist.controller.TaskController;
 import br.com.todolist.entity.Subtarefa;
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.exception.BusinessException;
-import br.com.todolist.ui.dialogs.DialogoTarefa;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -214,7 +213,7 @@ public class PainelTarefas extends PainelBase {
     /**
      * Recarrega a lista de tarefas a partir do controlador.
      */
-    private void popularListaTarefas() {
+    public void popularListaTarefas() {
         modeloListaTarefas.clear();
         try {
             List<Tarefa> tarefas = taskController.listarTodasTarefas();
@@ -262,11 +261,9 @@ public class PainelTarefas extends PainelBase {
      */
     private class OuvinteBotaoNovaTarefa implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this),
-                    taskController);
-            dialogo.setVisible(true);
-            if (dialogo.foiSalvo()) {
-                popularListaTarefas();
+            TelaPrincipal telaPrincipal = (TelaPrincipal) SwingUtilities.getWindowAncestor(PainelTarefas.this);
+            if (telaPrincipal != null) {
+                telaPrincipal.exibirFormularioTarefa(null);
             }
         }
     }
@@ -282,11 +279,9 @@ public class PainelTarefas extends PainelBase {
                         NO_TASK_SELECTED, JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            DialogoTarefa dialogo = new DialogoTarefa((Frame) SwingUtilities.getWindowAncestor(PainelTarefas.this),
-                    taskController, tarefaSelecionada);
-            dialogo.setVisible(true);
-            if (dialogo.foiSalvo()) {
-                popularListaTarefas();
+            TelaPrincipal telaPrincipal = (TelaPrincipal) SwingUtilities.getWindowAncestor(PainelTarefas.this);
+            if (telaPrincipal != null) {
+                telaPrincipal.exibirFormularioTarefa(tarefaSelecionada);
             }
         }
     }
@@ -342,16 +337,31 @@ public class PainelTarefas extends PainelBase {
         @Override
         public void mouseClicked(MouseEvent e) {
             int index = listaDeSubtarefas.locationToIndex(e.getPoint());
-            if (index != -1) {
+
+            // Apenas processa mudança de status se clicar na área do checkbox (aprox. 24px)
+            if (index != -1 && e.getX() < 24) {
                 Tarefa tarefaPai = listaDeTarefas.getSelectedValue();
                 Subtarefa subtarefa = modeloListaSubtarefas.getElementAt(index);
                 subtarefa.mudarStatus();
                 if (tarefaPai != null) {
                     try {
-                        taskController.atualizarTarefa(tarefaPai);
-                        atualizarDetalhesTarefa(tarefaPai);
-                        listaDeSubtarefas.repaint(listaDeSubtarefas.getCellBounds(index, index));
-                        listaDeTarefas.repaint();
+                        Tarefa tarefaAtualizada = taskController.atualizarTarefa(tarefaPai);
+
+                        // Atualiza a referência na lista de tarefas
+                        int indexTarefa = modeloListaTarefas.indexOf(tarefaPai);
+                        if (indexTarefa != -1) {
+                            modeloListaTarefas.set(indexTarefa, tarefaAtualizada);
+                            listaDeTarefas.setSelectedValue(tarefaAtualizada, false);
+                        }
+
+                        atualizarDetalhesTarefa(tarefaAtualizada);
+                        atualizarListaSubtarefas(tarefaAtualizada);
+
+                        // Restaura a seleção da subtarefa para permitir edição/exclusão imediata
+                        if (index < modeloListaSubtarefas.getSize()) {
+                            listaDeSubtarefas.setSelectedIndex(index);
+                        }
+
                     } catch (BusinessException ex) {
                         JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro ao Atualizar",
                                 JOptionPane.ERROR_MESSAGE);
@@ -381,10 +391,17 @@ public class PainelTarefas extends PainelBase {
             if (descricao != null && !descricao.trim().isEmpty()) {
                 tarefaPai.adicionarSubtarefa(new Subtarefa(descricao));
                 try {
-                    taskController.atualizarTarefa(tarefaPai);
-                    atualizarListaSubtarefas(tarefaPai);
-                    atualizarDetalhesTarefa(tarefaPai);
-                    listaDeTarefas.repaint();
+                    Tarefa tarefaAtualizada = taskController.atualizarTarefa(tarefaPai);
+
+                    // Atualiza a referência na lista de tarefas
+                    int indexTarefa = modeloListaTarefas.indexOf(tarefaPai);
+                    if (indexTarefa != -1) {
+                        modeloListaTarefas.set(indexTarefa, tarefaAtualizada);
+                        listaDeTarefas.setSelectedValue(tarefaAtualizada, false);
+                    }
+
+                    atualizarListaSubtarefas(tarefaAtualizada);
+                    atualizarDetalhesTarefa(tarefaAtualizada);
                 } catch (BusinessException ex) {
                     JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro",
                             JOptionPane.ERROR_MESSAGE);
@@ -414,8 +431,16 @@ public class PainelTarefas extends PainelBase {
             if (novoTitulo != null && !novoTitulo.trim().isEmpty()) {
                 subtarefa.setTitulo(novoTitulo);
                 try {
-                    taskController.atualizarTarefa(tarefaPai);
-                    atualizarListaSubtarefas(tarefaPai);
+                    Tarefa tarefaAtualizada = taskController.atualizarTarefa(tarefaPai);
+
+                    // Atualiza a referência na lista de tarefas
+                    int indexTarefa = modeloListaTarefas.indexOf(tarefaPai);
+                    if (indexTarefa != -1) {
+                        modeloListaTarefas.set(indexTarefa, tarefaAtualizada);
+                        listaDeTarefas.setSelectedValue(tarefaAtualizada, false);
+                    }
+
+                    atualizarListaSubtarefas(tarefaAtualizada);
                 } catch (BusinessException ex) {
                     JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro",
                             JOptionPane.ERROR_MESSAGE);
@@ -446,10 +471,17 @@ public class PainelTarefas extends PainelBase {
             if (resposta == JOptionPane.YES_OPTION) {
                 tarefaPai.removerSubtarefa(subtarefa);
                 try {
-                    taskController.atualizarTarefa(tarefaPai);
-                    atualizarListaSubtarefas(tarefaPai);
-                    atualizarDetalhesTarefa(tarefaPai);
-                    listaDeTarefas.repaint();
+                    Tarefa tarefaAtualizada = taskController.atualizarTarefa(tarefaPai);
+
+                    // Atualiza a referência na lista de tarefas
+                    int indexTarefa = modeloListaTarefas.indexOf(tarefaPai);
+                    if (indexTarefa != -1) {
+                        modeloListaTarefas.set(indexTarefa, tarefaAtualizada);
+                        listaDeTarefas.setSelectedValue(tarefaAtualizada, false);
+                    }
+
+                    atualizarListaSubtarefas(tarefaAtualizada);
+                    atualizarDetalhesTarefa(tarefaAtualizada);
                 } catch (BusinessException ex) {
                     JOptionPane.showMessageDialog(PainelTarefas.this, ex.getMessage(), "Erro",
                             JOptionPane.ERROR_MESSAGE);
