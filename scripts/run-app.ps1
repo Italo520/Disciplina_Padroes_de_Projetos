@@ -42,28 +42,57 @@ if ($LASTEXITCODE -ne 0) {
 Write-Info "Aguardando bancos de dados inicializarem..."
 Start-Sleep -Seconds 5
 
-# Verifica se o Maven Wrapper existe
-$mvnCmd = if (Test-Path ".\mvnw.cmd") {
-    ".\mvnw.cmd"
-} elseif (Get-Command mvn -ErrorAction SilentlyContinue) {
-    "mvn"
-} else {
-    Write-Error "Maven não encontrado. Instalando Maven Wrapper..."
-    # Download do Maven Wrapper
+# Verifica se o Maven está instalado via Scoop ou PATH
+$mvnCmd = $null
+
+# 1. Tenta encontrar via Scoop (caminho comum)
+$scoopMaven = "$env:USERPROFILE\scoop\apps\maven\current\bin\mvn.cmd"
+if (Test-Path $scoopMaven) {
+    $mvnCmd = $scoopMaven
+    Write-Info "Usando Maven do Scoop: $mvnCmd"
+} 
+# 2. Tenta encontrar no PATH
+elseif (Get-Command mvn -ErrorAction SilentlyContinue) {
+    $mvnCmd = "mvn"
+    Write-Info "Usando Maven do PATH"
+}
+# 3. Tenta usar o Maven Wrapper
+elseif (Test-Path ".\mvnw.cmd") {
+    if (Test-Path ".\.mvn\wrapper\maven-wrapper.properties") {
+        $mvnCmd = ".\mvnw.cmd"
+        Write-Info "Usando Maven Wrapper"
+    } else {
+        Write-Info "Maven Wrapper incompleto. Tentando reparar..."
+    }
+}
+
+# Se não encontrou ou wrapper está quebrado, tenta baixar/reparar o Wrapper
+if (-not $mvnCmd) {
+    Write-Info "Maven não encontrado. Instalando Maven Wrapper..."
     $mvnWrapperUrl = "https://raw.githubusercontent.com/takari/maven-wrapper/master/mvnw.cmd"
-    $mvnWrapperJarUrl = "https://raw.githubusercontent.com/takari/maven-wrapper/master/maven-wrapper.jar"
+    $mvnWrapperJarUrl = "https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.2.0/maven-wrapper-3.2.0.jar"
+    $mvnWrapperPropsUrl = "https://raw.githubusercontent.com/takari/maven-wrapper/master/maven-wrapper.properties"
     
     try {
         New-Item -ItemType Directory -Force -Path ".\.mvn\wrapper" | Out-Null
-        Invoke-WebRequest -Uri $mvnWrapperUrl -OutFile "mvnw.cmd"
-        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/takari/maven-wrapper/master/mvnw" -OutFile "mvnw"
         
-        Write-Error "Maven Wrapper baixado, mas ainda precisa ser configurado. Por favor, instale o Maven ou configure o Maven Wrapper manualmente."
-        exit 1
+        # Baixa mvnw.cmd se não existir
+        if (!(Test-Path "mvnw.cmd")) {
+            Invoke-WebRequest -Uri $mvnWrapperUrl -OutFile "mvnw.cmd"
+        }
+        
+        # Baixa maven-wrapper.jar
+        Invoke-WebRequest -Uri $mvnWrapperJarUrl -OutFile ".\.mvn\wrapper\maven-wrapper.jar"
+        
+        # Cria maven-wrapper.properties
+        $propsContent = "distributionUrl=https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/3.9.6/apache-maven-3.9.6-bin.zip`nwrapperUrl=https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.2.0/maven-wrapper-3.2.0.jar"
+        Set-Content -Path ".\.mvn\wrapper\maven-wrapper.properties" -Value $propsContent
+        
+        $mvnCmd = ".\mvnw.cmd"
+        Write-Success "Maven Wrapper configurado com sucesso."
     } catch {
-        Write-Error "Falha ao baixar Maven Wrapper. Por favor, instale o Maven manualmente."
-        Write-Info "Você pode instalar o Maven usando: winget install Apache.Maven"
-        Write-Info "Ou baixar de: https://maven.apache.org/download.cgi"
+        Write-Error "Falha ao configurar Maven Wrapper."
+        Write-Info "Por favor, instale o Maven manualmente (ex: 'scoop install maven')."
         exit 1
     }
 }
