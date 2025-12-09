@@ -2,7 +2,9 @@
 /target/
 
 # Arquivos de log
+# Arquivos de log
 *.log
+logs/
 
 # Arquivos de configuração de IDEs
 .idea/

@@ -23,6 +23,14 @@ Para rodar o ambiente completo (App + Bancos) usando Docker:
 
 > Se você não tiver o Maven instalado, o script tentará usar o Maven Wrapper ou você pode usar `.\scripts\run-app-docker-build.ps1` para compilar via Docker.
 
+### Monitoramento Unificado
+
+Para ver logs da aplicação e dos bancos de dados em tempo real:
+
+```powershell
+.\scripts\monitor-all.ps1
+```
+
 ### Linux / Mac
 
 ```bash
