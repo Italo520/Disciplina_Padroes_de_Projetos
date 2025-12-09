@@ -122,7 +122,7 @@ public class TaskServiceImpl implements ITaskService {
         if (tarefa.getCriado_por().equals(emailUsuario)) {
             try {
                 // O título é o ID da entidade Tarefa neste sistema (PK).
-                Tarefa oldTarefa = tarefaRepository.buscarPorId(tarefa.getTitulo());
+                Tarefa oldTarefa = tarefaRepository.buscarPorId(tarefa.getId());
                 if (oldTarefa != null) {
                     oldTarefa = oldTarefa.copiar();
                 }

@@ -69,7 +69,7 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
     }
 
     @Override
-    public Tarefa buscarPorId(String id) {
+    public Tarefa buscarPorId(Long id) {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
         try {
             return em.find(Tarefa.class, id);

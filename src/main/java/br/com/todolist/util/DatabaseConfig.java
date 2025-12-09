@@ -177,6 +177,15 @@ public class DatabaseConfig {
     }
 
     /**
+     * Obtém a senha do Redis.
+     *
+     * @return A senha do Redis.
+     */
+    public static String getRedisPassword() {
+        return getProperty("redis.password");
+    }
+
+    /**
      * Obtém a URI de conexão do MongoDB.
      *
      * @return A URI do MongoDB.
