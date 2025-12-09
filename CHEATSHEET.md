@@ -40,7 +40,7 @@ Comandos úteis para gerenciar a infraestrutura local.
 - `todolist-postgres` (PostgreSQL)
 - `todolist-redis` (Redis)
 - `todolist-mongodb` (MongoDB)
-- `todolist-sonarqube` (SonarQube)
+
 
 ---
 
@@ -83,24 +83,7 @@ docker exec -it todolist-mongodb mongosh -u mongo_admin -p mongo_pass --authenti
 
 ---
 
-## 🔍 Qualidade de Código (SonarQube)
 
-### Acesso Web
-- **URL**: [http://localhost:9000](http://localhost:9000)
-- **Login Padrão**: `admin` / `admin` (ou a senha que você definiu)
-
-### Rodar Análise Manualmente
-Para enviar o código para análise no SonarQube:
-```bash
-mvn clean verify sonar:sonar \
-  -Dsonar.projectKey=To_Do_List \
-  -Dsonar.projectName='To_Do_List' \
-  -Dsonar.host.url=http://localhost:9000 \
-  -Dsonar.token=SEU_TOKEN_AQUI
-```
-*(Substitua `SEU_TOKEN_AQUI` pelo token gerado no SonarQube)*
-
----
 
 ## ☕ Maven e Java
 

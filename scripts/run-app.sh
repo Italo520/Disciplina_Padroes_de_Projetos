@@ -18,7 +18,7 @@ echo -e "${YELLOW}[INFO] Iniciando serviços de banco de dados...${NC}"
 
 # Sobe apenas os serviços de infraestrutura (bancos de dados)
 # Não sobe o serviço 'app' pois vamos rodar localmente
-docker compose up -d postgres redis mongodb sonarqube
+docker compose up -d postgres redis mongodb
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}[ERRO] Falha ao iniciar containers.${NC}"
