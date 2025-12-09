@@ -17,13 +17,6 @@ import java.util.List;
 /**
  * Implementação do serviço de geração de relatórios.
  * Contém a lógica de negócio para criar e enviar relatórios de tarefas.
- * 
- * Segue os princípios SOLID:
- * - SRP: Responsável apenas pela lógica de negócio de relatórios
- * - OCP: Aberto para extensão (novos tipos de relatórios/notificações) fechado
- * para modificação
- * - DIP: Depende de abstrações (INotificador, IGeradorRelatorio) não de
- * implementações concretas
  */
 public class ReportServiceImpl implements IReportService {
 

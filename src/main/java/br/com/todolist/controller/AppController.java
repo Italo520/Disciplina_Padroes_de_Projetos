@@ -94,7 +94,7 @@ public class AppController {
                 return true;
             }
         } catch (BusinessException e) {
-            // Log or handle? Returning false as per original signature contract
+
         }
         return false;
     }
@@ -106,7 +106,6 @@ public class AppController {
         this.taskService = new TaskServiceImpl(tarefaRepository, usuario.getEmail());
         this.eventService = new EventServiceImpl(eventoRepository, usuario.getEmail());
 
-        // Configuração de Auditoria (Log)
         // Configuração de Auditoria (Log)
         ILogRepository logRepository = LogService.getInstance().getRepository();
         TaskAuditObserver taskAuditObserver = new TaskAuditObserver(logRepository);
