@@ -16,7 +16,7 @@
 5. [Padrão Repository](#5-padrão-repository)
 6. [Padrão Proxy/Decorator](#6-padrão-proxydecorator)
 7. [Padrão Observer](#7-padrão-observer)
-8. [Injeção de Dependência](#8-injeção-de-dependência)
+8. [Injeção de Dependência Manual](#8-injeção-de-dependência-manual)
 9. [Princípios SOLID Aplicados](#9-princípios-solid-aplicados)
 10. [Comparativo Antes vs Depois](#10-comparativo-antes-vs-depois)
 11. [Conclusão e Próximos Passos](#11-conclusão-e-próximos-passos)
@@ -79,7 +79,8 @@ Refatorar usando **Design Patterns** para criar arquitetura profissional:
 - ✅ **Repository** - Abstrair acesso a dados
 - ✅ **Proxy/Decorator** - Adicionar cache transparente
 - ✅ **Observer** - Auditoria automática de operações
-- ✅ **Dependency Injection** - Inverter controle de dependências
+- ✅ **Dependency Injection** - Injeção manual de dependências
+- ✅ **Facade** - AppController simplifica uso do sistema
 
 ---
 
@@ -90,100 +91,148 @@ Refatorar usando **Design Patterns** para criar arquitetura profissional:
 ```
 src/main/java/br/com/todolist/
 │
+├── Main.java                   # Ponto de entrada
+│
 ├── 📁 entity/                    # Entidades JPA
 │   ├── Tarefa.java
 │   ├── Usuario.java
-│   ├── Evento.java
-│   └── AuditLog.java
+│   └── Evento.java
 │
 ├── 📁 repository/                # Padrão Repository
-│   ├── TarefaRepository.java
-│   ├── UsuarioRepository.java
-│   ├── EventoRepository.java
-│   ├── AuditLogRepository.java
-│   └── CachedTarefaRepository.java  # Proxy/Decorator
+│   ├── ITaskRepository.java
+│   ├── IUserRepository.java
+│   ├── IEventRepository.java
+│   │
+│   ├── 📁 postgres/             # Implementações PostgreSQL
+│   │   ├── TaskRepositoryPostgres.java
+│   │   └── UserRepositoryPostgres.java
+│   │
+│   ├── 📁 mongo/                # Implementações MongoDB
+│   │   └── AuditLogRepository.java
+│   │
+│   └── 📁 cache/                # Proxy com Cache Redis
+│       └── CachedTaskRepository.java
 │
 ├── 📁 service/                   # Padrão Strategy
 │   ├── ITaskService.java        # Interface Strategy
 │   ├── IUserService.java
 │   ├── IEventService.java
-│   ├── IReportService.java
 │   ├── SessionManager.java      # Padrão Singleton
 │   │
 │   ├── 📁 impl/                  # Implementações concretas
 │   │   ├── TaskServiceImpl.java
 │   │   ├── UserServiceImpl.java
-│   │   ├── EventServiceImpl.java
-│   │   └── ReportServiceImpl.java
+│   │   └── EventServiceImpl.java
 │   │
-│   ├── 📁 event/                 # Padrão Observer
-│   │   └── AuditService.java
-│   │
-│   └── 📁 util/
-│       └── DateUtils.java
+│   └── 📁 event/                 # Padrão Observer
+│       └── AuditService.java
 │
-├── 📁 controller/                # Controllers REST
+├── 📁 controller/                # Padrão Facade
+│   ├── AppController.java       # Fachada principal
 │   ├── TaskController.java
-│   ├── UserController.java
-│   └── EventController.java
+│   ├── EventController.java
+│   └── AuthController.java
+│
+├── 📁 ui/                        # Interface Swing
+│   ├── TelaLogin.java
+│   ├── TelaPrincipal.java
+│   └── DialogCadastroTarefa.java
+│
+├── 📁 log/                       # Logs de auditoria
+│   └── AuditLog.java
 │
 ├── 📁 exception/                 # Tratamento de exceções
 │   ├── TarefaNaoEncontradaException.java
 │   └── UsuarioNaoAutenticadoException.java
 │
-└── 📁 ui/                        # Interface gráfica
-    └── ToDoListUI.java
+└── 📁 util/                      # Utilitários
+    ├── DateUtils.java
+    └── notificacao/
+        ├── INotificador.java
+        └── NotificadorEmail.java
 ```
 
 ### 2.2 Tecnologias Utilizadas
 
-| Tecnologia | Propósito | Padrão Relacionado |
-|------------|-----------|-------------------|
-| **PostgreSQL** | Banco de dados relacional principal | Repository |
-| **MongoDB** | Armazenamento de logs de auditoria | Observer |
-| **Redis** | Cache em memória | Proxy/Decorator |
-| **Spring Boot** | Framework de injeção de dependência | DI, IoC |
-| **Spring Data JPA** | Abstração de persistência | Repository |
-| **Spring Data MongoDB** | Integração com MongoDB | Observer |
-| **Spring Data Redis** | Integração com Redis | Proxy |
-| **Lombok** | Redução de boilerplate | - |
+| Tecnologia | Propósito | Versão |
+|------------|-----------|-------|
+| **Java** | Linguagem principal | 21 |
+| **Swing + FlatLaf** | Interface gráfica desktop | 3.4.1 |
+| **PostgreSQL** | Banco de dados relacional | 42.7.2 |
+| **Hibernate/JPA** | ORM para persistência | 6.4.4 |
+| **MongoDB** | Armazenamento de logs de auditoria | 4.11.1 |
+| **Redis (Jedis)** | Cache em memória | 5.1.0 |
+| **Jackson** | Serialização JSON | 2.17.1 |
+| **BCrypt** | Hash de senhas | 0.4 |
+| **Log4j2** | Sistema de logs | 2.23.1 |
+| **iText** | Geração de PDF | 7.2.5 |
 
 ### 2.3 Fluxo de Dados
 
 ```
-┌─────────────────┐
-│   UI (Swing)    │
-└────────┬────────┘
+┌────────────────────┐
+│  Interface Swing   │
+│  (TelaLogin, etc)  │
+└─────────┬──────────┘
          │
          ▼
-┌─────────────────┐
-│   Controllers   │ ◄─── REST API
-└────────┬────────┘
+┌────────────────────┐
+│   AppController    │ ◄── Padrão Facade
+│    (Fachada)       │
+└─────────┬──────────┘
          │
          ▼
-┌─────────────────┐
-│   Services      │ ◄─── Strategy Pattern
-│  (Interfaces)   │
-└────────┬────────┘
+┌────────────────────┐
+│   Services         │ ◄── Padrão Strategy
+│  (ITaskService)    │
+└─────────┬──────────┘
          │
          ▼
-┌─────────────────┐
-│  Repositories   │ ◄─── Repository Pattern
-│  (+ Cache)      │ ◄─── Proxy/Decorator
-└────────┬────────┘
+┌────────────────────┐
+│  Repositories      │ ◄── Padrão Repository
+│  (+ Cache Proxy)   │ ◄── Padrão Proxy
+└─────────┬──────────┘
          │
-         ├─────────┐
-         ▼         ▼
-  ┌──────────┐  ┌──────────┐
-  │PostgreSQL│  │  Redis   │
-  │  (Dados) │  │ (Cache)  │
-  └──────────┘  └──────────┘
+         ├───────────────┐
+         ▼               ▼
+  ┌──────────┐    ┌──────────┐
+  │PostgreSQL│    │  Redis   │
+  │  (Dados) │    │ (Cache)  │
+  └──────────┘    └──────────┘
          │
          ▼
   ┌──────────┐
-  │ MongoDB  │ ◄─── Observer Pattern
-  │(Auditoria)│
+  │ MongoDB  │ ◄── Padrão Observer
+  │(Auditoria)│     (AuditService)
   └──────────┘
+```
+
+### 2.4 Inicialização da Aplicação
+
+```java
+// Main.java - Injeção Manual de Dependências
+public class Main {
+    public static void main(String[] args) {
+        
+        // 1. Configura tema visual
+        FlatCarbonIJTheme.setup();
+        
+        // 2. Cria dependências manualmente (DI Manual)
+        IUserRepository userRepository = new UserRepositoryPostgres();
+        IUserService userService = new UserServiceImpl(userRepository);
+        INotificador notificador = new NotificadorEmail();
+        IItemFactory itemFactory = new DefaultItemFactory();
+        
+        // 3. Inicializa fachada com dependências
+        AppController.init(userService, notificador, itemFactory);
+        
+        // 4. Inicia interface gráfica
+        SwingUtilities.invokeLater(() -> {
+            TelaLogin telaLogin = new TelaLogin();
+            telaLogin.setVisible(true);
+        });
+    }
+}
 ```
 
 ---
@@ -206,9 +255,11 @@ src/main/java/br/com/todolist/
 package br.com.todolist.service;
 
 import br.com.todolist.entity.Usuario;
-import org.springframework.stereotype.Component;
 
-@Component
+/**
+ * Singleton que gerencia a sessão do usuário logado.
+ * Garante que apenas UMA instância exista em toda a aplicação.
+ */
 public class SessionManager {
     
     // 1️⃣ Instância única estática
@@ -268,30 +319,34 @@ if (session.isAutenticado()) {
 session.encerrarSessao();
 ```
 
-### 3.4 Benefícios
+### 3.4 Por Que usar `synchronized`?
+
+**Problema sem synchronized:**
+
+```
+Thread 1: if (instance == null) → TRUE
+Thread 2: if (instance == null) → TRUE
+Thread 1: instance = new SessionManager()  → Instância A
+Thread 2: instance = new SessionManager()  → Instância B
+
+RESULTADO: Duas instâncias! ❌ Singleton quebrado!
+```
+
+**Solução com synchronized:**
+
+```
+Thread 1: LOCK 🔒 → if (instance == null) → cria → UNLOCK 🔓
+Thread 2: AGUARDA... → LOCK 🔒 → if (instance == null) → FALSE → retorna existente
+
+RESULTADO: Uma instância! ✅ Singleton preservado!
+```
+
+### 3.5 Benefícios
 
 ✅ **Ponto de acesso global** - Qualquer classe pode acessar  
 ✅ **Uma única instância** - Garante consistência de estado  
 ✅ **Thread-safe** - Método `synchronized` previne condições de corrida  
 ✅ **Lazy initialization** - Instância criada apenas quando necessária
-
-### 3.5 Diagrama UML
-
-```
-┌─────────────────────────────┐
-│   SessionManager            │
-├─────────────────────────────┤
-│ - instance: SessionManager  │ ◄── static
-│ - usuarioLogado: Usuario    │
-├─────────────────────────────┤
-│ - SessionManager()          │ ◄── private
-│ + getInstance(): SM         │ ◄── static
-│ + iniciarSessao(Usuario)    │
-│ + encerrarSessao()          │
-│ + getUsuarioLogado(): U     │
-│ + isAutenticado(): boolean  │
-└─────────────────────────────┘
-```
 
 ---
 
@@ -309,19 +364,19 @@ session.encerrarSessao();
 ### 4.2 Estrutura
 
 ```
-┌──────────────────┐
-│   Controller     │
-└────────┬─────────┘
-         │ depende de
+┌─────────────────────┐
+│   AppController      │
+└─────────┬───────────┘
+         │ usa
          ▼
-┌──────────────────┐
-│   ITaskService   │ ◄───── Interface Strategy
-└────────┬─────────┘
+┌─────────────────────┐
+│   ITaskService       │ ◄─── Interface Strategy
+└─────────┬───────────┘
          │ implementada por
          ▼
-┌──────────────────┐
-│ TaskServiceImpl  │ ◄───── Concrete Strategy
-└──────────────────┘
+┌─────────────────────┐
+│ TaskServiceImpl     │ ◄─── Concrete Strategy
+└─────────────────────┘
 ```
 
 ### 4.3 Implementação: ITaskService (Interface)
@@ -339,40 +394,19 @@ import java.util.List;
  */
 public interface ITaskService {
     
-    /**
-     * Cria uma nova tarefa
-     */
     Tarefa criarTarefa(String titulo, String descricao, 
                       LocalDateTime dataVencimento, Usuario usuario);
     
-    /**
-     * Obtém tarefa por ID
-     */
     Tarefa obterTarefaById(Long id);
     
-    /**
-     * Lista todas as tarefas de um usuário
-     */
     List<Tarefa> listarTarefasPorUsuario(Usuario usuario);
     
-    /**
-     * Atualiza uma tarefa existente
-     */
     void atualizarTarefa(Tarefa tarefa);
     
-    /**
-     * Deleta uma tarefa
-     */
     void deletarTarefa(Long id);
     
-    /**
-     * Marca tarefa como concluída
-     */
     void marcarComoConcluida(Long id);
     
-    /**
-     * Obtém tarefas vencidas
-     */
     List<Tarefa> obterTarefasVencidas();
 }
 ```
@@ -384,28 +418,23 @@ package br.com.todolist.service.impl;
 
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.entity.Usuario;
-import br.com.todolist.repository.TarefaRepository;
+import br.com.todolist.repository.ITaskRepository;
 import br.com.todolist.service.ITaskService;
 import br.com.todolist.service.event.AuditService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-@Service  // Spring gerencia como bean
 public class TaskServiceImpl implements ITaskService {
     
-    // Dependências INJETADAS pelo Spring
-    private final TarefaRepository tarefaRepository;
+    // Dependências injetadas manualmente
+    private final ITaskRepository taskRepository;
     private final AuditService auditService;
     
-    @Autowired
-    public TaskServiceImpl(TarefaRepository tarefaRepository,
+    // Construtor recebe dependências (DI manual)
+    public TaskServiceImpl(ITaskRepository taskRepository,
                           AuditService auditService) {
-        this.tarefaRepository = tarefaRepository;
+        this.taskRepository = taskRepository;
         this.auditService = auditService;
     }
     
@@ -422,58 +451,35 @@ public class TaskServiceImpl implements ITaskService {
         tarefa.setDataCriacao(LocalDateTime.now());
         
         // Salvar no banco
-        Tarefa tarefaSalva = tarefaRepository.save(tarefa);
+        Tarefa tarefaSalva = taskRepository.save(tarefa);
         
         // Registrar auditoria (Observer notificado)
-        Map<String, Object> dados = new HashMap<>();
-        dados.put("titulo", titulo);
-        dados.put("descricao", descricao);
-        dados.put("usuarioId", usuario.getId());
-        auditService.registrarCriacao("TAREFA", tarefaSalva.getId(), dados);
+        auditService.registrarCriacao("TAREFA", tarefaSalva.getId());
         
         return tarefaSalva;
     }
     
     @Override
     public Tarefa obterTarefaById(Long id) {
-        return tarefaRepository.findById(id)
+        return taskRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
     }
     
     @Override
     public List<Tarefa> listarTarefasPorUsuario(Usuario usuario) {
-        return tarefaRepository.findByUsuario(usuario);
+        return taskRepository.findByUsuario(usuario);
     }
     
     @Override
     public void atualizarTarefa(Tarefa tarefa) {
-        Tarefa tarefaExistente = obterTarefaById(tarefa.getId());
-        
-        // Guardar valores antigos
-        Map<String, Object> dadosAntigos = new HashMap<>();
-        dadosAntigos.put("titulo", tarefaExistente.getTitulo());
-        dadosAntigos.put("descricao", tarefaExistente.getDescricao());
-        
-        // Atualizar
-        tarefaRepository.save(tarefa);
-        
-        // Registrar auditoria
-        Map<String, Object> dadosNovos = new HashMap<>();
-        dadosNovos.put("titulo", tarefa.getTitulo());
-        dadosNovos.put("descricao", tarefa.getDescricao());
-        auditService.registrarAtualizacao("TAREFA", tarefa.getId(), 
-                                          dadosAntigos, dadosNovos);
+        taskRepository.save(tarefa);
+        auditService.registrarAtualizacao("TAREFA", tarefa.getId());
     }
     
     @Override
     public void deletarTarefa(Long id) {
-        Tarefa tarefa = obterTarefaById(id);
-        tarefaRepository.deleteById(id);
-        
-        // Registrar auditoria
-        Map<String, Object> dados = new HashMap<>();
-        dados.put("titulo", tarefa.getTitulo());
-        auditService.registrarDelecao("TAREFA", id, dados);
+        taskRepository.deleteById(id);
+        auditService.registrarDelecao("TAREFA", id);
     }
     
     @Override
@@ -487,44 +493,33 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public List<Tarefa> obterTarefasVencidas() {
         LocalDateTime agora = LocalDateTime.now();
-        return tarefaRepository.findByDataVencimentoBeforeAndConcluidaFalse(agora);
+        return taskRepository.findByDataVencimentoBeforeAndConcluidaFalse(agora);
     }
 }
 ```
 
-### 4.5 Uso no Controller
+### 4.5 Uso no AppController (Facade)
 
 ```java
-@RestController
-@RequestMapping("/api/tarefas")
-public class TaskController {
+public class AppController {
     
     // Depende da INTERFACE, não da implementação
-    private final ITaskService taskService;
+    private static ITaskService taskService;
+    private static IUserService userService;
     
-    @Autowired
-    public TaskController(ITaskService taskService) {
-        this.taskService = taskService;  // Spring injeta TaskServiceImpl
+    // Injeção manual de dependências
+    public static void init(IUserService userSvc, ...) {
+        userService = userSvc;
+        
+        // Cria repository e service manualmente
+        ITaskRepository taskRepo = new TaskRepositoryPostgres();
+        AuditService auditService = new AuditService(...);
+        taskService = new TaskServiceImpl(taskRepo, auditService);
     }
     
-    @PostMapping
-    public ResponseEntity<Tarefa> criar(@RequestBody TarefaDTO dto) {
+    public static Tarefa criarTarefa(String titulo, String desc, LocalDateTime data) {
         Usuario usuario = SessionManager.getInstance().getUsuarioLogado();
-        
-        Tarefa tarefa = taskService.criarTarefa(
-            dto.getTitulo(),
-            dto.getDescricao(),
-            dto.getDataVencimento(),
-            usuario
-        );
-        
-        return ResponseEntity.ok(tarefa);
-    }
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<Tarefa> obter(@PathVariable Long id) {
-        Tarefa tarefa = taskService.obterTarefaById(id);
-        return ResponseEntity.ok(tarefa);
+        return taskService.criarTarefa(titulo, desc, data, usuario);
     }
 }
 ```
@@ -535,39 +530,6 @@ public class TaskController {
 ✅ **Open/Closed** - Adicionar nova estratégia sem modificar código existente  
 ✅ **Facilita testes** - Pode mockar interface facilmente  
 ✅ **Código limpo** - Responsabilidades bem definidas
-
-### 4.7 Outras Interfaces Strategy
-
-#### IUserService
-
-```java
-public interface IUserService {
-    Usuario autenticar(String email, String senha);
-    Usuario cadastrar(String nome, String email, String senha);
-    void atualizarPerfil(Usuario usuario);
-    List<Usuario> listarTodos();
-}
-```
-
-#### IEventService
-
-```java
-public interface IEventService {
-    Evento criarEvento(String titulo, LocalDateTime dataEvento);
-    List<Evento> listarEventosDoUsuario(Usuario usuario);
-    void deletarEvento(Long id);
-}
-```
-
-#### IReportService
-
-```java
-public interface IReportService {
-    RelatorioDTO gerarRelatorioTarefas(Usuario usuario);
-    int contarTarefasConcluidas(Usuario usuario);
-    int contarTarefasPendentes(Usuario usuario);
-}
-```
 
 ---
 
@@ -582,81 +544,109 @@ public interface IReportService {
 - Trocar banco de dados sem afetar código de negócio
 - Facilitar testes (mock de repositórios)
 
-### 5.2 Implementação com Spring Data JPA
+### 5.2 Implementação
 
 ```java
 package br.com.todolist.repository;
 
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.entity.Usuario;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-@Repository
-public interface TarefaRepository extends JpaRepository<Tarefa, Long> {
+/**
+ * Interface do Repository - Abstração de persistência
+ */
+public interface ITaskRepository {
     
-    // Spring gera implementação automaticamente
+    Tarefa save(Tarefa tarefa);
+    
+    Optional<Tarefa> findById(Long id);
+    
     List<Tarefa> findByUsuario(Usuario usuario);
     
     List<Tarefa> findByDataVencimentoBeforeAndConcluidaFalse(LocalDateTime data);
     
-    List<Tarefa> findByConcluidaTrue();
+    void deleteById(Long id);
     
-    List<Tarefa> findByUsuarioAndConcluida(Usuario usuario, boolean concluida);
+    List<Tarefa> findAll();
 }
 ```
 
-### 5.3 Entidade JPA
+### 5.3 Implementação PostgreSQL
 
 ```java
-package br.com.todolist.entity;
+package br.com.todolist.repository.postgres;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import java.time.LocalDateTime;
+import br.com.todolist.entity.Tarefa;
+import br.com.todolist.repository.ITaskRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
-@Entity
-@Table(name = "tarefas")
-@Data  // Lombok gera getters/setters
-public class Tarefa {
+import java.util.List;
+import java.util.Optional;
+
+public class TaskRepositoryPostgres implements ITaskRepository {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private EntityManagerFactory emf;
     
-    @Column(nullable = false, length = 200)
-    private String titulo;
+    public TaskRepositoryPostgres() {
+        this.emf = Persistence.createEntityManagerFactory("TodoListPU");
+    }
     
-    @Column(length = 1000)
-    private String descricao;
+    @Override
+    public Tarefa save(Tarefa tarefa) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            if (tarefa.getId() == null) {
+                em.persist(tarefa);
+            } else {
+                tarefa = em.merge(tarefa);
+            }
+            em.getTransaction().commit();
+            return tarefa;
+        } finally {
+            em.close();
+        }
+    }
     
-    @Column(name = "data_vencimento")
-    private LocalDateTime dataVencimento;
+    @Override
+    public Optional<Tarefa> findById(Long id) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Tarefa tarefa = em.find(Tarefa.class, id);
+            return Optional.ofNullable(tarefa);
+        } finally {
+            em.close();
+        }
+    }
     
-    @Column(name = "data_criacao", nullable = false)
-    private LocalDateTime dataCriacao;
+    @Override
+    public List<Tarefa> findByUsuario(Usuario usuario) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT t FROM Tarefa t WHERE t.usuario = :usuario", Tarefa.class)
+                .setParameter("usuario", usuario)
+                .getResultList();
+        } finally {
+            em.close();
+        }
+    }
     
-    @Column(name = "data_conclusao")
-    private LocalDateTime dataConclusao;
-    
-    @Column(nullable = false)
-    private Boolean concluida = false;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    // Outros métodos...
 }
 ```
 
 ### 5.4 Benefícios
 
 ✅ **Abstração** - Código não depende de SQL  
-✅ **Produtividade** - Spring gera implementação  
-✅ **Manutenibilidade** - Trocar BD facilmente  
-✅ **Testabilidade** - Fácil mockar
+✅ **Troca de BD** - Fácil trocar PostgreSQL por MySQL  
+✅ **Testabilidade** - Fácil mockar  
+✅ **Organização** - Separa persistência de negócio
 
 ---
 
@@ -670,128 +660,102 @@ public class Tarefa {
 
 No projeto, usamos **Cache-Aside Pattern** com Redis.
 
-### 6.2 Implementação: CachedTarefaRepository
+### 6.2 Implementação: CachedTaskRepository
 
 ```java
-package br.com.todolist.repository;
+package br.com.todolist.repository.cache;
 
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.entity.Usuario;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
+import br.com.todolist.repository.ITaskRepository;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
-@Component
-public class CachedTarefaRepository {
+/**
+ * Proxy que adiciona cache Redis ao repository
+ */
+public class CachedTaskRepository implements ITaskRepository {
     
-    private final TarefaRepository tarefaRepository;  // Repositório real
-    private final RedisTemplate<String, Object> redisTemplate;  // Cache
+    private final ITaskRepository repository;  // Repositório real
+    private final JedisPool jedisPool;         // Pool de conexões Redis
+    private final ObjectMapper objectMapper;   // Serialização JSON
     
     private static final String CACHE_PREFIX = "tarefa:";
-    private static final long TTL_SECONDS = 3600;  // 1 hora
+    private static final int TTL_SECONDS = 3600;  // 1 hora
     
-    @Autowired
-    public CachedTarefaRepository(TarefaRepository tarefaRepository,
-                                 RedisTemplate<String, Object> redisTemplate) {
-        this.tarefaRepository = tarefaRepository;
-        this.redisTemplate = redisTemplate;
+    public CachedTaskRepository(ITaskRepository repository) {
+        this.repository = repository;
+        this.jedisPool = new JedisPool("localhost", 6379);
+        this.objectMapper = new ObjectMapper();
     }
     
-    /**
-     * Busca tarefa por ID com cache
-     * FLUXO: Cache → BD → Armazena
-     */
+    @Override
     public Optional<Tarefa> findById(Long id) {
         String key = CACHE_PREFIX + id;
         
-        // 1️⃣ Tentar buscar no cache
-        Tarefa cached = (Tarefa) redisTemplate.opsForValue().get(key);
-        
-        if (cached != null) {
-            System.out.println("📦 [CACHE HIT] Tarefa " + id + " encontrada no Redis");
-            return Optional.of(cached);
+        try (Jedis jedis = jedisPool.getResource()) {
+            // 1️⃣ Tentar buscar no cache
+            String cachedJson = jedis.get(key);
+            
+            if (cachedJson != null) {
+                System.out.println("📦 [CACHE HIT] Tarefa " + id);
+                Tarefa tarefa = objectMapper.readValue(cachedJson, Tarefa.class);
+                return Optional.of(tarefa);
+            }
+            
+            System.out.println("🔍 [CACHE MISS] Consultando BD...");
+            
+            // 2️⃣ Se não estiver no cache, buscar no BD
+            Optional<Tarefa> tarefa = repository.findById(id);
+            
+            // 3️⃣ Se encontrou, armazenar no cache
+            if (tarefa.isPresent()) {
+                String json = objectMapper.writeValueAsString(tarefa.get());
+                jedis.setex(key, TTL_SECONDS, json);
+                System.out.println("💾 Tarefa " + id + " armazenada no cache");
+            }
+            
+            return tarefa;
+            
+        } catch (Exception e) {
+            // Se cache falhar, retorna do BD
+            return repository.findById(id);
         }
-        
-        System.out.println("🔍 [CACHE MISS] Consultando PostgreSQL...");
-        
-        // 2️⃣ Se não estiver no cache, buscar no BD
-        Optional<Tarefa> tarefa = tarefaRepository.findById(id);
-        
-        // 3️⃣ Se encontrou, armazenar no cache
-        tarefa.ifPresent(t -> {
-            redisTemplate.opsForValue().set(key, t, Duration.ofSeconds(TTL_SECONDS));
-            System.out.println("💾 Tarefa " + id + " armazenada no cache");
-        });
-        
-        return tarefa;
     }
     
-    /**
-     * Lista tarefas por usuário com cache
-     */
-    public List<Tarefa> findByUsuario(Usuario usuario) {
-        String key = CACHE_PREFIX + "usuario:" + usuario.getId();
-        
-        // Tentar cache
-        @SuppressWarnings("unchecked")
-        List<Tarefa> cached = (List<Tarefa>) redisTemplate.opsForValue().get(key);
-        
-        if (cached != null) {
-            System.out.println("📦 [CACHE HIT] Tarefas do usuário " + usuario.getId());
-            return cached;
-        }
-        
-        System.out.println("🔍 [CACHE MISS] Consultando PostgreSQL...");
-        
-        // Buscar no BD
-        List<Tarefa> tarefas = tarefaRepository.findByUsuario(usuario);
-        
-        // Armazenar no cache
-        redisTemplate.opsForValue().set(key, tarefas, Duration.ofSeconds(TTL_SECONDS));
-        
-        return tarefas;
-    }
-    
-    /**
-     * Salva tarefa e INVALIDA cache
-     */
+    @Override
     public Tarefa save(Tarefa tarefa) {
-        Tarefa tarefaSalva = tarefaRepository.save(tarefa);
+        // Salva no BD
+        Tarefa tarefaSalva = repository.save(tarefa);
         
-        // Invalidar cache individual
-        String keyIndividual = CACHE_PREFIX + tarefaSalva.getId();
-        redisTemplate.delete(keyIndividual);
-        
-        // Invalidar cache do usuário
-        String keyUsuario = CACHE_PREFIX + "usuario:" + tarefa.getUsuario().getId();
-        redisTemplate.delete(keyUsuario);
-        
-        System.out.println("🗑️ Cache invalidado para tarefa " + tarefaSalva.getId());
+        // Invalida cache
+        try (Jedis jedis = jedisPool.getResource()) {
+            String key = CACHE_PREFIX + tarefaSalva.getId();
+            jedis.del(key);
+            System.out.println("🗑️ Cache invalidado");
+        }
         
         return tarefaSalva;
     }
     
-    /**
-     * Deleta tarefa e INVALIDA cache
-     */
+    @Override
     public void deleteById(Long id) {
-        Optional<Tarefa> tarefa = tarefaRepository.findById(id);
+        repository.deleteById(id);
         
-        tarefaRepository.deleteById(id);
-        
-        // Invalidar caches
-        redisTemplate.delete(CACHE_PREFIX + id);
-        
-        tarefa.ifPresent(t -> {
-            String keyUsuario = CACHE_PREFIX + "usuario:" + t.getUsuario().getId();
-            redisTemplate.delete(keyUsuario);
-        });
-        
-        System.out.println("🗑️ Cache invalidado para tarefa deletada " + id);
+        // Invalida cache
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.del(CACHE_PREFIX + id);
+        }
+    }
+    
+    // Delega outros métodos ao repository real
+    @Override
+    public List<Tarefa> findByUsuario(Usuario usuario) {
+        return repository.findByUsuario(usuario);
     }
 }
 ```
@@ -800,13 +764,13 @@ public class CachedTarefaRepository {
 
 ```
 ┌─────────────────────┐
-│   Requisição GET    │
+│   findById(123)     │
 └──────────┬──────────┘
            │
            ▼
     ┌──────────────┐
     │ Verifica     │
-    │ Redis Cache? │
+    │ Redis?       │
     └──────┬───────┘
            │
     ┌──────┴──────┐
@@ -858,36 +822,27 @@ package br.com.todolist.service.event;
 
 import br.com.todolist.entity.Usuario;
 import br.com.todolist.log.AuditLog;
-import br.com.todolist.repository.AuditLogRepository;
+import br.com.todolist.repository.mongo.AuditLogRepository;
 import br.com.todolist.service.SessionManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 /**
- * Observer que registra todas as operações do sistema
+ * Observer que registra todas as operações do sistema no MongoDB
  */
-@Component
 public class AuditService {
     
     private final AuditLogRepository auditLogRepository;
-    private final SessionManager sessionManager;
     
-    @Autowired
-    public AuditService(AuditLogRepository auditLogRepository,
-                       SessionManager sessionManager) {
-        this.auditLogRepository = auditLogRepository;
-        this.sessionManager = sessionManager;
+    public AuditService(AuditLogRepository repository) {
+        this.auditLogRepository = repository;
     }
     
     /**
      * Registra operação de CRIAÇÃO
      */
-    public void registrarCriacao(String entidadeTipo, Long entidadeId, 
-                                Map<String, Object> dadosNovos) {
-        Usuario usuario = sessionManager.getUsuarioLogado();
+    public void registrarCriacao(String entidadeTipo, Long entidadeId) {
+        Usuario usuario = SessionManager.getInstance().getUsuarioLogado();
         
         AuditLog log = new AuditLog();
         log.setUsuarioId(usuario.getId());
@@ -895,21 +850,18 @@ public class AuditService {
         log.setAcao("CRIAR");
         log.setEntidadeTipo(entidadeTipo);
         log.setEntidadeId(entidadeId);
-        log.setDadosNovos(dadosNovos);
         log.setTimestamp(LocalDateTime.now());
         
         auditLogRepository.save(log);
         
-        System.out.println("✅ [AUDITORIA] Criação registrada: " + entidadeTipo + " #" + entidadeId);
+        System.out.println("✅ [AUDITORIA] " + entidadeTipo + " #" + entidadeId + " criado");
     }
     
     /**
      * Registra operação de ATUALIZAÇÃO
      */
-    public void registrarAtualizacao(String entidadeTipo, Long entidadeId,
-                                    Map<String, Object> dadosAntigos,
-                                    Map<String, Object> dadosNovos) {
-        Usuario usuario = sessionManager.getUsuarioLogado();
+    public void registrarAtualizacao(String entidadeTipo, Long entidadeId) {
+        Usuario usuario = SessionManager.getInstance().getUsuarioLogado();
         
         AuditLog log = new AuditLog();
         log.setUsuarioId(usuario.getId());
@@ -917,21 +869,18 @@ public class AuditService {
         log.setAcao("ATUALIZAR");
         log.setEntidadeTipo(entidadeTipo);
         log.setEntidadeId(entidadeId);
-        log.setDadosAntigos(dadosAntigos);
-        log.setDadosNovos(dadosNovos);
         log.setTimestamp(LocalDateTime.now());
         
         auditLogRepository.save(log);
         
-        System.out.println("✅ [AUDITORIA] Atualização registrada: " + entidadeTipo + " #" + entidadeId);
+        System.out.println("✅ [AUDITORIA] " + entidadeTipo + " #" + entidadeId + " atualizado");
     }
     
     /**
      * Registra operação de DELEÇÃO
      */
-    public void registrarDelecao(String entidadeTipo, Long entidadeId,
-                                Map<String, Object> dadosAntigos) {
-        Usuario usuario = sessionManager.getUsuarioLogado();
+    public void registrarDelecao(String entidadeTipo, Long entidadeId) {
+        Usuario usuario = SessionManager.getInstance().getUsuarioLogado();
         
         AuditLog log = new AuditLog();
         log.setUsuarioId(usuario.getId());
@@ -939,12 +888,11 @@ public class AuditService {
         log.setAcao("DELETAR");
         log.setEntidadeTipo(entidadeTipo);
         log.setEntidadeId(entidadeId);
-        log.setDadosAntigos(dadosAntigos);
         log.setTimestamp(LocalDateTime.now());
         
         auditLogRepository.save(log);
         
-        System.out.println("✅ [AUDITORIA] Deleção registrada: " + entidadeTipo + " #" + entidadeId);
+        System.out.println("✅ [AUDITORIA] " + entidadeTipo + " #" + entidadeId + " deletado");
     }
     
     /**
@@ -960,28 +908,6 @@ public class AuditService {
         log.setTimestamp(LocalDateTime.now());
         
         auditLogRepository.save(log);
-        
-        System.out.println("✅ [AUDITORIA] Login registrado: " + usuario.getNome());
-    }
-    
-    /**
-     * Registra ERROS do sistema
-     */
-    public void registrarErro(String descricao, String stackTrace) {
-        Usuario usuario = sessionManager.getUsuarioLogado();
-        
-        AuditLog log = new AuditLog();
-        if (usuario != null) {
-            log.setUsuarioId(usuario.getId());
-            log.setUsuarioNome(usuario.getNome());
-        }
-        log.setAcao("ERRO");
-        log.setEntidadeTipo("SISTEMA");
-        log.setTimestamp(LocalDateTime.now());
-        
-        auditLogRepository.save(log);
-        
-        System.err.println("❌ [AUDITORIA] Erro registrado: " + descricao);
     }
 }
 ```
@@ -991,55 +917,58 @@ public class AuditService {
 ```java
 package br.com.todolist.log;
 
-import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
+import org.bson.Document;
 import java.time.LocalDateTime;
-import java.util.Map;
 
-@Document(collection = "audit_logs")
-@Data
 public class AuditLog {
     
-    @Id
     private String id;
-    
     private Long usuarioId;
     private String usuarioNome;
-    
     private String acao;  // CRIAR, ATUALIZAR, DELETAR, LOGIN
-    
     private String entidadeTipo;  // TAREFA, USUARIO, EVENTO
     private Long entidadeId;
-    
-    private Map<String, Object> dadosAntigos;
-    private Map<String, Object> dadosNovos;
-    
     private LocalDateTime timestamp;
+    
+    // Getters e Setters
+    
+    public Document toDocument() {
+        return new Document()
+            .append("usuarioId", usuarioId)
+            .append("usuarioNome", usuarioNome)
+            .append("acao", acao)
+            .append("entidadeTipo", entidadeTipo)
+            .append("entidadeId", entidadeId)
+            .append("timestamp", timestamp.toString());
+    }
 }
 ```
 
 ### 7.4 Repository MongoDB
 
 ```java
-package br.com.todolist.repository;
+package br.com.todolist.repository.mongo;
 
 import br.com.todolist.log.AuditLog;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-@Repository
-public interface AuditLogRepository extends MongoRepository<AuditLog, String> {
+public class AuditLogRepository {
     
-    List<AuditLog> findByUsuarioId(Long usuarioId);
+    private MongoCollection<Document> collection;
     
-    List<AuditLog> findByAcao(String acao);
+    public AuditLogRepository() {
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
+        MongoDatabase database = mongoClient.getDatabase("todolist_audit");
+        this.collection = database.getCollection("audit_logs");
+    }
     
-    List<AuditLog> findByTimestampBetween(LocalDateTime inicio, LocalDateTime fim);
+    public void save(AuditLog log) {
+        collection.insertOne(log.toDocument());
+    }
 }
 ```
 
@@ -1076,123 +1005,113 @@ public interface AuditLogRepository extends MongoRepository<AuditLog, String> {
 
 ---
 
-## 8. Injeção de Dependência
+## 8. Injeção de Dependência Manual
 
 ### 8.1 Conceito
 
 **Injeção de Dependência (DI)** é quando um objeto recebe suas dependências de fontes externas, ao invés de criá-las internamente.
 
-**Inversão de Controle (IoC)**: Framework gerencia ciclo de vida dos objetos.
+No projeto, **NÃO usamos Spring Boot**. A DI é feita **manualmente** no `Main.java` e `AppController`.
 
-### 8.2 Como Spring Faz DI
+### 8.2 DI Manual vs Framework
 
 ```java
 // ❌ SEM DI - Alto Acoplamento
 public class TaskService {
-    private TarefaRepository repository = new TarefaRepositoryImpl();
+    private ITaskRepository repository = new TaskRepositoryPostgres();
     // Difícil testar, difícil trocar implementação
 }
 
-// ✅ COM DI - Baixo Acoplamento
-@Service
+// ✅ COM DI MANUAL - Baixo Acoplamento
 public class TaskServiceImpl implements ITaskService {
     
-    private final TarefaRepository repository;
+    private final ITaskRepository repository;
     
-    @Autowired  // Spring injeta automaticamente
-    public TaskServiceImpl(TarefaRepository repository) {
+    // Construtor recebe dependência (DI manual)
+    public TaskServiceImpl(ITaskRepository repository) {
         this.repository = repository;
     }
 }
 ```
 
-### 8.3 Tipos de Injeção
-
-#### 1. Via Construtor (Recomendado ✅)
+### 8.3 Injeção no Main.java
 
 ```java
-@Service
-public class TaskServiceImpl {
-    
-    private final TarefaRepository repository;
-    private final AuditService auditService;
-    
-    @Autowired  // Opcional se há apenas 1 construtor
-    public TaskServiceImpl(TarefaRepository repository, 
-                          AuditService auditService) {
-        this.repository = repository;
-        this.auditService = auditService;
+public class Main {
+    public static void main(String[] args) {
+        
+        // 1️⃣ Criar dependências manualmente
+        IUserRepository userRepository = new UserRepositoryPostgres();
+        
+        // 2️⃣ Injetar no service
+        IUserService userService = new UserServiceImpl(userRepository);
+        
+        // 3️⃣ Criar outras dependências
+        INotificador notificador = new NotificadorEmail();
+        IItemFactory itemFactory = new DefaultItemFactory();
+        
+        // 4️⃣ Injetar tudo na fachada
+        AppController.init(userService, notificador, itemFactory);
+        
+        // 5️⃣ Iniciar interface
+        SwingUtilities.invokeLater(() -> {
+            new TelaLogin().setVisible(true);
+        });
     }
 }
 ```
 
-**Vantagens:**
-- ✅ Imutabilidade (final)
-- ✅ Testes fáceis
-- ✅ Obrigatório fornecer dependências
-
-#### 2. Via Campo
+### 8.4 Injeção no AppController (Facade)
 
 ```java
-@Service
-public class TaskServiceImpl {
+public class AppController {
     
-    @Autowired
-    private TarefaRepository repository;
-}
-```
-
-**Desvantagens:**
-- ❌ Não pode ser final
-- ❌ Dificulta testes
-
-#### 3. Via Setter
-
-```java
-@Service
-public class TaskServiceImpl {
+    private static IUserService userService;
+    private static ITaskService taskService;
+    private static INotificador notificador;
     
-    private TarefaRepository repository;
+    // Método de inicialização com DI manual
+    public static void init(IUserService userSvc, 
+                           INotificador notif,
+                           IItemFactory factory) {
+        
+        userService = userSvc;
+        notificador = notif;
+        
+        // Criar outras dependências
+        ITaskRepository taskRepo = new TaskRepositoryPostgres();
+        
+        // Envolver com cache (Proxy)
+        ITaskRepository cachedRepo = new CachedTaskRepository(taskRepo);
+        
+        // Criar audit service
+        AuditLogRepository auditRepo = new AuditLogRepository();
+        AuditService auditService = new AuditService(auditRepo);
+        
+        // Injetar no service
+        taskService = new TaskServiceImpl(cachedRepo, auditService);
+    }
     
-    @Autowired
-    public void setRepository(TarefaRepository repository) {
-        this.repository = repository;
+    // Métodos que usam os services
+    public static Tarefa criarTarefa(String titulo, String desc, LocalDateTime data) {
+        Usuario usuario = SessionManager.getInstance().getUsuarioLogado();
+        return taskService.criarTarefa(titulo, desc, data, usuario);
     }
 }
 ```
 
-### 8.4 Container IoC do Spring
+### 8.5 Vantagens da DI Manual
 
-```
-Application Context (Container)
-│
-├─ Controllers
-│   └─ TaskController
-│       └─ depende → ITaskService
-│           └─ Spring injeta → TaskServiceImpl
-│
-├─ Services
-│   ├─ TaskServiceImpl
-│   │   ├─ depende → TarefaRepository
-│   │   └─ depende → AuditService
-│   │       └─ Spring injeta
-│   │
-│   └─ AuditService
-│       ├─ depende → AuditLogRepository
-│       └─ depende → SessionManager
-│           └─ Spring injeta
-│
-└─ Repositories
-    ├─ TarefaRepository (JPA - Spring cria)
-    └─ AuditLogRepository (MongoDB - Spring cria)
-```
+✅ **Controle Total** - Você decide quando e como criar  
+✅ **Sem Framework** - Menos dependências externas  
+✅ **Didático** - Mais fácil entender o fluxo  
+✅ **Testabilidade** - Pode injetar mocks facilmente
 
-### 8.5 Benefícios
+### 8.6 Desvantagens
 
-✅ **Testabilidade** - Fácil injetar mocks  
-✅ **Baixo Acoplamento** - Depende de interfaces  
-✅ **Flexibilidade** - Trocar implementações via config  
-✅ **Gerenciamento Automático** - Spring cuida do ciclo de vida
+❌ **Mais código** - Precisa criar tudo manualmente  
+❌ **Sem auto-wire** - Não detecta dependências automaticamente  
+❌ **Gerenciamento manual** - Você cuida do ciclo de vida
 
 ---
 
@@ -1204,18 +1123,15 @@ Application Context (Container)
 
 ```java
 // ✅ BOM - Cada classe uma responsabilidade
-@Service
 public class TaskServiceImpl {
     // Responsabilidade: Lógica de negócio de tarefas
 }
 
-@Component
 public class AuditService {
     // Responsabilidade: Auditoria
 }
 
-@Repository
-public interface TarefaRepository {
+public interface ITaskRepository {
     // Responsabilidade: Persistência
 }
 ```
@@ -1228,10 +1144,8 @@ public interface TarefaRepository {
 // ✅ BOM - Nova estratégia sem modificar código existente
 public interface ITaskService { }
 
-@Service
 public class BasicTaskService implements ITaskService { }
 
-@Service
 public class PremiumTaskService implements ITaskService { }
 // Adicionar nova estratégia não modifica código existente
 ```
@@ -1254,15 +1168,7 @@ service.criarTarefa(...);  // Funciona perfeitamente
 // ✅ BOM - Interfaces específicas
 public interface ITaskService { }  // Apenas operações de tarefa
 public interface IUserService { }  // Apenas operações de usuário
-public interface IReportService { }  // Apenas relatórios
-
-// ❌ RUIM - Interface gigante
-public interface IService {
-    // Métodos de tarefa
-    // Métodos de usuário
-    // Métodos de relatório
-    // ...100 métodos
-}
+public interface IEventService { } // Apenas eventos
 ```
 
 ### 9.5 D - Dependency Inversion Principle
@@ -1271,15 +1177,13 @@ public interface IService {
 
 ```java
 // ✅ BOM - Depende de interface
-@RestController
-public class TaskController {
-    private final ITaskService taskService;  // Interface
+public class AppController {
+    private static ITaskService taskService;  // Interface
 }
 
 // ❌ RUIM - Depende de implementação concreta
-@RestController
-public class TaskController {
-    private final TaskServiceImpl taskService;  // Implementação
+public class AppController {
+    private static TaskServiceImpl taskService;  // Implementação
 }
 ```
 
@@ -1297,7 +1201,8 @@ public class TaskController {
 | **Extensibilidade** | Modificar código | Adicionar classes |
 | **Auditoria** | Inexistente | Completa (MongoDB) |
 | **Cache** | Inexistente | Redis (100x mais rápido) |
-| **Padrões** | Nenhum | 5+ padrões |
+| **Padrões** | Nenhum | 6+ padrões |
+| **Arquitetura** | Monolítica | Em camadas |
 
 ### 10.2 Estrutura
 
@@ -1314,15 +1219,22 @@ src/
 
 ```
 src/
-├── entity/              # Entidades
-├── repository/          # Repository Pattern
+├── Main.java               # Entry point
+├── entity/                # Entidades
+├── repository/            # Repository Pattern
+│   ├── interfaces
+│   ├── postgres/          # Implementações
+│   ├── mongo/
+│   └── cache/             # Proxy Pattern
 ├── service/
-│   ├── interfaces       # Strategy Pattern
-│   ├── impl/            # Implementações
-│   ├── event/           # Observer Pattern
-│   └── SessionManager   # Singleton Pattern
-├── controller/          # REST API
-└── exception/           # Tratamento de erros
+│   ├── interfaces         # Strategy Pattern
+│   ├── impl/              # Implementações
+│   ├── event/             # Observer Pattern
+│   └── SessionManager     # Singleton Pattern
+├── controller/            # Facade Pattern
+├── ui/                    # Interface Swing
+├── log/                   # Logs MongoDB
+└── exception/             # Tratamento de erros
 ```
 
 ### 10.3 Métricas
@@ -1331,14 +1243,13 @@ src/
 ┌───────────────────┬──────────┬───────────┐
 │ Métrica           │  ANTES   │   DEPOIS  │
 ├───────────────────┼──────────┼───────────┤
-│ Linhas de Código  │   1200   │    3500   │ ⬆️ (Mais organizado)
-│ Classes           │      5   │      25   │ ⬆️ (Mais coeso)
+│ Classes           │      5   │      30   │ ⬆️
 │ Acoplamento       │   Alto   │   Baixo   │ ✅
 │ Testabilidade     │   20%    │    90%    │ ✅
 │ Manutenibilidade  │  Difícil │   Fácil   │ ✅
-│ Performance       │   1x     │   100x    │ ✅ (Cache)
+│ Performance       │   1x     │   100x    │ ✅
 │ Auditoria         │    0%    │   100%    │ ✅
-│ Padrões           │    0     │     6     │ ✅
+│ Padrões           │    0     │     7     │ ✅
 └───────────────────┴──────────┴───────────┘
 ```
 
@@ -1349,11 +1260,12 @@ src/
 ### 11.1 Padrões Implementados ✅
 
 1. ✅ **Singleton** - SessionManager
-2. ✅ **Strategy** - Interfaces de serviço
+2. ✅ **Strategy** - Interfaces de serviço (ITaskService, IUserService, etc)
 3. ✅ **Repository** - Abstração de dados
-4. ✅ **Proxy/Decorator** - Cache Redis
-5. ✅ **Observer** - Auditoria MongoDB
-6. ✅ **Dependency Injection** - Spring IoC
+4. ✅ **Proxy/Decorator** - Cache Redis transparente
+5. ✅ **Observer** - Auditoria MongoDB automática
+6. ✅ **Facade** - AppController simplifica uso
+7. ✅ **Dependency Injection** - DI manual no Main.java
 
 ### 11.2 Benefícios Alcançados
 
@@ -1375,7 +1287,6 @@ public interface TarefaFactory {
     Tarefa criarTarefa(TarefaDTO dto);
 }
 
-@Component
 public class TarefaSimpleFactory implements TarefaFactory {
     @Override
     public Tarefa criarTarefa(TarefaDTO dto) {
@@ -1411,24 +1322,15 @@ public interface TarefaState {
 }
 ```
 
-#### 4. Mediator Pattern
-
-```java
-@Component
-public class TaskMediator {
-    // Coordena comunicação entre componentes
-}
-```
-
 ### 11.4 Melhorias Futuras
 
 - 🚀 **Implementar testes unitários** (JUnit 5 + Mockito)
-- 🚀 **Adicionar testes de integração** (TestContainers)
-- 🚀 **Implementar Circuit Breaker** (Resilience4j)
-- 🚀 **Adicionar métricas** (Micrometer + Prometheus)
-- 🚀 **Implementar API Gateway**
-- 🚀 **Containerização** (Docker Compose)
-- 🚀 **CI/CD** (GitHub Actions)
+- 🚀 **Adicionar validação de dados** (Bean Validation)
+- 🚀 **Implementar exportação de relatórios** (PDF, Excel)
+- 🚀 **Adicionar notificações por email**
+- 🚀 **Implementar filtros avançados**
+- 🚀 **Pool de conexões** (HikariCP)
+- 🚀 **Logging estruturado** (Log4j2 completo)
 
 ---
 
@@ -1443,10 +1345,9 @@ public class TaskMediator {
 
 ### Links Úteis
 
-- [Spring Framework Documentation](https://spring.io/projects/spring-framework)
-- [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
-- [Spring Data Redis](https://spring.io/projects/spring-data-redis)
-- [Spring Data MongoDB](https://spring.io/projects/spring-data-mongodb)
+- [Hibernate Documentation](https://hibernate.org/orm/documentation/)
+- [MongoDB Java Driver](https://www.mongodb.com/docs/drivers/java/sync/current/)
+- [Jedis Redis Client](https://github.com/redis/jedis)
 - [Refactoring Guru - Design Patterns](https://refactoring.guru/design-patterns)
 - [SOLID Principles](https://www.baeldung.com/solid-principles)
 
