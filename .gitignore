@@ -28,7 +28,3 @@ qodana.yaml
 build/
 *.jar
 *.class
-
-# Arquivos de testes
-test/
-*.test
