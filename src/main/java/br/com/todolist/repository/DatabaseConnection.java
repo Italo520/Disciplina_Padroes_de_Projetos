@@ -13,7 +13,7 @@ public class DatabaseConnection {
     private EntityManagerFactory entityManagerFactory;
 
     private DatabaseConnection() {
-        this.entityManagerFactory = Persistence.createEntityManagerFactory("todolist-pu");
+        // Lazy initialization
     }
 
     public static synchronized DatabaseConnection getInstance() {
@@ -24,6 +24,9 @@ public class DatabaseConnection {
     }
 
     public EntityManager getEntityManager() {
+        if (entityManagerFactory == null) {
+            entityManagerFactory = Persistence.createEntityManagerFactory("todolist-pu");
+        }
         return entityManagerFactory.createEntityManager();
     }
 
@@ -31,5 +34,17 @@ public class DatabaseConnection {
         if (entityManagerFactory != null && entityManagerFactory.isOpen()) {
             entityManagerFactory.close();
         }
+    }
+
+    /**
+     * Método para injetar um EntityManagerFactory customizado (usado em testes).
+     * 
+     * @param emf O EntityManagerFactory a ser utilizado.
+     */
+    public void setEntityManagerFactory(EntityManagerFactory emf) {
+        if (this.entityManagerFactory != null && this.entityManagerFactory.isOpen()) {
+            this.entityManagerFactory.close();
+        }
+        this.entityManagerFactory = emf;
     }
 }
