@@ -181,6 +181,14 @@
         <scope>test</scope>
     </dependency>
 
+    <!-- TestFX para testes reais -->
+    <dependency>
+        <groupId>org.testfx</groupId>
+        <artifactId>testfx-junit5</artifactId>
+        <version>4.0.18</version>
+        <scope>test</scope>
+    </dependency>
+
     <!-- Testcontainers - Containers Docker para Testes -->
     <dependency>
         <groupId>org.testcontainers</groupId>

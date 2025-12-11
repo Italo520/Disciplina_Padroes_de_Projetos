@@ -3,6 +3,10 @@ package br.com.todolist.ui.telasusuario;
 import br.com.todolist.controller.AuthController;
 import br.com.todolist.entity.Usuario;
 import br.com.todolist.service.SessionManager;
+import br.com.todolist.ui.service.DialogService;
+import br.com.todolist.ui.service.NavigationService;
+import br.com.todolist.ui.service.SwingDialogService;
+import br.com.todolist.ui.service.SwingNavigationService;
 import br.com.todolist.ui.telaPrincipal.TelaPrincipal;
 import javax.swing.*;
 
@@ -27,13 +31,32 @@ public class TelaLogin extends JFrame {
     /** Controlador de autenticação. */
     private final AuthController authController;
 
+    /** Serviço de diálogos. */
+    private final DialogService dialogService;
+
+    /** Serviço de navegação. */
+    private final NavigationService navigationService;
+
     /**
      * Construtor padrão da classe TelaLogin.
      * Inicializa o controlador de autenticação e a interface gráfica.
      */
     public TelaLogin() {
+        this(new AuthController(), new SwingDialogService(), new SwingNavigationService());
+    }
+
+    /**
+     * Construtor com injeção de dependência.
+     * 
+     * @param authController    O controlador de autenticação.
+     * @param dialogService     O serviço de diálogos.
+     * @param navigationService O serviço de navegação.
+     */
+    public TelaLogin(AuthController authController, DialogService dialogService, NavigationService navigationService) {
         super("Login - ToDo List");
-        this.authController = new AuthController();
+        this.authController = authController;
+        this.dialogService = dialogService;
+        this.navigationService = navigationService;
         configurarLayout();
         configurarAcoes();
     }
@@ -93,24 +116,21 @@ public class TelaLogin extends JFrame {
      * Tenta realizar o login com as credenciais fornecidas.
      * Se bem-sucedido, inicializa a sessão e abre a tela principal.
      */
-    private void realizarLogin() {
+    public void realizarLogin() {
         String email = campoEmail.getText();
         String senha = new String(campoSenha.getPassword());
 
         if (email.trim().isEmpty() || senha.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Email e senha são obrigatórios.", "Erro de Login",
-                    JOptionPane.ERROR_MESSAGE);
+            dialogService.showError(this, "Email e senha são obrigatórios.");
             return;
         }
 
         Usuario usuario = authController.login(email, senha);
         if (usuario != null) {
             SessionManager.getInstance().login(usuario);
-            new TelaPrincipal().setVisible(true);
-            this.dispose();
+            navigationService.navigateToMain(this);
         } else {
-            JOptionPane.showMessageDialog(this, "Email ou senha incorretos.", "Erro de Login",
-                    JOptionPane.ERROR_MESSAGE);
+            dialogService.showError(this, "Email ou senha incorretos.");
         }
     }
 
@@ -118,8 +138,8 @@ public class TelaLogin extends JFrame {
      * Abre a tela de cadastro de novos usuários.
      * Após o fechamento, preenche o campo de e-mail se o cadastro for bem-sucedido.
      */
-    private void abrirTelaDeCadastro() {
-        TelaCadastro telaCadastro = new TelaCadastro(this, authController);
+    public void abrirTelaDeCadastro() {
+        TelaCadastro telaCadastro = new TelaCadastro(this, authController, dialogService);
         telaCadastro.setVisible(true);
         String emailNovo = telaCadastro.getEmailCadastrado();
         if (emailNovo != null) {
@@ -127,5 +147,22 @@ public class TelaLogin extends JFrame {
             campoSenha.setText("");
             campoSenha.requestFocus();
         }
+    }
+
+    // Getters para testes
+    public JTextField getCampoEmail() {
+        return campoEmail;
+    }
+
+    public JPasswordField getCampoSenha() {
+        return campoSenha;
+    }
+
+    public JButton getBotaoEntrar() {
+        return botaoEntrar;
+    }
+
+    public JButton getBotaoCriarConta() {
+        return botaoCriarConta;
     }
 }

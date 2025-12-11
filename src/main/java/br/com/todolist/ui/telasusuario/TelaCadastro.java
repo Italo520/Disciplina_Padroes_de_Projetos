@@ -1,6 +1,8 @@
 package br.com.todolist.ui.telasusuario;
 
 import br.com.todolist.controller.AuthController;
+import br.com.todolist.ui.service.DialogService;
+import br.com.todolist.ui.service.SwingDialogService;
 import javax.swing.*;
 import java.awt.*;
 
@@ -31,15 +33,31 @@ public class TelaCadastro extends JDialog {
     /** Armazena o e-mail cadastrado com sucesso. */
     private String emailCadastrado = null;
 
+    /** Serviço de diálogos. */
+    private final DialogService dialogService;
+
     /**
      * Construtor da classe TelaCadastro.
      *
      * @param owner          O frame pai (geralmente a tela de login).
-     * @param authController O controlador de autenticação para processar o cadastro.
+     * @param authController O controlador de autenticação para processar o
+     *                       cadastro.
      */
     public TelaCadastro(Frame owner, AuthController authController) {
+        this(owner, authController, new SwingDialogService());
+    }
+
+    /**
+     * Construtor com injeção de dependência.
+     *
+     * @param owner          O frame pai.
+     * @param authController O controlador de autenticação.
+     * @param dialogService  O serviço de diálogos.
+     */
+    public TelaCadastro(Frame owner, AuthController authController, DialogService dialogService) {
         super(owner, "Criar Nova Conta", true);
         this.authController = authController;
+        this.dialogService = dialogService;
         configurarLayout();
         configurarAcoes();
     }
@@ -70,6 +88,7 @@ public class TelaCadastro extends JDialog {
         add(labelNome);
 
         campoNome = new JTextField();
+        campoNome.setName("campoNome");
         campoNome.setBounds(550, 230, 250, 30);
         add(campoNome);
 
@@ -79,6 +98,7 @@ public class TelaCadastro extends JDialog {
         add(labelEmail);
 
         campoEmail = new JTextField();
+        campoEmail.setName("campoEmail");
         campoEmail.setBounds(550, 275, 250, 30);
         add(campoEmail);
 
@@ -88,15 +108,18 @@ public class TelaCadastro extends JDialog {
         add(labelSenha);
 
         campoSenha = new JPasswordField();
+        campoSenha.setName("campoSenha");
         campoSenha.setBounds(550, 320, 250, 30);
         add(campoSenha);
 
         // Botoes
         botaoCadastrar = new JButton("Cadastrar");
+        botaoCadastrar.setName("botaoCadastrar");
         botaoCadastrar.setBounds(550, 380, 120, 30);
         add(botaoCadastrar);
 
         botaoCancelar = new JButton("Cancelar");
+        botaoCancelar.setName("botaoCancelar");
         botaoCancelar.setBounds(680, 380, 120, 30);
         add(botaoCancelar);
     }
@@ -113,22 +136,43 @@ public class TelaCadastro extends JDialog {
      * Processa a solicitação de cadastro.
      * Valida os campos e chama o controlador para criar o usuário.
      */
-    private void realizarCadastro() {
+    public void realizarCadastro() {
         String nome = campoNome.getText();
         String email = campoEmail.getText();
         String senha = new String(campoSenha.getPassword());
 
         if (nome.trim().isEmpty() || email.trim().isEmpty() || senha.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos os campos são obrigatórios.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+            dialogService.showError(this, "Todos os campos são obrigatórios.");
             return;
         }
 
         if (authController.cadastrarUsuario(nome, email, senha)) {
-            JOptionPane.showMessageDialog(this, "Usuário cadastrado com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            dialogService.showInformation(this, "Usuário cadastrado com sucesso!");
             emailCadastrado = email;
             dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Este email já está em uso. Tente outro.", "Erro no Cadastro", JOptionPane.ERROR_MESSAGE);
+            dialogService.showError(this, "Este email já está em uso. Tente outro.");
         }
+    }
+
+    // Getters para testes
+    public JTextField getCampoNome() {
+        return campoNome;
+    }
+
+    public JTextField getCampoEmail() {
+        return campoEmail;
+    }
+
+    public JPasswordField getCampoSenha() {
+        return campoSenha;
+    }
+
+    public JButton getBotaoCadastrar() {
+        return botaoCadastrar;
+    }
+
+    public JButton getBotaoCancelar() {
+        return botaoCancelar;
     }
 }
