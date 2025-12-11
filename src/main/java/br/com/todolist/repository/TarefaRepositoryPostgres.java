@@ -2,11 +2,9 @@ package br.com.todolist.repository;
 
 import br.com.todolist.entity.Tarefa;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import java.util.List;
 
 /**
  * Implementação do repositório de tarefas utilizando PostgreSQL e JPA.

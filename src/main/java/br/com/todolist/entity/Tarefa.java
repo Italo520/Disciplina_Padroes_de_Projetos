@@ -14,7 +14,8 @@ import java.time.LocalDate;
 
 /**
  * Classe que representa uma Tarefa no sistema.
- * Estende a classe abstrata Itens e adiciona funcionalidades específicas como prioridade,
+ * Estende a classe abstrata Itens e adiciona funcionalidades específicas como
+ * prioridade,
  * data de conclusão, subtarefas e cálculo de progresso.
  */
 @Entity
@@ -32,16 +33,18 @@ public class Tarefa extends Itens {
      * Construtor padrão da classe Tarefa.
      */
     public Tarefa() {
+        this.subtarefas = new ArrayList<>();
+        this.progressCalculationStrategy = new DefaultProgressCalculationStrategy();
     }
 
     /**
      * Construtor da classe Tarefa.
      *
-     * @param titulo       O título da tarefa.
-     * @param descricao    A descrição da tarefa.
-     * @param criado_por   O e-mail do usuário que criou a tarefa.
-     * @param deadline     A data limite da tarefa.
-     * @param prioridade   A prioridade da tarefa.
+     * @param titulo     O título da tarefa.
+     * @param descricao  A descrição da tarefa.
+     * @param criado_por O e-mail do usuário que criou a tarefa.
+     * @param deadline   A data limite da tarefa.
+     * @param prioridade A prioridade da tarefa.
      */
     public Tarefa(String titulo, String descricao, String criado_por, LocalDate deadline, int prioridade) {
         super(titulo, descricao, "Tarefa", criado_por, deadline);

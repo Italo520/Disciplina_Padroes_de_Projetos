@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import br.com.todolist.entity.Tarefa;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Implementação do repositório de eventos.

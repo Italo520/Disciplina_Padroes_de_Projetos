@@ -1,7 +1,7 @@
 package br.com.todolist.controller;
 
 import br.com.todolist.entity.Evento;
-import br.com.todolist.entity.Itens;
+
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.entity.Usuario;
 import br.com.todolist.repository.EventoRepositoryPostgres;

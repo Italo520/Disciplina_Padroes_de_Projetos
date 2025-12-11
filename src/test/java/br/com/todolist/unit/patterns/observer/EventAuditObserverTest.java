@@ -5,7 +5,7 @@ import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.observer.EventAuditObserver;
 import br.com.todolist.repository.AuditLogRepository;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

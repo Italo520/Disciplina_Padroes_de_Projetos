@@ -3,11 +3,9 @@ package br.com.todolist.repository;
 import br.com.todolist.entity.Evento;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.Collections;
 import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import java.util.List;
 
 /**
  * Implementação do repositório de eventos utilizando PostgreSQL e JPA.

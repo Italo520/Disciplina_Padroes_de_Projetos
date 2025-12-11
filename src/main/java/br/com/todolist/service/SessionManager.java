@@ -5,15 +5,15 @@ import br.com.todolist.repository.EventoRepositoryImpl;
 import br.com.todolist.repository.IEventoRepository;
 import br.com.todolist.repository.ITarefaRepository;
 import br.com.todolist.repository.TarefaRepositoryImpl;
-import br.com.todolist.service.IEventService;
-import br.com.todolist.service.ITaskService;
+
 import br.com.todolist.service.impl.EventServiceImpl;
 import br.com.todolist.service.impl.TaskServiceImpl;
 
 /**
  * Gerenciador de sessão do usuário.
  * Utiliza o padrão Singleton para garantir uma única instância global.
- * Mantém o estado do usuário logado e seus serviços associados (Tarefas e Eventos).
+ * Mantém o estado do usuário logado e seus serviços associados (Tarefas e
+ * Eventos).
  */
 public class SessionManager {
 
@@ -25,7 +25,8 @@ public class SessionManager {
     /**
      * Construtor privado para impedir a criação direta de instâncias.
      */
-    private SessionManager() {}
+    private SessionManager() {
+    }
 
     /**
      * Retorna a instância única do SessionManager.
