@@ -16,12 +16,28 @@ public class EventoRepositoryPostgres implements IEventoRepository {
 
     @Override
     public List<Evento> buscarPorDia(LocalDate dia) {
-        return Collections.emptyList();
+        EntityManager em = DatabaseConnection.getInstance().getEntityManager();
+        try {
+            TypedQuery<Evento> query = em.createQuery("SELECT e FROM Evento e WHERE e.deadline = :dia", Evento.class);
+            query.setParameter("dia", dia);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     @Override
     public List<Evento> buscarPorMes(YearMonth mes) {
-        return Collections.emptyList();
+        EntityManager em = DatabaseConnection.getInstance().getEntityManager();
+        try {
+            TypedQuery<Evento> query = em.createQuery(
+                    "SELECT e FROM Evento e WHERE MONTH(e.deadline) = :mes AND YEAR(e.deadline) = :ano", Evento.class);
+            query.setParameter("mes", mes.getMonthValue());
+            query.setParameter("ano", mes.getYear());
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     @Override

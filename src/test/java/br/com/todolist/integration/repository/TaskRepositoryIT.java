@@ -105,4 +105,37 @@ class TaskRepositoryIT {
         Tarefa found = repository.buscarPorId("Task 2");
         assertThat(found).isNull();
     }
+
+    @Test
+    @Order(4)
+    @DisplayName("Deve buscar tarefas por dia")
+    void shouldFindTasksByDay() {
+        // Arrange
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        // "Integration Task" was saved with tomorrow's date in test 1
+
+        // Act
+        List<Tarefa> tasks = repository.buscarPorDia(tomorrow);
+
+        // Assert
+        assertThat(tasks).isNotEmpty();
+        assertThat(tasks).extracting(Tarefa::getTitulo).contains("Integration Task");
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("Deve buscar tarefas críticas")
+    void shouldFindCriticalTasks() {
+        // Arrange
+        // "Integration Task" has priority 1 (Critical)
+        // "Task 2" has priority 2 (Not critical if threshold is 1)
+
+        // Act
+        List<Tarefa> criticalTasks = repository.buscarTarefasCriticas(1);
+
+        // Assert
+        assertThat(criticalTasks).isNotEmpty();
+        assertThat(criticalTasks).extracting(Tarefa::getTitulo).contains("Integration Task");
+        assertThat(criticalTasks).extracting(Tarefa::getTitulo).doesNotContain("Task 2");
+    }
 }

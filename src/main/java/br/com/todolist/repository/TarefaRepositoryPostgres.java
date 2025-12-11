@@ -15,12 +15,27 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
 
     @Override
     public List<Tarefa> buscarPorDia(LocalDate dia) {
-        return Collections.emptyList();
+        EntityManager em = DatabaseConnection.getInstance().getEntityManager();
+        try {
+            TypedQuery<Tarefa> query = em.createQuery("SELECT t FROM Tarefa t WHERE t.deadline = :dia", Tarefa.class);
+            query.setParameter("dia", dia);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     @Override
     public List<Tarefa> buscarTarefasCriticas(int prioridadeMinima) {
-        return Collections.emptyList();
+        EntityManager em = DatabaseConnection.getInstance().getEntityManager();
+        try {
+            TypedQuery<Tarefa> query = em.createQuery("SELECT t FROM Tarefa t WHERE t.prioridade <= :prioridade",
+                    Tarefa.class);
+            query.setParameter("prioridade", prioridadeMinima);
+            return query.getResultList();
+        } finally {
+            em.close();
+        }
     }
 
     @Override
