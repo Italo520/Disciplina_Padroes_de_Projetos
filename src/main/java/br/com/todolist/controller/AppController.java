@@ -48,7 +48,7 @@ public class AppController {
      * Este método deve ser chamado apenas uma vez na inicialização da aplicação.
      *
      * @param userService o serviço de usuário.
-     * @param mensageiro o utilitário de mensageria.
+     * @param mensageiro  o utilitário de mensageria.
      * @param itemFactory a fábrica de itens.
      */
     public static void init(IUserService userService, Mensageiro mensageiro, IItemFactory itemFactory) {
@@ -68,6 +68,30 @@ public class AppController {
             throw new IllegalStateException("AppController não foi inicializado. Chame o método init primeiro.");
         }
         return instance;
+    }
+
+    /**
+     * Reseta a instância Singleton. Apenas para uso em testes.
+     */
+    public static void resetInstance() {
+        instance = null;
+    }
+
+    // Setters para injeção de dependência em testes
+    public void setTaskService(ITaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    public void setEventService(IEventService eventService) {
+        this.eventService = eventService;
+    }
+
+    public void setReportService(IReportService reportService) {
+        this.reportService = reportService;
+    }
+
+    public void setUsuarioLogado(Usuario usuarioLogado) {
+        this.usuarioLogado = usuarioLogado;
     }
 
     /**
@@ -142,7 +166,8 @@ public class AppController {
      * @param novoDeadline   O novo prazo.
      * @param novaPrioridade A nova prioridade.
      */
-    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) {
+    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline,
+            int novaPrioridade) {
         taskService.editarTarefa(tarefaOriginal, novoTitulo, novaDescricao, novoDeadline, novaPrioridade);
     }
 

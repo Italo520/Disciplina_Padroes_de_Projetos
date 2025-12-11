@@ -28,14 +28,33 @@ public class Mensageiro {
      * Construtor da classe Mensageiro.
      * Configura as propriedades da sessão de e-mail (SMTP, autenticação, TLS).
      */
+    /**
+     * Construtor padrão da classe Mensageiro.
+     * Configura as propriedades da sessão de e-mail (SMTP, autenticação, TLS) para
+     * o Gmail.
+     */
     public Mensageiro() {
+        this(createDefaultSession());
+    }
+
+    /**
+     * Construtor que aceita uma sessão customizada.
+     * Útil para testes unitários com mocks ou configurações diferentes.
+     *
+     * @param session A sessão de e-mail a ser utilizada.
+     */
+    public Mensageiro(Session session) {
+        this.session = session;
+    }
+
+    private static Session createDefaultSession() {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", HOST);
         props.put("mail.smtp.port", PORT);
 
-        this.session = Session.getInstance(props, new Authenticator() {
+        return Session.getInstance(props, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(USERNAME, PASSWORD);
             }
@@ -50,7 +69,8 @@ public class Mensageiro {
      * @param corpoMensagem O corpo (texto) da mensagem.
      * @return true se o e-mail foi enviado com sucesso, false caso contrário.
      */
-    public boolean enviarEmail(String emailDestino, String assunto, String corpoMensagem) { // Sem arquivo, só a mensagem!
+    public boolean enviarEmail(String emailDestino, String assunto, String corpoMensagem) { // Sem arquivo, só a
+                                                                                            // mensagem!
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(USERNAME));
@@ -70,13 +90,15 @@ public class Mensageiro {
     /**
      * Envia um e-mail com um arquivo em anexo.
      *
-     * @param emailDestino  O endereço de e-mail do destinatário.
-     * @param assunto       O assunto do e-mail.
-     * @param corpoMensagem O corpo (texto) da mensagem.
+     * @param emailDestino   O endereço de e-mail do destinatário.
+     * @param assunto        O assunto do e-mail.
+     * @param corpoMensagem  O corpo (texto) da mensagem.
      * @param caminhoArquivo O caminho do arquivo a ser anexado.
-     * @return true se o e-mail foi enviado com sucesso, false caso contrário ou se o arquivo não existir.
+     * @return true se o e-mail foi enviado com sucesso, false caso contrário ou se
+     *         o arquivo não existir.
      */
-    public boolean enviarEmailComAnexo(String emailDestino, String assunto, String corpoMensagem, String caminhoArquivo) {
+    public boolean enviarEmailComAnexo(String emailDestino, String assunto, String corpoMensagem,
+            String caminhoArquivo) {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(USERNAME));
@@ -90,13 +112,14 @@ public class Mensageiro {
             // Parte 2: O anexo
             MimeBodyPart anexoBodyPart = new MimeBodyPart();
             File arquivoAnexo = new File(caminhoArquivo);
-            
+
             if (arquivoAnexo.exists() && arquivoAnexo.isFile()) {
                 DataSource source = new FileDataSource(arquivoAnexo);
                 anexoBodyPart.setDataHandler(new DataHandler(source));
                 anexoBodyPart.setFileName(arquivoAnexo.getName());
             } else {
-                System.err.println("Aviso: O arquivo '" + caminhoArquivo + "' não foi encontrado. E-mail não será enviado.");
+                System.err.println(
+                        "Aviso: O arquivo '" + caminhoArquivo + "' não foi encontrado. E-mail não será enviado.");
                 return false;
             }
 
