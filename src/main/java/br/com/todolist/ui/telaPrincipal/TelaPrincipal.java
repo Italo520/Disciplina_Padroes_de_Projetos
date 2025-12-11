@@ -11,7 +11,8 @@ import javax.swing.JTabbedPane;
 
 /**
  * A tela principal da aplicação.
- * Contém as abas para gerenciamento de tarefas e eventos, além da barra de ferramentas.
+ * Contém as abas para gerenciamento de tarefas e eventos, além da barra de
+ * ferramentas.
  * Exibe o nome do usuário logado no título.
  */
 public class TelaPrincipal extends JFrame {
@@ -36,11 +37,26 @@ public class TelaPrincipal extends JFrame {
      * Inicializa os controladores e configura a interface gráfica.
      */
     public TelaPrincipal() {
-        super("Usuário: " + SessionManager.getInstance().getUsuarioLogado().getNome());
-
         SessionManager sessionManager = SessionManager.getInstance();
         this.taskController = new TaskController(sessionManager.getTaskService());
         this.eventController = new EventController(sessionManager.getEventService());
+
+        setTitle("Usuário: " + sessionManager.getUsuarioLogado().getNome());
+        configurarJanela();
+        montarLayout();
+    }
+
+    /**
+     * Construtor com injeção de dependência para testes.
+     *
+     * @param taskController  Controlador de tarefas.
+     * @param eventController Controlador de eventos.
+     * @param userName        Nome do usuário para exibição.
+     */
+    public TelaPrincipal(TaskController taskController, EventController eventController, String userName) {
+        super("Usuário: " + userName);
+        this.taskController = taskController;
+        this.eventController = eventController;
 
         configurarJanela();
         montarLayout();
@@ -58,7 +74,8 @@ public class TelaPrincipal extends JFrame {
     }
 
     /**
-     * Monta o layout da tela, adicionando a barra de ferramentas e o painel de abas.
+     * Monta o layout da tela, adicionando a barra de ferramentas e o painel de
+     * abas.
      */
     private void montarLayout() {
         setJMenuBar(BarraFerramentas.criarBarraFerramentas(this, taskController, eventController));
@@ -83,7 +100,8 @@ public class TelaPrincipal extends JFrame {
     }
 
     /**
-     * Atualiza o painel de tarefas com uma lista específica de tarefas e seleciona a aba de tarefas.
+     * Atualiza o painel de tarefas com uma lista específica de tarefas e seleciona
+     * a aba de tarefas.
      * Útil para exibir resultados de filtros.
      *
      * @param tarefas A lista de tarefas a ser exibida.
@@ -94,7 +112,8 @@ public class TelaPrincipal extends JFrame {
     }
 
     /**
-     * Atualiza o painel de eventos com uma lista específica de eventos e seleciona a aba de eventos.
+     * Atualiza o painel de eventos com uma lista específica de eventos e seleciona
+     * a aba de eventos.
      * Útil para exibir resultados de filtros.
      *
      * @param eventos A lista de eventos a ser exibida.
@@ -102,5 +121,18 @@ public class TelaPrincipal extends JFrame {
     public void atualizarPainelDeEventos(List<Evento> eventos) {
         painelComAbas.setSelectedComponent(painelEventos);
         painelEventos.exibirEventos(eventos);
+    }
+
+    // Getters para testes
+    public PainelTarefas getPainelTarefas() {
+        return painelTarefas;
+    }
+
+    public PainelEventos getPainelEventos() {
+        return painelEventos;
+    }
+
+    public JTabbedPane getPainelComAbas() {
+        return painelComAbas;
     }
 }
