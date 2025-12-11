@@ -60,13 +60,3 @@ mvn verify
 Os relatórios de cobertura JaCoCo podem ser encontrados em:
 - `target/site/jacoco/index.html`
 
-## 🎓 Notas Educacionais
-
-Esta documentação foi criada com foco educacional para alunos de **2º período de Análise e Desenvolvimento de Sistemas (ADS)**. 
-
-As implementações demonstram:
-- Testes de unidade básicos e avançados
-- Integração com banco de dados usando containers
-- Padrões de mocking e dependency injection
-- Testabilidade de código legado
-- Trade-offs entre cobertura ideal e praticidade
