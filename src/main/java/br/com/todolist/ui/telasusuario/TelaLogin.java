@@ -37,7 +37,7 @@ public class TelaLogin extends JFrame {
         configurarLayout();
         configurarAcoes();
     }
-    
+
     /**
      * Configura o layout e os componentes da tela de login.
      */
@@ -46,7 +46,7 @@ public class TelaLogin extends JFrame {
         setSize(1280, 720);
         setLocationRelativeTo(null);
         setResizable(false);
-        setLayout(null); 
+        setLayout(null);
 
         // Campo de Email
         JLabel labelEmail = new JLabel("Email:");
@@ -54,24 +54,28 @@ public class TelaLogin extends JFrame {
         add(labelEmail);
 
         campoEmail = new JTextField();
+        campoEmail.setName("campoEmail");
         campoEmail.setBounds(550, 260, 250, 30);
-        add(campoEmail); 
-        
+        add(campoEmail);
+
         // Campo de Senha
         JLabel labelSenha = new JLabel("Senha:");
         labelSenha.setBounds(440, 305, 100, 30);
-        add(labelSenha); 
+        add(labelSenha);
 
         campoSenha = new JPasswordField();
+        campoSenha.setName("campoSenha");
         campoSenha.setBounds(550, 305, 250, 30);
         add(campoSenha);
 
         // Botoes
         botaoEntrar = new JButton("Entrar");
+        botaoEntrar.setName("botaoEntrar");
         botaoEntrar.setBounds(550, 365, 120, 30);
         add(botaoEntrar);
 
         botaoCriarConta = new JButton("Criar Conta");
+        botaoCriarConta.setName("botaoCriarConta");
         botaoCriarConta.setBounds(680, 365, 120, 30);
         add(botaoCriarConta);
     }
@@ -94,7 +98,8 @@ public class TelaLogin extends JFrame {
         String senha = new String(campoSenha.getPassword());
 
         if (email.trim().isEmpty() || senha.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Email e senha são obrigatórios.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Email e senha são obrigatórios.", "Erro de Login",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -104,7 +109,8 @@ public class TelaLogin extends JFrame {
             new TelaPrincipal().setVisible(true);
             this.dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Email ou senha incorretos.", "Erro de Login", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Email ou senha incorretos.", "Erro de Login",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
