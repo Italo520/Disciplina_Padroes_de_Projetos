@@ -7,7 +7,6 @@ import br.com.todolist.ui.service.DialogService;
 import br.com.todolist.ui.service.NavigationService;
 import br.com.todolist.ui.service.SwingDialogService;
 import br.com.todolist.ui.service.SwingNavigationService;
-import br.com.todolist.ui.telaPrincipal.TelaPrincipal;
 import javax.swing.*;
 
 /**

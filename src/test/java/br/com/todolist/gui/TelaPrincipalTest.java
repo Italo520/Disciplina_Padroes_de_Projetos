@@ -4,7 +4,6 @@ import br.com.todolist.controller.EventController;
 import br.com.todolist.controller.TaskController;
 import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Tarefa;
-import br.com.todolist.ui.telaPrincipal.TelaPrincipal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
