@@ -3,6 +3,9 @@ package br.com.todolist.repository;
 import br.com.todolist.entity.DadosUsuario;
 import br.com.todolist.entity.Evento;
 import br.com.todolist.entity.Tarefa;
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +14,16 @@ import java.util.List;
  * Responsável por persistir e recuperar dados de tarefas em um arquivo JSON.
  */
 public class TarefaRepositoryImpl implements ITarefaRepository {
+
+    @Override
+    public List<Tarefa> buscarPorDia(LocalDate dia) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Tarefa> buscarTarefasCriticas(int prioridadeMinima) {
+        return Collections.emptyList();
+    }
 
     private static final String ARQUIVO_DADOS = "arquivos/dados_globais.json";
     private final GerenciadorDePersistenciaJson persistencia;

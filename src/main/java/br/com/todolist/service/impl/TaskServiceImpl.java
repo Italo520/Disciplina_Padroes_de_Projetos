@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 
 /**
  * Implementação do serviço de tarefas.
- * Contém a lógica de negócio para gerenciar tarefas e notificar observadores sobre mudanças.
+ * Contém a lógica de negócio para gerenciar tarefas e notificar observadores
+ * sobre mudanças.
  * Filtra as tarefas pelo e-mail do usuário logado.
  */
 public class TaskServiceImpl implements ITaskService {
@@ -69,7 +70,8 @@ public class TaskServiceImpl implements ITaskService {
      * @param novaPrioridade A nova prioridade.
      */
     @Override
-    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline, int novaPrioridade) {
+    public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline,
+            int novaPrioridade) {
         if (tarefaOriginal.getCriado_por().equals(emailUsuario)) {
             tarefaOriginal.setTitulo(novoTitulo);
             tarefaOriginal.setDescricao(novaDescricao);

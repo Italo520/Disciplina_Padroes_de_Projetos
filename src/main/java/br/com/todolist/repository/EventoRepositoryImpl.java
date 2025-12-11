@@ -2,6 +2,10 @@ package br.com.todolist.repository;
 
 import br.com.todolist.entity.DadosUsuario;
 import br.com.todolist.entity.Evento;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.Collections;
+import java.util.List;
 import br.com.todolist.entity.Tarefa;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +15,16 @@ import java.util.List;
  * Responsável por persistir e recuperar dados de eventos em um arquivo JSON.
  */
 public class EventoRepositoryImpl implements IEventoRepository {
+
+    @Override
+    public List<Evento> buscarPorDia(LocalDate dia) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Evento> buscarPorMes(YearMonth mes) {
+        return Collections.emptyList();
+    }
 
     private static final String ARQUIVO_DADOS = "arquivos/dados_globais.json";
     private final GerenciadorDePersistenciaJson persistencia;
