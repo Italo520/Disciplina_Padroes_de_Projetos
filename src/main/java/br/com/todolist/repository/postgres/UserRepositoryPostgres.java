@@ -1,17 +1,13 @@
 package br.com.todolist.repository.postgres;
-import br.com.todolist.repository.IUserRepository;
 
+import br.com.todolist.repository.IUserRepository;
 import br.com.todolist.entity.Usuario;
 import br.com.todolist.exception.DatabaseException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-/**
- * Implementação do repositório de usuários utilizando PostgreSQL e JPA.
- */
 public class UserRepositoryPostgres implements IUserRepository {
-
     @Override
     public void salvar(Usuario entity) {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
@@ -23,6 +19,7 @@ public class UserRepositoryPostgres implements IUserRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+
             throw new DatabaseException("Erro ao salvar usuário: " + e.getMessage(), e);
         } finally {
             em.close();
@@ -38,11 +35,13 @@ public class UserRepositoryPostgres implements IUserRepository {
             if (usuarioParaRemover != null) {
                 em.remove(usuarioParaRemover);
             }
+
             em.getTransaction().commit();
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+
             throw new DatabaseException("Erro ao excluir usuário: " + e.getMessage(), e);
         } finally {
             em.close();
@@ -60,6 +59,7 @@ public class UserRepositoryPostgres implements IUserRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+
             throw new DatabaseException("Erro ao atualizar usuário: " + e.getMessage(), e);
         } finally {
             em.close();

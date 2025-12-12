@@ -1,18 +1,13 @@
 package br.com.todolist.repository.postgres;
 
 import br.com.todolist.repository.IEventoRepository;
-
 import br.com.todolist.entity.Evento;
 import br.com.todolist.exception.DatabaseException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-/**
- * Implementação do repositório de eventos utilizando PostgreSQL e JPA.
- */
 public class EventoRepositoryPostgres implements IEventoRepository {
-
     @Override
     public void salvar(Evento entity) {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
@@ -24,6 +19,7 @@ public class EventoRepositoryPostgres implements IEventoRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+
             throw new DatabaseException("Erro ao salvar evento: " + e.getMessage(), e);
         } finally {
             em.close();
@@ -39,11 +35,13 @@ public class EventoRepositoryPostgres implements IEventoRepository {
             if (eventoParaRemover != null) {
                 em.remove(eventoParaRemover);
             }
+
             em.getTransaction().commit();
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+
             throw new DatabaseException("Erro ao excluir evento: " + e.getMessage(), e);
         } finally {
             em.close();
@@ -61,6 +59,7 @@ public class EventoRepositoryPostgres implements IEventoRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+
             throw new DatabaseException("Erro ao atualizar evento: " + e.getMessage(), e);
         } finally {
             em.close();

@@ -12,8 +12,6 @@ public class MainTesteCache {
     public static void main(String[] args) {
         try {
             System.out.println("=== INICIANDO TESTE DE CACHE ===");
-
-            // 1. Teste Redis Simples
             System.out.println("1. Testando conexao Redis...");
             RedisCacheManager cache = RedisCacheManager.getInstance();
             cache.salvar("teste:ping", "pong", 60);
@@ -23,39 +21,30 @@ public class MainTesteCache {
                 throw new RuntimeException("Falha no Redis: valor retornado diferente de pong");
             }
 
-            // 2. Teste Serialização Jackson
             System.out.println("2. Testando serializacao Jackson...");
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
             Tarefa t = new Tarefa("TituloTeste", "DescricaoTeste", "email@teste.com", LocalDate.now(), 1);
             t.setId(1L);
             List<Tarefa> lista = Collections.singletonList(t);
-
             String json = mapper.writeValueAsString(lista);
             System.out.println("   JSON Gerado: " + json);
-
-            // 3. Teste Integrado (Salvar JSON no Redis)
             System.out.println("3. Testando salvar JSON no Redis...");
             cache.salvar("teste:tarefa", json, 60);
             String jsonCache = cache.buscar("teste:tarefa");
             System.out.println("   JSON recuperado do Cache: " + jsonCache);
-
             if (jsonCache == null || !jsonCache.equals(json)) {
                 throw new RuntimeException("Falha no Cache: JSON recuperado diferente do original");
             }
 
-            // 4. Teste Deserialização
             System.out.println("4. Testando deserializacao...");
             List<Tarefa> l2 = mapper.readValue(jsonCache,
                     new com.fasterxml.jackson.core.type.TypeReference<List<Tarefa>>() {
                     });
             System.out.println("   Tarefa deserializada: " + l2.get(0).getTitulo());
-
             System.out.println("=== TESTE CONCLUIDO COM SUCESSO ===");
             System.exit(0);
-
         } catch (Exception e) {
             System.err.println("=== ERRO NO TESTE ===");
             e.printStackTrace();

@@ -11,34 +11,24 @@ public class MainTesteMongo {
     public static void main(String[] args) {
         try {
             System.out.println("=== INICIANDO TESTE DE MONGO DB ===");
-
-            // 1. Teste Conexão Simples
             System.out.println("1. Testando conexao Mongo...");
             MongoDatabase db = MongoConnection.getInstance().getDatabase();
             System.out.println("   Conectado ao database: " + db.getName());
-
-            // Força um comando simples para verificar autenticação
             Document ping = db.runCommand(new Document("ping", 1));
             System.out.println("   Ping Resultado: " + ping.toJson());
-
-            // 2. Teste Inserção de Log
             System.out.println("2. Testando insercao de Log...");
             LogEntry entry = new LogEntry(AuditAction.CREATE, "Teste de Log", "Detalhes do teste");
             LogService.getInstance().getRepository().salvarLog(entry);
             System.out.println("   Log inserido com sucesso.");
-
-            // 3. Teste Contagem
             System.out.println("3. Verificando contagem de logs...");
             long count = db.getCollection("logs").countDocuments();
             System.out.println("   Total de logs na colecao: " + count);
-
             if (count == 0) {
                 throw new RuntimeException("Falha no Mongo: Nenhum log encontrado apos insercao");
             }
 
             System.out.println("=== TESTE CONCLUIDO COM SUCESSO ===");
             System.exit(0);
-
         } catch (Exception e) {
             System.err.println("=== ERRO NO TESTE ===");
             e.printStackTrace();

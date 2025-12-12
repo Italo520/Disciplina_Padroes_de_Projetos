@@ -21,13 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Classe utilitária responsável por criar a barra de menu (ferramentas) da
- * aplicação.
- * Contém as opções de arquivo, tarefas, eventos, aparência e ajuda.
- */
 public class BarraFerramentas {
-
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger
             .getLogger(BarraFerramentas.class.getName());
     private static final DateTimeFormatter FORMATADOR_DATA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -42,69 +36,45 @@ public class BarraFerramentas {
             Curso ADS - IFPB
             2025""";
 
-    /**
-     * Construtor privado para impedir a instanciação da classe utilitária.
-     */
     private BarraFerramentas() {
         throw new IllegalStateException("Classe utilitária");
     }
 
-    /**
-     * Cria e configura a barra de menu principal.
-     *
-     * @param frame           A janela principal da aplicação.
-     * @param taskController  O controlador de tarefas.
-     * @param eventController O controlador de eventos.
-     * @return Um objeto JMenuBar configurado.
-     */
     public static JMenuBar criarBarraFerramentas(TelaPrincipal frame, TaskController taskController,
             EventController eventController) {
         JMenuBar menuBar = new JMenuBar();
         AppController appController = AppController.getInstance();
-
         JMenu menuArquivo = new JMenu("Arquivo");
         JMenu menuTarefas = new JMenu("Tarefas");
         JMenu menuEventos = new JMenu("Eventos");
         JMenu menuAparencia = new JMenu("Aparência");
         JMenu menuAjuda = new JMenu("Ajuda");
-
         JMenuItem itemSair = new JMenuItem("Sair");
         itemSair.addActionListener(e -> {
             frame.dispose();
             System.exit(0);
         });
-
         JMenuItem listarTodasTarefas = new JMenuItem("Listar Todas as Tarefas");
         listarTodasTarefas.addActionListener(new OuvinteListarTodasTarefas(frame, taskController));
-
         JMenuItem listarTarefasPorDia = new JMenuItem("Listar Tarefas por Dia");
         listarTarefasPorDia.addActionListener(new OuvinteListarTarefasPorDia(frame, taskController));
-
         JMenuItem listarTarefasCriticas = new JMenuItem("Listar Tarefas Críticas");
         listarTarefasCriticas.addActionListener(new OuvinteListarTarefasCriticas(frame, taskController));
-
         JMenuItem pdfDoDia = new JMenuItem("Gerar PDF das Tarefas do Dia");
         pdfDoDia.addActionListener(new OuvinteGerarPdfTarefas(frame, appController));
-
         JMenuItem enviarEmailTarefas = new JMenuItem("Enviar Tarefas do Dia por Email");
         enviarEmailTarefas.addActionListener(new OuvinteEnviarEmailTarefas(frame, appController));
-
         JMenuItem relatorioTarefasPorMes = new JMenuItem("Relatório de Tarefas por Mês (Excel)");
         relatorioTarefasPorMes.addActionListener(new OuvinteGerarExcelTarefas(frame, appController));
-
         JMenuItem listarEventosPorDia = new JMenuItem("Listar Eventos por Dia");
         listarEventosPorDia.addActionListener(new OuvinteListarEventosPorDia(frame, eventController));
-
         JMenuItem listarEventosMesEspecifico = new JMenuItem("Listar Eventos por Mês");
         listarEventosMesEspecifico.addActionListener(new OuvinteListarEventosPorMes(frame, eventController));
-
         JMenuItem itemSobre = new JMenuItem("Sobre");
         itemSobre.addActionListener(e -> JOptionPane.showMessageDialog(frame,
                 SOBRE_MENSAGEM,
                 "Sobre", JOptionPane.INFORMATION_MESSAGE));
-
         ButtonGroup grupoDeTemas = new ButtonGroup();
-
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Carbon (Padrão)", FlatCarbonIJTheme.class.getName(), true);
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Dracula", FlatDraculaIJTheme.class.getName(), false);
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Solarized Light", FlatSolarizedLightIJTheme.class.getName(),
@@ -114,7 +84,6 @@ public class BarraFerramentas {
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Vuesion", FlatVuesionIJTheme.class.getName(), false);
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Light", FlatLightLaf.class.getName(), false);
         adicionarTemaNoMenu(menuAparencia, grupoDeTemas, "Dark", FlatDarkLaf.class.getName(), false);
-
         menuAjuda.add(itemSobre);
         menuEventos.add(listarEventosPorDia);
         menuEventos.add(listarEventosMesEspecifico);
@@ -130,7 +99,6 @@ public class BarraFerramentas {
             frame.dispose();
             new br.com.todolist.ui.auth.TelaLogin().setVisible(true);
         });
-
         menuArquivo.add(itemLogout);
         menuArquivo.add(itemSair);
         menuBar.add(menuArquivo);
@@ -138,19 +106,9 @@ public class BarraFerramentas {
         menuBar.add(menuEventos);
         menuBar.add(menuAparencia);
         menuBar.add(menuAjuda);
-
         return menuBar;
     }
 
-    /**
-     * Adiciona uma opção de tema ao menu de aparência.
-     *
-     * @param menu        O menu onde o item será adicionado.
-     * @param grupo       O grupo de botões (para garantir seleção única).
-     * @param nome        O nome visível do tema.
-     * @param className   O nome da classe do Look and Feel.
-     * @param selecionado Se o tema deve vir selecionado por padrão.
-     */
     private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String nome, String className,
             boolean selecionado) {
         JRadioButtonMenuItem itemMenu = new JRadioButtonMenuItem(nome, selecionado);
@@ -168,18 +126,12 @@ public class BarraFerramentas {
         menu.add(itemMenu);
     }
 
-    /**
-     * Solicita ao usuário uma data através de um diálogo de entrada.
-     *
-     * @param frame    O frame pai para o diálogo.
-     * @param mensagem A mensagem a ser exibida.
-     * @return Um Optional contendo a data se válida, ou vazio caso contrário.
-     */
     private static Optional<LocalDate> obterDataDoUsuario(JFrame frame, String mensagem) {
         String dataInput = JOptionPane.showInputDialog(frame, mensagem);
         if (dataInput == null || dataInput.trim().isEmpty()) {
             return Optional.empty();
         }
+
         try {
             return Optional.of(LocalDate.parse(dataInput, FORMATADOR_DATA));
         } catch (DateTimeParseException ex) {
@@ -189,18 +141,12 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Solicita ao usuário um mês e ano através de um diálogo de entrada.
-     *
-     * @param frame    O frame pai para o diálogo.
-     * @param mensagem A mensagem a ser exibida.
-     * @return Um Optional contendo o YearMonth se válido, ou vazio caso contrário.
-     */
     private static Optional<YearMonth> obterMesAnoDoUsuario(JFrame frame, String mensagem) {
         String mesAnoInput = JOptionPane.showInputDialog(frame, mensagem);
         if (mesAnoInput == null || mesAnoInput.trim().isEmpty()) {
             return Optional.empty();
         }
+
         try {
             return Optional.of(YearMonth.parse(mesAnoInput, FORMATADOR_MES_ANO));
         } catch (DateTimeParseException ex) {
@@ -210,9 +156,6 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Listener para listar todas as tarefas.
-     */
     private static class OuvinteListarTodasTarefas implements ActionListener {
         private final TelaPrincipal frame;
         private final TaskController taskController;
@@ -229,13 +172,11 @@ public class BarraFerramentas {
                 JOptionPane.showMessageDialog(frame, "Nenhuma tarefa encontrada.",
                         INFO_TITLE, JOptionPane.INFORMATION_MESSAGE);
             }
+
             frame.atualizarPainelDeTarefas(tarefas);
         }
     }
 
-    /**
-     * Listener para listar tarefas de um dia específico.
-     */
     private static class OuvinteListarTarefasPorDia implements ActionListener {
         private final TelaPrincipal frame;
         private final TaskController taskController;
@@ -254,14 +195,12 @@ public class BarraFerramentas {
                             JOptionPane.showMessageDialog(frame, "Nenhuma tarefa encontrada para esta data.",
                                     INFO_TITLE, JOptionPane.INFORMATION_MESSAGE);
                         }
+
                         frame.atualizarPainelDeTarefas(tarefas);
                     });
         }
     }
 
-    /**
-     * Listener para listar tarefas críticas.
-     */
     private static class OuvinteListarTarefasCriticas implements ActionListener {
         private final TelaPrincipal frame;
         private final TaskController taskController;
@@ -278,13 +217,11 @@ public class BarraFerramentas {
                 JOptionPane.showMessageDialog(frame, "Nenhuma tarefa crítica encontrada.", INFO_TITLE,
                         JOptionPane.INFORMATION_MESSAGE);
             }
+
             frame.atualizarPainelDeTarefas(tarefas);
         }
     }
 
-    /**
-     * Listener para listar eventos de um dia específico.
-     */
     private static class OuvinteListarEventosPorDia implements ActionListener {
         private final TelaPrincipal frame;
         private final EventController eventController;
@@ -303,14 +240,12 @@ public class BarraFerramentas {
                             JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para esta data.",
                                     INFO_TITLE, JOptionPane.INFORMATION_MESSAGE);
                         }
+
                         frame.atualizarPainelDeEventos(eventos);
                     });
         }
     }
 
-    /**
-     * Listener para listar eventos de um mês específico.
-     */
     private static class OuvinteListarEventosPorMes implements ActionListener {
         private final TelaPrincipal frame;
         private final EventController eventController;
@@ -329,14 +264,12 @@ public class BarraFerramentas {
                             JOptionPane.showMessageDialog(frame, "Nenhum evento encontrado para este mês.",
                                     INFO_TITLE, JOptionPane.INFORMATION_MESSAGE);
                         }
+
                         frame.atualizarPainelDeEventos(eventos);
                     });
         }
     }
 
-    /**
-     * Listener para gerar PDF das tarefas do dia.
-     */
     private static class OuvinteGerarPdfTarefas implements ActionListener {
         private final JFrame frame;
         private final AppController appController;
@@ -353,7 +286,6 @@ public class BarraFerramentas {
                         JFileChooser fileChooser = new JFileChooser();
                         fileChooser.setDialogTitle("Salvar Relatório PDF");
                         fileChooser.setSelectedFile(new java.io.File("Relatorio_Tarefas_" + dia.toString() + ".pdf"));
-
                         int userSelection = fileChooser.showSaveDialog(frame);
                         if (userSelection == JFileChooser.APPROVE_OPTION) {
                             java.io.File fileToSave = fileChooser.getSelectedFile();
@@ -376,10 +308,6 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Listener para enviar e-mail com as tarefas do dia.
-     * Executa a operação em background.
-     */
     private static class OuvinteEnviarEmailTarefas implements ActionListener {
         private final JFrame frame;
         private final AppController appController;
@@ -396,7 +324,6 @@ public class BarraFerramentas {
                         frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                         JOptionPane.showMessageDialog(frame, "Enviando e-mail em segundo plano...", "Aguarde",
                                 JOptionPane.INFORMATION_MESSAGE);
-
                         SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
                             @Override
                             protected Boolean doInBackground() throws Exception {
@@ -431,15 +358,11 @@ public class BarraFerramentas {
                                 }
                             }
                         };
-
                         worker.execute();
                     });
         }
     }
 
-    /**
-     * Listener para gerar relatório Excel das tarefas do mês.
-     */
     private static class OuvinteGerarExcelTarefas implements ActionListener {
         private final JFrame frame;
         private final AppController appController;
@@ -457,7 +380,6 @@ public class BarraFerramentas {
                         fileChooser.setDialogTitle("Salvar Relatório Excel");
                         fileChooser.setSelectedFile(new java.io.File(
                                 "Relatorio_Tarefas_" + mes.format(DateTimeFormatter.ofPattern("MM_yyyy")) + ".xlsx"));
-
                         int userSelection = fileChooser.showSaveDialog(frame);
                         if (userSelection == JFileChooser.APPROVE_OPTION) {
                             java.io.File fileToSave = fileChooser.getSelectedFile();

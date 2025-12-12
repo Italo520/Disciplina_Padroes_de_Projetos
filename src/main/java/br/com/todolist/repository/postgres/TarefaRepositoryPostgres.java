@@ -1,18 +1,13 @@
 package br.com.todolist.repository.postgres;
 
 import br.com.todolist.repository.ITarefaRepository;
-
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.exception.DatabaseException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-/**
- * Implementação do repositório de tarefas utilizando PostgreSQL e JPA.
- */
 public class TarefaRepositoryPostgres implements ITarefaRepository {
-
     @Override
     public void salvar(Tarefa entity) {
         EntityManager em = DatabaseConnection.getInstance().getEntityManager();
@@ -24,6 +19,7 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+
             throw new DatabaseException("Erro ao salvar tarefa: " + e.getMessage(), e);
         } finally {
             em.close();
@@ -39,11 +35,13 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
             if (tarefaParaRemover != null) {
                 em.remove(tarefaParaRemover);
             }
+
             em.getTransaction().commit();
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+
             throw new DatabaseException("Erro ao excluir tarefa: " + e.getMessage(), e);
         } finally {
             em.close();
@@ -62,6 +60,7 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+
             throw new DatabaseException("Erro ao atualizar tarefa: " + e.getMessage(), e);
         } finally {
             em.close();
@@ -109,10 +108,6 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
 
     @Override
     public List<Tarefa> buscarTarefasCriticas() {
-        // Implementação em memória para manter consistência com a regra de negócio
-        // original
-        // Idealmente seria uma query DB, mas a lógica de data/prioridade é complexa
-        // para JPQL portátil
         List<Tarefa> all = buscarTodos();
         java.time.LocalDate hoje = java.time.LocalDate.now();
         return all.stream()
