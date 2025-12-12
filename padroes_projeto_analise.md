@@ -262,40 +262,35 @@ import br.com.todolist.entity.Usuario;
  */
 public class SessionManager {
     
-    // 1️⃣ Instância única estática
-    private static SessionManager instance;
+    // 1️⃣ Instância única estática (Thread-safe by default)
+    private static final SessionManager instance = new SessionManager();
     
-    // 2️⃣ Usuário logado na sessão
     private Usuario usuarioLogado;
+    private ITaskService taskService;
+    private IEventService eventService;
     
-    // 3️⃣ Construtor privado (ninguém pode fazer new)
+    // 2️⃣ Construtor privado
     private SessionManager() {
-        this.usuarioLogado = null;
     }
     
-    // 4️⃣ Método synchronized para acesso thread-safe
-    public static synchronized SessionManager getInstance() {
-        if (instance == null) {
-            instance = new SessionManager();
-        }
+    // 3️⃣ Acesso global
+    public static SessionManager getInstance() {
         return instance;
     }
     
-    // 5️⃣ Métodos de gerenciamento de sessão
-    public void iniciarSessao(Usuario usuario) {
+    // 4️⃣ Gerenciamento de sessão
+    public void login(Usuario usuario) {
         this.usuarioLogado = usuario;
     }
     
-    public void encerrarSessao() {
-        this.usuarioLogado = null;
+    // 5️⃣ Injeção de dependências (Serviços configurados)
+    public void setServices(ITaskService taskService, IEventService eventService) {
+        this.taskService = taskService;
+        this.eventService = eventService;
     }
     
     public Usuario getUsuarioLogado() {
         return usuarioLogado;
-    }
-    
-    public boolean isAutenticado() {
-        return usuarioLogado != null;
     }
 }
 ```
@@ -303,20 +298,16 @@ public class SessionManager {
 ### 3.3 Como Usar
 
 ```java
-// Em qualquer lugar da aplicação
+// Inicialização (no AppController)
+SessionManager.getInstance().login(usuario);
+SessionManager.getInstance().setServices(taskService, eventService);
+
+// Uso em qualquer lugar
 SessionManager session = SessionManager.getInstance();
-
-// Login
-session.iniciarSessao(usuario);
-
-// Verificar se está logado
-if (session.isAutenticado()) {
-    Usuario user = session.getUsuarioLogado();
-    System.out.println("Bem-vindo, " + user.getNome());
+if (session.getUsuarioLogado() != null) {
+    // Acessar serviços configurados
+    session.getTaskService().listarTodasTarefas();
 }
-
-// Logout
-session.encerrarSessao();
 ```
 
 ### 3.4 Por Que usar `synchronized`?
@@ -815,159 +806,74 @@ public class CachedTaskRepository implements ITaskRepository {
 - Notificações
 - Event-driven architecture
 
-### 7.2 Implementação: AuditService
-
-```java
-package br.com.todolist.service.event;
-
-import br.com.todolist.entity.Usuario;
-import br.com.todolist.log.AuditLog;
-import br.com.todolist.repository.mongo.AuditLogRepository;
-import br.com.todolist.service.SessionManager;
-
-import java.time.LocalDateTime;
-
-/**
- * Observer que registra todas as operações do sistema no MongoDB
- */
-public class AuditService {
-    
-    private final AuditLogRepository auditLogRepository;
-    
-    public AuditService(AuditLogRepository repository) {
-        this.auditLogRepository = repository;
-    }
-    
-    /**
-     * Registra operação de CRIAÇÃO
-     */
-    public void registrarCriacao(String entidadeTipo, Long entidadeId) {
-        Usuario usuario = SessionManager.getInstance().getUsuarioLogado();
-        
-        AuditLog log = new AuditLog();
-        log.setUsuarioId(usuario.getId());
-        log.setUsuarioNome(usuario.getNome());
-        log.setAcao("CRIAR");
-        log.setEntidadeTipo(entidadeTipo);
-        log.setEntidadeId(entidadeId);
-        log.setTimestamp(LocalDateTime.now());
-        
-        auditLogRepository.save(log);
-        
-        System.out.println("✅ [AUDITORIA] " + entidadeTipo + " #" + entidadeId + " criado");
-    }
-    
-    /**
-     * Registra operação de ATUALIZAÇÃO
-     */
-    public void registrarAtualizacao(String entidadeTipo, Long entidadeId) {
-        Usuario usuario = SessionManager.getInstance().getUsuarioLogado();
-        
-        AuditLog log = new AuditLog();
-        log.setUsuarioId(usuario.getId());
-        log.setUsuarioNome(usuario.getNome());
-        log.setAcao("ATUALIZAR");
-        log.setEntidadeTipo(entidadeTipo);
-        log.setEntidadeId(entidadeId);
-        log.setTimestamp(LocalDateTime.now());
-        
-        auditLogRepository.save(log);
-        
-        System.out.println("✅ [AUDITORIA] " + entidadeTipo + " #" + entidadeId + " atualizado");
-    }
-    
-    /**
-     * Registra operação de DELEÇÃO
-     */
-    public void registrarDelecao(String entidadeTipo, Long entidadeId) {
-        Usuario usuario = SessionManager.getInstance().getUsuarioLogado();
-        
-        AuditLog log = new AuditLog();
-        log.setUsuarioId(usuario.getId());
-        log.setUsuarioNome(usuario.getNome());
-        log.setAcao("DELETAR");
-        log.setEntidadeTipo(entidadeTipo);
-        log.setEntidadeId(entidadeId);
-        log.setTimestamp(LocalDateTime.now());
-        
-        auditLogRepository.save(log);
-        
-        System.out.println("✅ [AUDITORIA] " + entidadeTipo + " #" + entidadeId + " deletado");
-    }
-    
-    /**
-     * Registra LOGIN de usuário
-     */
-    public void registrarLogin(Usuario usuario) {
-        AuditLog log = new AuditLog();
-        log.setUsuarioId(usuario.getId());
-        log.setUsuarioNome(usuario.getNome());
-        log.setAcao("LOGIN");
-        log.setEntidadeTipo("USUARIO");
-        log.setEntidadeId(usuario.getId());
-        log.setTimestamp(LocalDateTime.now());
-        
-        auditLogRepository.save(log);
-    }
-}
-```
-
-### 7.3 Entidade AuditLog (MongoDB)
+### 7.2 Implementação: TaskAuditObserver
 
 ```java
 package br.com.todolist.log;
 
-import org.bson.Document;
-import java.time.LocalDateTime;
+import br.com.todolist.service.event.TaskEvent;
+import br.com.todolist.service.util.ITaskObserver;
 
-public class AuditLog {
+/**
+ * Observer que registra operações de tarefas no MongoDB
+ */
+public class TaskAuditObserver implements ITaskObserver {
     
-    private String id;
-    private Long usuarioId;
-    private String usuarioNome;
-    private String acao;  // CRIAR, ATUALIZAR, DELETAR, LOGIN
-    private String entidadeTipo;  // TAREFA, USUARIO, EVENTO
-    private Long entidadeId;
-    private LocalDateTime timestamp;
+    private final ILogRepository logRepository;
     
-    // Getters e Setters
-    
-    public Document toDocument() {
-        return new Document()
-            .append("usuarioId", usuarioId)
-            .append("usuarioNome", usuarioNome)
-            .append("acao", acao)
-            .append("entidadeTipo", entidadeTipo)
-            .append("entidadeId", entidadeId)
-            .append("timestamp", timestamp.toString());
+    public TaskAuditObserver(ILogRepository logRepository) {
+        this.logRepository = logRepository;
     }
+    
+    @Override
+    public void update(TaskEvent event) {
+        // Mapeia dados antigos e novos
+        Map<String, Object> oldData = mapTarefa(event.getOldTarefa());
+        Map<String, Object> newData = mapTarefa(event.getTarefa());
+        
+        LogEntry entry = new LogEntry(
+            event.getAction(), // CREATE, UPDATE, DELETE
+            "Tarefa",
+            event.getTarefa().getCriadoPor(),
+            oldData,
+            newData
+        );
+        
+        logRepository.salvarLog(entry);
+    }
+}
+```
+
+### 7.3 Registro dos Observers (AppController)
+
+```java
+// No AppController.java
+public void configurarRepositorios(Usuario usuario) {
+    // ... criação dos services ...
+    
+    // Configuração de Auditoria
+    ILogRepository logRepository = LogService.getInstance().getRepository();
+    
+    // Cria e registra o observer
+    TaskAuditObserver taskObserver = new TaskAuditObserver(logRepository);
+    this.taskService.addObserver(taskObserver);
+    
+    // O mesmo para eventos
+    this.eventService.addObserver(new EventAuditObserver(logRepository));
 }
 ```
 
 ### 7.4 Repository MongoDB
 
 ```java
-package br.com.todolist.repository.mongo;
-
-import br.com.todolist.log.AuditLog;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
-
-public class AuditLogRepository {
-    
-    private MongoCollection<Document> collection;
-    
-    public AuditLogRepository() {
-        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017");
-        MongoDatabase database = mongoClient.getDatabase("todolist_audit");
-        this.collection = database.getCollection("audit_logs");
-    }
-    
-    public void save(AuditLog log) {
-        collection.insertOne(log.toDocument());
+public class MongoLogRepository implements ILogRepository {
+    // Implementação usando MongoDB Driver
+    @Override
+    public void salvarLog(LogEntry logEntry) {
+        Document doc = new Document();
+        doc.append("action", logEntry.getAction().toString());
+        // ... mapeamento ...
+        collection.insertOne(doc);
     }
 }
 ```
@@ -976,18 +882,18 @@ public class AuditLogRepository {
 
 ```
 ┌──────────────────────┐
-│ TaskService.criar()  │
+│ TaskService.salvar() │
 └──────────┬───────────┘
            │
            ▼
 ┌──────────────────────┐
-│ repository.save()    │
+│ notifyObservers()    │
 └──────────┬───────────┘
            │
            ▼
 ┌──────────────────────┐
-│ auditService.        │
-│ registrarCriacao()   │ ◄─── Observer notificado
+│ TaskAuditObserver.   │
+│ update(event)        │ ◄─── Observer notificado
 └──────────┬───────────┘
            │
            ▼
