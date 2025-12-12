@@ -126,6 +126,10 @@ public class AppController {
                 notificador,
                 new GeradorRelatorioPDF(),
                 new GeradorRelatorioExcel());
+
+        // Atualiza o SessionManager com o usuário e os serviços configurados
+        br.com.todolist.service.SessionManager.getInstance().login(usuario);
+        br.com.todolist.service.SessionManager.getInstance().setServices(this.taskService, this.eventService);
     }
 
     /**

@@ -1,8 +1,7 @@
 package br.com.todolist.ui.auth;
 
 import br.com.todolist.controller.AppController;
-import br.com.todolist.entity.Usuario;
-import br.com.todolist.service.SessionManager;
+
 import br.com.todolist.ui.main.TelaPrincipal;
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -105,8 +104,7 @@ public class TelaLogin extends JFrame {
         try {
             boolean sucesso = AppController.getInstance().login(email, senha);
             if (sucesso) {
-                Usuario usuario = AppController.getInstance().getUsuarioLogado();
-                SessionManager.getInstance().login(usuario);
+
                 new TelaPrincipal().setVisible(true);
                 this.dispose();
             } else {

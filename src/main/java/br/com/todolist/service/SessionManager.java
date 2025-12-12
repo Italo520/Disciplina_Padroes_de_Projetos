@@ -1,12 +1,6 @@
 package br.com.todolist.service;
 
 import br.com.todolist.entity.Usuario;
-import br.com.todolist.repository.postgres.EventoRepositoryPostgres;
-import br.com.todolist.repository.IEventoRepository;
-import br.com.todolist.repository.ITarefaRepository;
-import br.com.todolist.repository.postgres.TarefaRepositoryPostgres;
-import br.com.todolist.service.impl.EventServiceImpl;
-import br.com.todolist.service.impl.TaskServiceImpl;
 
 /**
  * Gerenciador de sessão do usuário.
@@ -44,15 +38,17 @@ public class SessionManager {
      */
     public void login(Usuario usuario) {
         this.usuarioLogado = usuario;
-        if (usuario != null) {
-            ITarefaRepository tarefaRepository = new TarefaRepositoryPostgres();
-            IEventoRepository eventoRepository = new EventoRepositoryPostgres();
-            this.taskService = new TaskServiceImpl(tarefaRepository, usuario.getEmail());
-            this.eventService = new EventServiceImpl(eventoRepository, usuario.getEmail());
-        } else {
-            this.taskService = null;
-            this.eventService = null;
-        }
+    }
+
+    /**
+     * Define os serviços de tarefa e evento para a sessão atual.
+     *
+     * @param taskService  O serviço de tarefas.
+     * @param eventService O serviço de eventos.
+     */
+    public void setServices(ITaskService taskService, IEventService eventService) {
+        this.taskService = taskService;
+        this.eventService = eventService;
     }
 
     /**
