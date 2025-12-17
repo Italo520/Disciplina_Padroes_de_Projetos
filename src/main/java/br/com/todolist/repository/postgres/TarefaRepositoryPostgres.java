@@ -117,7 +117,8 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
         java.time.LocalDate hoje = java.time.LocalDate.now();
         return all.stream()
                 .filter(t -> t.getDeadline() != null &&
-                        java.time.temporal.ChronoUnit.DAYS.between(hoje, t.getDeadline()) - t.getPrioridade() < 0)
+                        (java.time.temporal.ChronoUnit.DAYS.between(hoje, t.getDeadline()) <= 2
+                                || t.getPrioridade() >= 4))
                 .collect(java.util.stream.Collectors.toList());
     }
 }

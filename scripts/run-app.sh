@@ -45,11 +45,14 @@ export DB_USER=todolist_user
 export DB_PASSWORD=todolist_pass
 
 export REDIS_HOST=localhost
-export REDIS_PORT=6379
+export REDIS_PORT=6380
+export REDIS_PASSWORD=redis_pass
 
 export MONGO_HOST=localhost
 export MONGO_PORT=27017
 export MONGO_DATABASE=todolist_logs
+export MONGO_USER=mongo_admin
+export MONGO_PASSWORD=mongo_pass
 
 echo -e "${GREEN}[SUCESSO] Ambiente pronto! Iniciando aplicação...${NC}"
 echo -e "${YELLOW}[INFO] Pressione Ctrl+C para parar a aplicação.${NC}"

@@ -109,6 +109,8 @@ services:
       MONGO_HOST: mongodb
       MONGO_PORT: 27017
       MONGO_DATABASE: todolist_logs
+      MONGO_USER: mongo_admin
+      MONGO_PASSWORD: mongo_pass
 
       # Configurações da JVM
       JAVA_TOOL_OPTIONS: "-Xmx512m -Xms256m"

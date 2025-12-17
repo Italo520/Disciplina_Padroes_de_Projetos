@@ -101,6 +101,19 @@ public class DatabaseConfig {
      * @return A URL de conexão.
      */
     public static String getDbUrl() {
+        String env = System.getenv("DB_URL");
+        if (env != null)
+            return env;
+
+        // Monta a URL se as parciais estiverem disponíveis
+        String host = System.getenv("DB_HOST");
+        String port = System.getenv("DB_PORT");
+        String name = System.getenv("DB_NAME");
+
+        if (host != null && port != null && name != null) {
+            return String.format("jdbc:postgresql://%s:%s/%s", host, port, name);
+        }
+
         return getProperty("db.url");
     }
 
@@ -110,6 +123,9 @@ public class DatabaseConfig {
      * @return O nome de usuário.
      */
     public static String getDbUser() {
+        String env = System.getenv("DB_USER");
+        if (env != null)
+            return env;
         return getProperty("db.user");
     }
 
@@ -119,6 +135,9 @@ public class DatabaseConfig {
      * @return A senha do usuário.
      */
     public static String getDbPassword() {
+        String env = System.getenv("DB_PASSWORD");
+        if (env != null)
+            return env;
         return getProperty("db.password");
     }
 
@@ -164,6 +183,9 @@ public class DatabaseConfig {
      * @return O host do Redis.
      */
     public static String getRedisHost() {
+        String env = System.getenv("REDIS_HOST");
+        if (env != null)
+            return env;
         return getProperty("redis.host");
     }
 
@@ -173,6 +195,14 @@ public class DatabaseConfig {
      * @return A porta do Redis.
      */
     public static int getRedisPort() {
+        String env = System.getenv("REDIS_PORT");
+        if (env != null) {
+            try {
+                return Integer.parseInt(env);
+            } catch (NumberFormatException e) {
+                // Fallback
+            }
+        }
         return Integer.parseInt(getProperty("redis.port"));
     }
 
@@ -182,6 +212,11 @@ public class DatabaseConfig {
      * @return A senha do Redis.
      */
     public static String getRedisPassword() {
+        String env = System.getenv("REDIS_PASSWORD"); // Nota: docker-compose não define REDIS_PASSWORD explicitamente
+                                                      // para a app, mas run-app não define também.
+                                                      // Porém, o RedisCacheManager verifica se é nulo.
+        if (env != null)
+            return env;
         return getProperty("redis.password");
     }
 
@@ -191,6 +226,21 @@ public class DatabaseConfig {
      * @return A URI do MongoDB.
      */
     public static String getMongoUri() {
+        String env = System.getenv("MONGO_URI");
+        if (env != null)
+            return env;
+
+        // Monta URI se parciais existirem
+        String host = System.getenv("MONGO_HOST");
+        String port = System.getenv("MONGO_PORT");
+        String db = System.getenv("MONGO_DATABASE");
+        String user = System.getenv("MONGO_USER");
+        String pass = System.getenv("MONGO_PASSWORD");
+
+        if (host != null && port != null && user != null && pass != null) {
+            return String.format("mongodb://%s:%s@%s:%s", user, pass, host, port);
+        }
+
         return getProperty("mongo.uri");
     }
 
@@ -200,6 +250,9 @@ public class DatabaseConfig {
      * @return O nome do database.
      */
     public static String getMongoDatabase() {
+        String env = System.getenv("MONGO_DATABASE");
+        if (env != null)
+            return env;
         return getProperty("mongo.database");
     }
 }

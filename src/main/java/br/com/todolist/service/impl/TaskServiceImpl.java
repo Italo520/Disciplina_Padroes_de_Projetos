@@ -68,7 +68,7 @@ public class TaskServiceImpl implements ITaskService {
      */
     @Override
     public void excluirTarefa(Tarefa tarefa) throws BusinessException {
-        if (tarefa.getCriadoPor().equals(emailUsuario)) {
+        if (tarefa.getCriadoPor() != null && tarefa.getCriadoPor().equals(emailUsuario)) {
             try {
                 tarefaRepository.excluir(tarefa);
                 notifyObservers(new TaskEvent(AuditAction.DELETE, tarefa));
@@ -93,7 +93,7 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline,
             int novaPrioridade) throws BusinessException {
-        if (tarefaOriginal.getCriadoPor().equals(emailUsuario)) {
+        if (tarefaOriginal.getCriadoPor() != null && tarefaOriginal.getCriadoPor().equals(emailUsuario)) {
             Tarefa oldTarefa = tarefaOriginal.copiar();
 
             tarefaOriginal.setTitulo(novoTitulo);
@@ -119,7 +119,7 @@ public class TaskServiceImpl implements ITaskService {
      */
     @Override
     public Tarefa atualizarTarefa(Tarefa tarefa) throws BusinessException {
-        if (tarefa.getCriadoPor().equals(emailUsuario)) {
+        if (tarefa.getCriadoPor() != null && tarefa.getCriadoPor().equals(emailUsuario)) {
             try {
                 // O título é o ID da entidade Tarefa neste sistema (PK).
                 Tarefa oldTarefa = tarefaRepository.buscarPorId(tarefa.getId());
@@ -145,7 +145,7 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public List<Tarefa> listarTodasTarefas() {
         return tarefaRepository.buscarTodos().stream()
-                .filter(tarefa -> tarefa.getCriadoPor().equals(emailUsuario))
+                .filter(tarefa -> tarefa.getCriadoPor() != null && tarefa.getCriadoPor().equals(emailUsuario))
                 .toList();
     }
 
@@ -158,7 +158,7 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public List<Tarefa> listarTarefasPorDia(LocalDate dia) {
         return tarefaRepository.buscarPorDia(dia).stream()
-                .filter(tarefa -> tarefa.getCriadoPor().equals(emailUsuario))
+                .filter(tarefa -> tarefa.getCriadoPor() != null && tarefa.getCriadoPor().equals(emailUsuario))
                 .toList();
     }
 
@@ -171,7 +171,7 @@ public class TaskServiceImpl implements ITaskService {
     @Override
     public List<Tarefa> listarTarefasCriticas() {
         return tarefaRepository.buscarTarefasCriticas().stream()
-                .filter(tarefa -> tarefa.getCriadoPor().equals(emailUsuario))
+                .filter(tarefa -> tarefa.getCriadoPor() != null && tarefa.getCriadoPor().equals(emailUsuario))
                 .toList();
     }
 

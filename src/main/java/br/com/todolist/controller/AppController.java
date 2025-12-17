@@ -5,6 +5,7 @@ import br.com.todolist.entity.Tarefa;
 import br.com.todolist.entity.Usuario;
 import br.com.todolist.exception.BusinessException;
 import br.com.todolist.log.EventAuditObserver;
+import br.com.todolist.service.SessionManager;
 import br.com.todolist.log.ILogRepository;
 import br.com.todolist.log.LogService;
 import br.com.todolist.log.TaskAuditObserver;
@@ -125,6 +126,10 @@ public class AppController {
                 notificador,
                 new GeradorRelatorioPDF(),
                 new GeradorRelatorioExcel());
+
+        // Atualiza a sessão global com os serviços configurados (incluindo Cache e
+        // Logs)
+        SessionManager.getInstance().registrarSessao(usuario, this.taskService, this.eventService);
     }
 
     /**
