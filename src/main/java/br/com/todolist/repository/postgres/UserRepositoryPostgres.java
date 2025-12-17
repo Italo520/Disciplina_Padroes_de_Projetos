@@ -7,9 +7,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-/**
- * Implementação do repositório de usuários utilizando PostgreSQL e JPA.
- */
 public class UserRepositoryPostgres implements IUserRepository {
 
     @Override

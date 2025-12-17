@@ -8,9 +8,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-/**
- * Implementação do repositório de tarefas utilizando PostgreSQL e JPA.
- */
 public class TarefaRepositoryPostgres implements ITarefaRepository {
 
     @Override
@@ -109,10 +106,7 @@ public class TarefaRepositoryPostgres implements ITarefaRepository {
 
     @Override
     public List<Tarefa> buscarTarefasCriticas() {
-        // Implementação em memória para manter consistência com a regra de negócio
-        // original
-        // Idealmente seria uma query DB, mas a lógica de data/prioridade é complexa
-        // para JPQL portátil
+
         List<Tarefa> all = buscarTodos();
         java.time.LocalDate hoje = java.time.LocalDate.now();
         return all.stream()

@@ -21,11 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-/**
- * Classe utilitária responsável por criar a barra de menu (ferramentas) da
- * aplicação.
- * Contém as opções de arquivo, tarefas, eventos, aparência e ajuda.
- */
 public class BarraFerramentas {
 
     private static final java.util.logging.Logger LOGGER = java.util.logging.Logger
@@ -42,21 +37,10 @@ public class BarraFerramentas {
             Curso ADS - IFPB
             2025""";
 
-    /**
-     * Construtor privado para impedir a instanciação da classe utilitária.
-     */
     private BarraFerramentas() {
         throw new IllegalStateException("Classe utilitária");
     }
 
-    /**
-     * Cria e configura a barra de menu principal.
-     *
-     * @param frame           A janela principal da aplicação.
-     * @param taskController  O controlador de tarefas.
-     * @param eventController O controlador de eventos.
-     * @return Um objeto JMenuBar configurado.
-     */
     public static JMenuBar criarBarraFerramentas(TelaPrincipal frame, TaskController taskController,
             EventController eventController) {
         JMenuBar menuBar = new JMenuBar();
@@ -142,15 +126,6 @@ public class BarraFerramentas {
         return menuBar;
     }
 
-    /**
-     * Adiciona uma opção de tema ao menu de aparência.
-     *
-     * @param menu        O menu onde o item será adicionado.
-     * @param grupo       O grupo de botões (para garantir seleção única).
-     * @param nome        O nome visível do tema.
-     * @param className   O nome da classe do Look and Feel.
-     * @param selecionado Se o tema deve vir selecionado por padrão.
-     */
     private static void adicionarTemaNoMenu(JMenu menu, ButtonGroup grupo, String nome, String className,
             boolean selecionado) {
         JRadioButtonMenuItem itemMenu = new JRadioButtonMenuItem(nome, selecionado);
@@ -168,13 +143,6 @@ public class BarraFerramentas {
         menu.add(itemMenu);
     }
 
-    /**
-     * Solicita ao usuário uma data através de um diálogo de entrada.
-     *
-     * @param frame    O frame pai para o diálogo.
-     * @param mensagem A mensagem a ser exibida.
-     * @return Um Optional contendo a data se válida, ou vazio caso contrário.
-     */
     private static Optional<LocalDate> obterDataDoUsuario(JFrame frame, String mensagem) {
         String dataInput = JOptionPane.showInputDialog(frame, mensagem);
         if (dataInput == null || dataInput.trim().isEmpty()) {
@@ -189,13 +157,6 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Solicita ao usuário um mês e ano através de um diálogo de entrada.
-     *
-     * @param frame    O frame pai para o diálogo.
-     * @param mensagem A mensagem a ser exibida.
-     * @return Um Optional contendo o YearMonth se válido, ou vazio caso contrário.
-     */
     private static Optional<YearMonth> obterMesAnoDoUsuario(JFrame frame, String mensagem) {
         String mesAnoInput = JOptionPane.showInputDialog(frame, mensagem);
         if (mesAnoInput == null || mesAnoInput.trim().isEmpty()) {
@@ -210,9 +171,6 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Listener para listar todas as tarefas.
-     */
     private static class OuvinteListarTodasTarefas implements ActionListener {
         private final TelaPrincipal frame;
         private final TaskController taskController;
@@ -233,9 +191,6 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Listener para listar tarefas de um dia específico.
-     */
     private static class OuvinteListarTarefasPorDia implements ActionListener {
         private final TelaPrincipal frame;
         private final TaskController taskController;
@@ -259,9 +214,6 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Listener para listar tarefas críticas.
-     */
     private static class OuvinteListarTarefasCriticas implements ActionListener {
         private final TelaPrincipal frame;
         private final TaskController taskController;
@@ -282,9 +234,6 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Listener para listar eventos de um dia específico.
-     */
     private static class OuvinteListarEventosPorDia implements ActionListener {
         private final TelaPrincipal frame;
         private final EventController eventController;
@@ -308,9 +257,6 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Listener para listar eventos de um mês específico.
-     */
     private static class OuvinteListarEventosPorMes implements ActionListener {
         private final TelaPrincipal frame;
         private final EventController eventController;
@@ -334,9 +280,6 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Listener para gerar PDF das tarefas do dia.
-     */
     private static class OuvinteGerarPdfTarefas implements ActionListener {
         private final JFrame frame;
         private final AppController appController;
@@ -376,10 +319,6 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Listener para enviar e-mail com as tarefas do dia.
-     * Executa a operação em background.
-     */
     private static class OuvinteEnviarEmailTarefas implements ActionListener {
         private final JFrame frame;
         private final AppController appController;
@@ -437,9 +376,6 @@ public class BarraFerramentas {
         }
     }
 
-    /**
-     * Listener para gerar relatório Excel das tarefas do mês.
-     */
     private static class OuvinteGerarExcelTarefas implements ActionListener {
         private final JFrame frame;
         private final AppController appController;

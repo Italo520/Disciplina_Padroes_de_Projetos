@@ -3,10 +3,6 @@ package br.com.todolist.log;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-/**
- * Serviço centralizado de logs.
- * Facilita o log de erros a partir de qualquer ponto da aplicação.
- */
 public class LogService {
 
     private static LogService instance;
@@ -16,11 +12,6 @@ public class LogService {
         this.logRepository = new MongoLogRepository();
     }
 
-    /**
-     * Obtém a instância única do LogService.
-     *
-     * @return A instância do LogService.
-     */
     public static synchronized LogService getInstance() {
         if (instance == null) {
             instance = new LogService();
@@ -28,11 +19,6 @@ public class LogService {
         return instance;
     }
 
-    /**
-     * Registra um erro no log.
-     *
-     * @param e A exceção a ser logada.
-     */
     public void logError(Exception e) {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);

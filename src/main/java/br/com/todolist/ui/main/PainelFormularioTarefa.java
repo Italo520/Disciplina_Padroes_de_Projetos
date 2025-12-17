@@ -10,51 +10,29 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-/**
- * Painel para cadastro e edição de Tarefas.
- * Oferece um formulário para preencher título, descrição, prioridade e prazo da
- * tarefa.
- */
 public class PainelFormularioTarefa extends JPanel {
 
-    /** Referência para a tela principal para navegação. */
     private final TelaPrincipal telaPrincipal;
 
-    /** Controlador de tarefas para persistência dos dados. */
     private final transient TaskController taskController;
 
-    /** Tarefa a ser editada (null se for cadastro). */
     private transient Tarefa tarefa;
 
-    /** Campo de texto para o título da tarefa. */
     private JTextField campoTitulo;
 
-    /** Campo de texto para a descrição da tarefa. */
     private JTextField campoDescricao;
 
-    /** Campo de seleção numérica para a prioridade da tarefa. */
     private JSpinner campoPrioridade;
 
-    /** Campo de texto para o prazo da tarefa. */
     private JTextField campoPrazo;
 
-    /** Botão para salvar as alterações. */
     private JButton botaoSalvar;
 
-    /** Botão para cancelar e voltar. */
     private JButton botaoCancelar;
 
-    /** Formatador de data utilizado nos campos de texto (dd/MM/yyyy). */
     private static final String DATE_PATTERN = "dd/MM/yyyy";
     private final transient DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
-    /**
-     * Construtor do painel de formulário de tarefa.
-     *
-     * @param telaPrincipal    A tela principal para navegação.
-     * @param taskController   O controlador de tarefas.
-     * @param tarefaParaEditar A tarefa a ser editada (null para nova tarefa).
-     */
     public PainelFormularioTarefa(TelaPrincipal telaPrincipal, TaskController taskController, Tarefa tarefaParaEditar) {
         this.telaPrincipal = telaPrincipal;
         this.taskController = taskController;
@@ -64,9 +42,6 @@ public class PainelFormularioTarefa extends JPanel {
         configurarAcoes();
     }
 
-    /**
-     * Inicializa e posiciona os componentes da interface gráfica.
-     */
     private void configurarEAdicionarComponentes() {
         setLayout(null);
         setSize(1280, 720);
@@ -117,9 +92,6 @@ public class PainelFormularioTarefa extends JPanel {
         add(botaoCancelar);
     }
 
-    /**
-     * Preenche os campos do formulário com os dados da tarefa em edição.
-     */
     private void preencherCampos() {
         if (tarefa != null) {
             campoTitulo.setText(tarefa.getTitulo());
@@ -129,18 +101,11 @@ public class PainelFormularioTarefa extends JPanel {
         }
     }
 
-    /**
-     * Configura os listeners para os botões de ação.
-     */
     private void configurarAcoes() {
         botaoCancelar.addActionListener(e -> telaPrincipal.voltarParaListaTarefas());
         botaoSalvar.addActionListener(e -> salvar());
     }
 
-    /**
-     * Valida os campos e salva a tarefa (nova ou editada).
-     * Interage com o controlador para persistir os dados.
-     */
     private void salvar() {
         try {
             String titulo = campoTitulo.getText().trim();

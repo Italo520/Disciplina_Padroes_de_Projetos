@@ -11,47 +11,27 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-/**
- * Painel para cadastro e edição de Eventos.
- * Oferece um formulário para preencher título, descrição e data do evento.
- */
 public class PainelFormularioEvento extends JPanel {
 
-    /** Referência para a tela principal para navegação. */
     private final TelaPrincipal telaPrincipal;
 
-    /** Controlador de eventos para persistência dos dados. */
     private final transient EventController eventController;
 
-    /** Evento a ser editado (null se for cadastro). */
     private transient Evento evento;
 
-    /** Campo de texto para o título do evento. */
     private JTextField campoTitulo;
 
-    /** Campo de texto para a descrição do evento. */
     private JTextField campoDescricao;
 
-    /** Campo de texto para a data do evento. */
     private JTextField campoData;
 
-    /** Botão para salvar as alterações. */
     private JButton botaoSalvar;
 
-    /** Botão para cancelar e voltar. */
     private JButton botaoCancelar;
 
-    /** Formatador de data utilizado nos campos de texto (dd/MM/yyyy). */
     private static final String DATE_PATTERN = "dd/MM/yyyy";
     private final transient DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
-    /**
-     * Construtor do painel de formulário de evento.
-     *
-     * @param telaPrincipal    A tela principal para navegação.
-     * @param eventController  O controlador de eventos.
-     * @param eventoParaEditar O evento a ser editado (null para novo evento).
-     */
     public PainelFormularioEvento(TelaPrincipal telaPrincipal, EventController eventController,
             Evento eventoParaEditar) {
         this.telaPrincipal = telaPrincipal;
@@ -62,9 +42,6 @@ public class PainelFormularioEvento extends JPanel {
         configurarAcoes();
     }
 
-    /**
-     * Inicializa e posiciona os componentes da interface gráfica.
-     */
     private void configurarEAdicionarComponentes() {
         setLayout(null);
         setSize(1280, 720);
@@ -107,9 +84,6 @@ public class PainelFormularioEvento extends JPanel {
         add(botaoCancelar);
     }
 
-    /**
-     * Preenche os campos do formulário com os dados do evento em edição.
-     */
     private void preencherCampos() {
         if (evento != null) {
             campoTitulo.setText(evento.getTitulo());
@@ -118,18 +92,11 @@ public class PainelFormularioEvento extends JPanel {
         }
     }
 
-    /**
-     * Configura os listeners para os botões de ação.
-     */
     private void configurarAcoes() {
         botaoCancelar.addActionListener(e -> telaPrincipal.voltarParaListaEventos());
         botaoSalvar.addActionListener(e -> salvar());
     }
 
-    /**
-     * Valida os campos e salva o evento (novo ou editado).
-     * Interage com o controlador para persistir os dados.
-     */
     private void salvar() {
         if (!validarCampos()) {
             return;
@@ -161,11 +128,6 @@ public class PainelFormularioEvento extends JPanel {
         }
     }
 
-    /**
-     * Valida se os campos obrigatórios foram preenchidos corretamente.
-     *
-     * @return true se os dados forem válidos, false caso contrário.
-     */
     private boolean validarCampos() {
         if (campoTitulo.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(this, "O campo 'Título' é obrigatório.", "Erro de Validação",

@@ -7,10 +7,6 @@ import br.com.todolist.service.util.IEventObserver;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Observador responsável por auditar ações em Eventos.
- * Persiste as mudanças no MongoDB.
- */
 public class EventAuditObserver implements IEventObserver {
 
     private final ILogRepository logRepository;

@@ -7,16 +7,13 @@ import jakarta.persistence.Persistence;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Singleton para gerenciar a conexão com o banco de dados via JPA.
- */
 public class DatabaseConnection {
 
     private static DatabaseConnection instance;
     private EntityManagerFactory entityManagerFactory;
 
     private DatabaseConnection() {
-        // Carrega as configurações do arquivo database.properties
+
         Map<String, String> properties = new HashMap<>();
         properties.put("jakarta.persistence.jdbc.driver", DatabaseConfig.getDbDriver());
         properties.put("jakarta.persistence.jdbc.url", DatabaseConfig.getDbUrl());

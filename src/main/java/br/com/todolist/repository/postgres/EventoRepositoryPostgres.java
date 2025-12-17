@@ -8,9 +8,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 
-/**
- * Implementação do repositório de eventos utilizando PostgreSQL e JPA.
- */
 public class EventoRepositoryPostgres implements IEventoRepository {
 
     @Override

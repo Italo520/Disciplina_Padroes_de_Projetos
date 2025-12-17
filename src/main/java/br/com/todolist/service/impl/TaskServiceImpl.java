@@ -15,36 +15,17 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementação do serviço de tarefas.
- * Contém a lógica de negócio para gerenciar tarefas e notificar observadores
- * sobre mudanças.
- * Filtra as tarefas pelo e-mail do usuário logado.
- */
 public class TaskServiceImpl implements ITaskService {
 
     private final ITarefaRepository tarefaRepository;
     private final String emailUsuario;
     private final List<ITaskObserver> observers = new ArrayList<>();
 
-    /**
-     * Construtor da classe TaskServiceImpl.
-     *
-     * @param tarefaRepository O repositório de tarefas a ser utilizado.
-     * @param emailUsuario     O e-mail do usuário cujas tarefas serão gerenciadas.
-     */
     public TaskServiceImpl(ITarefaRepository tarefaRepository, String emailUsuario) {
         this.tarefaRepository = tarefaRepository;
         this.emailUsuario = emailUsuario;
     }
 
-    /**
-     * Cadastra uma nova tarefa para o usuário.
-     * Notifica os observadores após o cadastro.
-     *
-     * @param tarefa A tarefa a ser cadastrada.
-     * @throws BusinessException se houver erro na validação ou persistência.
-     */
     @Override
     public void cadastrarTarefa(Tarefa tarefa) throws BusinessException {
         if (tarefa == null) {
@@ -58,14 +39,6 @@ public class TaskServiceImpl implements ITaskService {
         }
     }
 
-    /**
-     * Exclui uma tarefa, garantindo que pertença ao usuário logado.
-     * Notifica os observadores após a exclusão.
-     *
-     * @param tarefa A tarefa a ser excluída.
-     * @throws BusinessException se a tarefa não pertencer ao usuário ou houver
-     *                           erro.
-     */
     @Override
     public void excluirTarefa(Tarefa tarefa) throws BusinessException {
         if (tarefa.getCriadoPor() != null && tarefa.getCriadoPor().equals(emailUsuario)) {
@@ -80,16 +53,6 @@ public class TaskServiceImpl implements ITaskService {
         }
     }
 
-    /**
-     * Edita os detalhes de uma tarefa existente, se pertencer ao usuário.
-     *
-     * @param tarefaOriginal A tarefa original.
-     * @param novoTitulo     O novo título.
-     * @param novaDescricao  A nova descrição.
-     * @param novoDeadline   O novo prazo.
-     * @param novaPrioridade A nova prioridade.
-     * @throws BusinessException se houver erro ao editar.
-     */
     @Override
     public void editarTarefa(Tarefa tarefaOriginal, String novoTitulo, String novaDescricao, LocalDate novoDeadline,
             int novaPrioridade) throws BusinessException {
@@ -111,17 +74,11 @@ public class TaskServiceImpl implements ITaskService {
         }
     }
 
-    /**
-     * Atualiza o estado de uma tarefa (ex: conclusão, subtarefas).
-     *
-     * @param tarefa A tarefa com os dados atualizados.
-     * @throws BusinessException se houver erro ao atualizar.
-     */
     @Override
     public Tarefa atualizarTarefa(Tarefa tarefa) throws BusinessException {
         if (tarefa.getCriadoPor() != null && tarefa.getCriadoPor().equals(emailUsuario)) {
             try {
-                // O título é o ID da entidade Tarefa neste sistema (PK).
+
                 Tarefa oldTarefa = tarefaRepository.buscarPorId(tarefa.getId());
                 if (oldTarefa != null) {
                     oldTarefa = oldTarefa.copiar();
@@ -137,11 +94,6 @@ public class TaskServiceImpl implements ITaskService {
         }
     }
 
-    /**
-     * Lista todas as tarefas do usuário logado.
-     *
-     * @return Uma lista de tarefas filtrada pelo e-mail do usuário.
-     */
     @Override
     public List<Tarefa> listarTodasTarefas() {
         return tarefaRepository.buscarTodos().stream()
@@ -149,12 +101,6 @@ public class TaskServiceImpl implements ITaskService {
                 .toList();
     }
 
-    /**
-     * Lista as tarefas do usuário para um dia específico.
-     *
-     * @param dia O dia a ser consultado.
-     * @return Uma lista de tarefas do dia.
-     */
     @Override
     public List<Tarefa> listarTarefasPorDia(LocalDate dia) {
         return tarefaRepository.buscarPorDia(dia).stream()
@@ -162,12 +108,6 @@ public class TaskServiceImpl implements ITaskService {
                 .toList();
     }
 
-    /**
-     * Lista as tarefas críticas do usuário.
-     * O critério de criticidade é baseado na proximidade do prazo e na prioridade.
-     *
-     * @return Uma lista de tarefas críticas.
-     */
     @Override
     public List<Tarefa> listarTarefasCriticas() {
         return tarefaRepository.buscarTarefasCriticas().stream()
@@ -175,38 +115,23 @@ public class TaskServiceImpl implements ITaskService {
                 .toList();
     }
 
-    /**
-     * Adiciona um observador para receber notificações sobre mudanças nas tarefas.
-     *
-     * @param observer O observador a ser adicionado.
-     */
     @Override
     public void addObserver(ITaskObserver observer) {
         observers.add(observer);
     }
 
-    /**
-     * Remove um observador.
-     *
-     * @param observer O observador a ser removido.
-     */
     @Override
     public void removeObserver(ITaskObserver observer) {
         observers.remove(observer);
     }
 
-    /**
-     * Notifica todos os observadores registrados sobre uma mudança em uma tarefa.
-     *
-     * @param event O evento de mudança da tarefa.
-     */
     @Override
     public void notifyObservers(TaskEvent event) {
         for (ITaskObserver observer : observers) {
             try {
                 observer.update(event);
             } catch (Exception e) {
-                // Loga o erro de auditoria mas não impede a operação principal
+
                 System.err.println("ALERTA: Falha ao notificar observador (Auditoria): " + e.getMessage());
                 e.printStackTrace();
             }

@@ -3,10 +3,6 @@ package br.com.todolist.service.event;
 import br.com.todolist.entity.Tarefa;
 import br.com.todolist.log.AuditAction;
 
-/**
- * Evento disparado quando ocorre uma ação em uma Tarefa.
- * Encapsula a ação, a tarefa atual e, em caso de edição, a versão anterior.
- */
 public class TaskEvent {
     private final AuditAction action;
     private final Tarefa tarefa;

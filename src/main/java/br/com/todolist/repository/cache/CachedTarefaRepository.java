@@ -8,14 +8,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Decorator para adicionar cache Redis ao repositório de Tarefas.
- */
 public class CachedTarefaRepository implements ITarefaRepository {
 
     private static final Logger LOGGER = Logger.getLogger(CachedTarefaRepository.class.getName());
     private static final String CACHE_KEY_PREFIX = "tarefa:";
-    private static final int TTL = 300; // 5 minutos
+    private static final int TTL = 300; 
 
     private final ITarefaRepository decoratedRepository;
     private final RedisCacheManager cacheManager;
@@ -39,7 +36,7 @@ public class CachedTarefaRepository implements ITarefaRepository {
                 return objectMapper.readValue(json, Tarefa.class);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, e, () -> "Erro ao deserializar Tarefa do cache: " + e.getMessage());
-                // Se falhar na deserialização, fallback para o banco
+
             }
         }
 

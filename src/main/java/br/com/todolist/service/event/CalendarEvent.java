@@ -3,10 +3,6 @@ package br.com.todolist.service.event;
 import br.com.todolist.entity.Evento;
 import br.com.todolist.log.AuditAction;
 
-/**
- * Evento disparado quando ocorre uma ação em um Evento.
- * Encapsula a ação, o evento atual e, em caso de edição, a versão anterior.
- */
 public class CalendarEvent {
     private final AuditAction action;
     private final Evento evento;

@@ -13,39 +13,22 @@ import br.com.todolist.util.notificacao.NotificadorEmail;
 import javax.swing.SwingUtilities;
 import com.formdev.flatlaf.intellijthemes.FlatCarbonIJTheme;
 
-/**
- * Ponto de entrada da aplicação.
- * Responsável por configurar o tema, inicializar as dependências,
- * configurar o controlador principal e exibir a tela de login.
- */
 public class Main {
 
-    /**
-     * Construtor privado para impedir a instanciação da classe principal.
-     */
     private Main() {
     }
 
-    /**
-     * Método principal que inicia a execução da aplicação.
-     *
-     * @param args Argumentos de linha de comando (não utilizados).
-     */
     public static void main(String[] args) {
 
-        // Configura o tema visual FlatLaf
         FlatCarbonIJTheme.setup();
 
-        // Inicializa as dependências (Repositórios, Serviços, Utilitários)
         IUserRepository userRepository = new UserRepositoryPostgres();
         IUserService userService = new UserServiceImpl(userRepository);
         INotificador notificador = new NotificadorEmail();
         IItemFactory itemFactory = new DefaultItemFactory();
 
-        // Inicializa a fachada (AppController) com as dependências injetadas
         AppController.init(userService, notificador, itemFactory);
 
-        // Inicia a interface gráfica na Thread de Eventos do Swing
         SwingUtilities.invokeLater(() -> {
             TelaLogin telaLogin = new TelaLogin();
             telaLogin.setVisible(true);

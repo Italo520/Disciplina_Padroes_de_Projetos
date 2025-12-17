@@ -3,9 +3,6 @@ package br.com.todolist.log;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-/**
- * Entidade que representa uma entrada de log (Auditoria ou Erro).
- */
 public class LogEntry {
 
     private LocalDateTime timestamp;
@@ -17,16 +14,10 @@ public class LogEntry {
     private String errorMessage;
     private String stackTrace;
 
-    /**
-     * Construtor padrão.
-     */
     public LogEntry() {
         this.timestamp = LocalDateTime.now();
     }
 
-    /**
-     * Construtor para logs de auditoria.
-     */
     public LogEntry(AuditAction action, String entityType, String userEmail, Map<String, Object> oldData, Map<String, Object> newData) {
         this.timestamp = LocalDateTime.now();
         this.action = action;
@@ -36,9 +27,6 @@ public class LogEntry {
         this.newData = newData;
     }
 
-    /**
-     * Construtor para logs de erro.
-     */
     public LogEntry(AuditAction action, String errorMessage, String stackTrace) {
         this.timestamp = LocalDateTime.now();
         this.action = action;

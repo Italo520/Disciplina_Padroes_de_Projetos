@@ -4,9 +4,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
-/**
- * Implementação do repositório de logs utilizando MongoDB.
- */
 public class MongoLogRepository implements ILogRepository {
 
     private final MongoCollection<Document> collection;

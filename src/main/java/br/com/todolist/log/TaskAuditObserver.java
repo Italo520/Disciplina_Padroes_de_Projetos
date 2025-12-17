@@ -7,10 +7,6 @@ import br.com.todolist.service.util.ITaskObserver;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Observador responsável por auditar ações em Tarefas.
- * Persiste as mudanças no MongoDB.
- */
 public class TaskAuditObserver implements ITaskObserver {
 
     private final ILogRepository logRepository;
